@@ -56,11 +56,21 @@ That is the gap this project occupies.
 
 - [ ] Country selector covering **all 27 member states**, showing transposition status (in force
       / from date / draft / pending), legal basis (national article where known, else Directive
-      Art. 7), response deadline (2 months unless national law says otherwise), frequency
-      (annual), anti-retaliation note, and the national equality body to escalate to
+      Art. 7), response deadline, anti-retaliation note, the national equality body to escalate
+      to, and whether that state has taken the **Art. 12(3)** option of routing requests only via
+      workers' representatives, the labour inspectorate or the equality body — which changes what
+      the worker should even ask for
+- [ ] **Deadline stated as the Directive states it**: Art. 7(4) is *"within a reasonable period of
+      time but in any event within two months"*. Two months is a backstop, not the standard, and
+      the letter must not present it as the standard. **Corrects the brief.**
+- [ ] **No annual frequency limit is asserted.** Art. 7 places no frequency limit on the worker;
+      Art. 7(3) is the *employer's* annual duty to remind workers the right exists. **Corrects the
+      brief**, which conflated the two.
 - [ ] Letter inputs never leave the browser: name, employer, job title/category, and what is
-      requested (own pay level; average pay by sex for same or equal-value work; criteria for
-      pay, pay levels and progression)
+      requested — **cited to the correct article**: own pay level and average pay levels broken
+      down by sex for same or equal-value work under **Art. 7**; criteria for pay, pay levels and
+      pay progression under **Art. 6**. **Corrects the brief**, which cited Art. 7 for both; a
+      letter mis-citing Art. 7 for the Art. 6 material is wrong on its face to any HR lawyer.
 - [ ] Optional works-council / union route where national law channels requests that way
 - [ ] Letter output in EN and PL, formal register, with statutory citation and a "please respond
       within N" line
@@ -73,7 +83,18 @@ That is the gap this project occupies.
 - [ ] Pending-country mode (Poland today): explain what is already in force, what is coming, and
       offer "notify me when it lands" as a local-only bookmark page — no email capture
 - [ ] Disclaimer on every generated artefact: informational tool, not legal advice; link to the
-      national equality body
+      national equality body. Scoped against **Germany's RDG** — § 2(1) captures activity needing
+      legal examination of an individual case, while BGH I ZR 113/20 (smartlaw) held a
+      form-driven document generator is not a Rechtsdienstleistung. Stay on the generator side of
+      that line; § 7 permits unions and associations, which is why representative-first routing is
+      legally easier and not merely polite.
+- [ ] **Art. 7(6) duty-of-care warning at generation time**: employers may lawfully require that
+      information obtained *other than the worker's own pay* is used only to exercise the equal-pay
+      right. A worker who posts received category averages publicly may breach that requirement.
+      The tool must say so before it hands over the letter, not in a footer.
+- [ ] **Identifiability warning for small employers** — in a small team, a worker's own request can
+      identify them and the comparison group; the UI must say this plainly rather than assume the
+      anti-retaliation provisions make it moot.
 
 **Module B — Career gap calculator + share card (B2C, virality)**
 
@@ -120,7 +141,9 @@ That is the gap this project occupies.
       statistical-reliability flag. **Corrects the brief**: the Directive sets no EU-wide minimum
       group size; working guidance sits at 3–5, and the "six" figure traces (unverified) to
       Germany's Advisory Commission. Presenting 6 as law is the fastest way for a comp analyst to
-      discredit the tool. Whether any member state mandates its own threshold is a `country-data`
+      discredit the tool. The six-person figure is **§ 12 EntgTranspG — German national law
+      governing the individual information right, not Art. 9 reporting**: wrong jurisdiction and
+      wrong obligation. Whether any member state mandates its own threshold is a `country-data`
       field, not a global constant.
 - [ ] Report export as PDF and JSON
 - [ ] Country adapters exposed as a plugin interface so the community can add member states
@@ -242,7 +265,14 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
 - **Legal-content rule for agents**: every legal fact in `country-data` must carry a source URL
   and `verified_at`, verified by web search at build time. Agents must never invent a statute
   number, deadline or authority. Unknown → `null` plus "pending verification" in the UI, never a
-  guess.
+  guess. **The verifier must assert a non-empty body and an expected anchor string** — EUR-Lex
+  was observed returning empty 200 responses during research, and a verifier that "passes" on an
+  empty 200 is worse than no verifier at all.
+- **Article-level accuracy**: the Directive's own articles must not be conflated. Four errors
+  inherited from the original brief were corrected at initialization (Art. 6 vs Art. 7 subject
+  matter; no annual frequency limit on the worker; the two-month backstop wording; the German
+  § 12 EntgTranspG six-person threshold misapplied as a Directive rule). Phase 0 must re-pull the
+  Directive from EUR-Lex primary text — all research quotations reached us via a reader proxy.
 - **Analytics**: Cloudflare Web Analytics — cookieless, no third-party origin in the CSP, counts
   only ("letter_generated", "card_shared"), never payloads.
 - **Quality gate**: Lighthouse 100/100/100/100, WCAG AA, mobile-first (viral traffic is mobile),
@@ -283,6 +313,8 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
 | `country-data` covers all 27 member states at v1 | It is JSON with sources, not translated prose — cheap to seed, and it makes the site a linkable reference for journalists and unions from day one, plus the asset the community maintains by PR | — Pending |
 | No public wall of shame in v1 (H3) | Naming employers needs a moderation queue, takedown handling and legal review; excluding it keeps Module C storage-free and the zero-egress claim absolute | — Pending |
 | Cloudflare Web Analytics over Plausible (H5) | Free, same vendor as hosting, no third-party origin in the CSP — the tighter CSP is worth more than richer custom events for a project whose headline claim is zero egress | — Pending |
+| Cut the "by retirement" projection before the "so far" figure, if Module B must shrink | The retrospective number is a defensible arithmetic statement; the projection multiplies every assumption and is where an economist would attack | — Pending |
+| Module D refuses to infer worker categories from job titles | Art. 3(1)(h) makes "category of workers" employer-defined — inferring it would produce confidently wrong statutory metrics | — Pending |
 | Malta served in English with Maltese legal citations (H4) | English is an official language in Malta; a full MT localisation needs a hard-to-source native-speaker review for ~530k people | — Pending |
 | A design-system phase lands early; later phases inherit it via `/gsd-ui-phase` | The status taxonomy and the share-card family recur in every module and are expensive to change late — deciding the visual language four times is the failure mode being avoided | — Pending |
 | Claude Design canvas for visual surfaces, `/gsd-sketch` for interactive flows | They answer different questions: a canvas compares many artboards at a glance (right for a share-card *family*), a sketch proves real responsive and interaction behaviour in a browser (right for multi-step flows and the column mapper) | — Pending |
