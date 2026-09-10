@@ -85,8 +85,15 @@ That is the gap this project occupies.
 - [ ] Honesty layer explaining that the unadjusted gap is not the same as discrimination, and
       what the Directive actually targets (per-category gap ≥5% → joint pay assessment). This
       must not be embarrassable by an economist.
-- [ ] Share card: 1200×630 OG image rendered from URL params by an edge function; the URL itself
-      carries the inputs, so nothing is stored server-side
+- [ ] Share card: 1200×630, **default approach is build-time bucketed static cards** addressed by
+      coarse, non-identifying params (country × band), with real inputs kept after the `#` —
+      fragments are never transmitted. A dynamic edge-rendered card must justify itself against
+      this default rather than being assumed. **Superseded the brief's original design**: research
+      confirmed Cloudflare logs `ClientRequestURI` including the query string, and that Slack,
+      LinkedIn, Facebook and X all unfurl server-side — so a salary in a query string is published
+      to those logs, not merely "not stored". Signing params fixes abuse, not disclosure.
+- [ ] Share-URL parameter contract agreed as a Phase 1 acceptance criterion, before any card is
+      built: only derived, rounded, non-identifying values may appear in a transmitted URL
 - [ ] Localised share card; copy-link and native share sheet on mobile
 
 **Module C — Range-o-meter (B2C, in v1)**
@@ -94,7 +101,10 @@ That is the gap this project occupies.
 - [ ] Paste a salary range → honesty score covering presence, spread ratio (max/min), gross vs
       net clarity, currency/period ambiguity, and employment-type ambiguity (B2B vs employment
       contract, which matters acutely in PL)
-- [ ] Parse a job-ad URL **only where the portal's terms allow it** — no scraping
+- [ ] Job-ad URL parsing is **unresolved and must be rescoped or dropped before Phase 4**:
+      research found it cannot be done client-side at all, because no job portal sends permissive
+      CORS. Options are a bookmarklet, a browser extension, or paste-only. Paste-only is the
+      assumption until decided.
 - [ ] Calculator only: no stored submissions, no rankings, no named employers
 
 **Module D — Article 9 calculator for employers (B2B door)**
@@ -105,7 +115,13 @@ That is the gap this project occupies.
       complementary/variable components; proportion of each sex in each pay quartile; gap by
       category of workers split into basic and complementary/variable
 - [ ] Flags every category at or above the 5% Article 10 threshold
-- [ ] Flags small groups (fewer than six per sex in a category) for suppression or aggregation
+- [ ] Flags small groups for suppression or aggregation using a **configurable, documented
+      threshold emitted in the JSON export** — and presents the privacy flag separately from the
+      statistical-reliability flag. **Corrects the brief**: the Directive sets no EU-wide minimum
+      group size; working guidance sits at 3–5, and the "six" figure traces (unverified) to
+      Germany's Advisory Commission. Presenting 6 as law is the fastest way for a comp analyst to
+      discredit the tool. Whether any member state mandates its own threshold is a `country-data`
+      field, not a global constant.
 - [ ] Report export as PDF and JSON
 - [ ] Country adapters exposed as a plugin interface so the community can add member states
 - [ ] Járnhaus CTA: "Need this wired into your HRIS / payroll, or a custom internal tool?"
@@ -117,8 +133,9 @@ That is the gap this project occupies.
 - [ ] `packages/country-data` — one JSON per member state (status, effective dates, legal basis,
       deadlines, equality body, sources, `verified_at`), all 27 seeded at v1
 - [ ] `packages/letters` — Article 7 templates per country/language, snapshot-tested
-- [ ] README with a network-tab screenshot proving the zero-egress claim, auditable by a
-      compensation analyst
+- [ ] **Zero-egress oracle**: a Playwright test asserting no request carries user data, written
+      in Phase 1 before there is anything to leak. Its JSON output *is* the README privacy proof —
+      generated and re-run on every deploy, not a hand-taken screenshot that rots.
 
 **Design system (settled early, inherited by every later phase)**
 
@@ -213,8 +230,11 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
 
 - **Privacy**: No salary data may reach a server, ever — enforced in CSP (`connect-src 'self'`
   plus analytics only) and proved in the README. This is the product's entire trust position.
-- **Tech stack**: Astro 5 + TypeScript + Tailwind 4, React islands for interactive modules,
-  deployed on Cloudflare Pages. Locked, not a Phase 0 question.
+- **Tech stack**: Astro 7.3.2 + TypeScript + Tailwind 4, React islands for interactive modules,
+  deployed on Cloudflare Pages. Locked, not a Phase 0 question. The major was raised from 5 to 7
+  on research evidence: `security.csp` only became stable in Astro 6 (it is `experimental.csp` in
+  5.x and was renamed breakingly within that line), and the zero-egress claim depends on it.
+  `@astrojs/react` peer deps are byte-identical across majors, so islands port unchanged.
 - **Edge functions**: Cloudflare Workers used *only* for OG image generation (satori +
   resvg-wasm). Nothing else runs server-side. No database.
 - **Licensing**: MIT for `directive-engine` (maximise npm adoption — it is the B2B lead magnet);
@@ -255,7 +275,9 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
 | Standalone brand on its own domain, "built by Járnhaus" footer, Module D on the same domain (H1) | The B2C side needs its own identity to be shareable and press-linkable; keeping Module D on the domain preserves the worker → HR → Járnhaus flywheel | — Pending |
 | Brand name and domain deferred to a Phase 0 decision | "Jafn" was always a placeholder; naming deserves its own deliberate moment before anything is registered or printed on a share card | — Pending |
 | MIT for `directive-engine`, AGPL for the web app (H2) | The engine is the B2B lead magnet, so adoption and stars matter more than copyleft; the app is the traffic asset and should not be trivially cloned and monetised | — Pending |
-| Astro 5 + TS + Tailwind 4 + React islands on Cloudflare Pages, locked now | Matches jarnhaus.dev, so it is a known quantity — research effort goes to the legal data layer and the engine instead of stack selection | — Pending |
+| Astro 7.3.2 + TS + Tailwind 4 + React islands on Cloudflare Pages, locked now | Stack shape matches jarnhaus.dev so it is a known quantity; the major was raised from 5 to 7 because `security.csp` is stable only from Astro 6 and the zero-egress claim rests on it. Astro 5's last patch was 5.18.2 (May 2026) | — Pending |
+| SheetJS (`xlsx`) rejected for `read-excel-file` | The npm copy has been frozen at 0.18.5 since March 2022 with two HIGH advisories, patched only via SheetJS's own CDN — unacceptable distribution provenance for a product sold on auditability | — Pending |
+| jsPDF over pdf-lib for client-side PDF | Measured: 208 KB brotli with built-in TTF subsetting versus 488 KB and no word wrap. Polish diacritics force font embedding either way, and pdf-lib's standard fonts cannot encode them | — Pending |
 | EN + PL interface locales at v1; SK, IT, LT deferred | Each locale carries a native-speaker review HITL step; Wave 1 is Poland, and deferring four reviews is the difference between launching and not | — Pending |
 | English letter available for any EU state with that state's correct national citation | Keeps Module A genuinely useful in Slovakia, Italy, Lithuania and Malta at launch despite EN/PL-only interface — otherwise the letter generator serves only a country where the law is still pending | — Pending |
 | `country-data` covers all 27 member states at v1 | It is JSON with sources, not translated prose — cheap to seed, and it makes the site a linkable reference for journalists and unions from day one, plus the asset the community maintains by PR | — Pending |
