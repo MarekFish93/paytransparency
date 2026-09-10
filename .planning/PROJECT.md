@@ -120,6 +120,24 @@ That is the gap this project occupies.
 - [ ] README with a network-tab screenshot proving the zero-egress claim, auditable by a
       compensation analyst
 
+**Design system (settled early, inherited by every later phase)**
+
+- [ ] Design tokens, type scale and component language, delivered as a reviewable
+      Claude Design canvas (an Artifact link openable on a phone, since the traffic is mobile)
+- [ ] **Status taxonomy** — a single visual vocabulary for "in force" / "from date" / "draft" /
+      "pending" / "pending verification", used identically by the country selector, the country
+      pages, the letter preview and the share card. This recurs in every module and is expensive
+      to change late.
+- [ ] **Share-card system, not a share card** — if the build-time bucketed approach holds, the
+      deliverable is a family of cards (country × band) that must all read at LinkedIn thumbnail
+      size. Designed and reviewed as a set, on one canvas.
+- [ ] Interaction design for the multi-step flows proved as throwaway interactive HTML
+      (`/gsd-sketch`), not static mockups: the Article 7 flow, the pending-country explainer,
+      and the Module D column mapper
+- [ ] Polish text-length slack designed in from the start (PL runs ~20–30% longer than EN)
+- [ ] Legal disclaimers, citations and `verified_at` stamps given a readable, deliberate place
+      in the type scale — they are legally load-bearing, not fine print to hide
+
 **Cross-cutting**
 
 - [ ] EN and PL interface locales live at v1
@@ -211,6 +229,19 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
   Playwright smoke on all CTAs green before any deploy.
 - **i18n**: Astro i18n routing with message catalogues. RTL not needed. Locale priority after
   v1: SK, IT, LT (in force), then DE, NL, CS, SV, DA (1 Jan 2027 wave), then the rest.
+- **Design process**: A design-system phase lands early and every later phase inherits it rather
+  than re-deciding the visual language. Tooling split by what each is actually good at:
+  **Claude Design canvas** for anything whose output is a picture or where variants must be
+  compared at a glance (above all the share-card family and the career-gap result screen);
+  **`/gsd-sketch`** for surfaces where behaviour *is* the design and a static mockup would lie
+  (the Article 7 multi-step flow, the pending-country explainer, the Module D column mapper);
+  **`UI-SPEC.md`** via `/gsd-ui-phase` as the binding contract underneath both; and
+  **`/gsd-ui-review`** as the retroactive audit. `workflow.ui_phase` and `ui_safety_gate` are
+  enabled in config.
+- **Design constraints that invalidate mockups if ignored**: Polish runs ~20–30% longer than
+  English, so every label, button and card needs slack; legal disclaimers and citations are long
+  and must stay readable rather than be shrunk away; Lighthouse 100 caps the font and image
+  budget; the share card must survive being rendered as a LinkedIn thumbnail.
 - **Process**: Spec-driven — every module gets a spec with acceptance criteria before code.
   `directive-engine` is TDD with golden vectors: build the worked example first, then the code.
   Letters are snapshot-tested per locale. A native-speaker review is a HITL step per language.
@@ -231,6 +262,8 @@ exercised end to end. Playwright smoke coverage on every CTA is a deploy gate, n
 | No public wall of shame in v1 (H3) | Naming employers needs a moderation queue, takedown handling and legal review; excluding it keeps Module C storage-free and the zero-egress claim absolute | — Pending |
 | Cloudflare Web Analytics over Plausible (H5) | Free, same vendor as hosting, no third-party origin in the CSP — the tighter CSP is worth more than richer custom events for a project whose headline claim is zero egress | — Pending |
 | Malta served in English with Maltese legal citations (H4) | English is an official language in Malta; a full MT localisation needs a hard-to-source native-speaker review for ~530k people | — Pending |
+| A design-system phase lands early; later phases inherit it via `/gsd-ui-phase` | The status taxonomy and the share-card family recur in every module and are expensive to change late — deciding the visual language four times is the failure mode being avoided | — Pending |
+| Claude Design canvas for visual surfaces, `/gsd-sketch` for interactive flows | They answer different questions: a canvas compares many artboards at a glance (right for a share-card *family*), a sketch proves real responsive and interaction behaviour in a browser (right for multi-step flows and the column mapper) | — Pending |
 
 ## Definition of Done for v1
 
