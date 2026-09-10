@@ -172,13 +172,115 @@ Deferred. Tracked, not in the current roadmap.
 
 ## Traceability
 
-Populated during roadmap creation.
+Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for phase goals and
+success criteria.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| LEGAL-01 | Phase 1 | Pending |
+| LEGAL-02 | Phase 1 | Pending |
+| LEGAL-03 | Phase 1 | Pending |
+| LEGAL-04 | Phase 1 | Pending |
+| LEGAL-05 | Phase 1 | Pending |
+| LEGAL-06 | Phase 1 | Pending |
+| LEGAL-07 | Phase 1 | Pending |
+| LEGAL-08 | Phase 1 | Pending |
+| LEGAL-09 | Phase 1 | Pending |
+| LEGAL-10 | Phase 1 | Pending |
+| LEGAL-11 | Phase 3 | Pending |
+| LEGAL-12 | Phase 3 | Pending |
+| LTR-01 | Phase 5 | Pending |
+| LTR-02 | Phase 5 | Pending |
+| LTR-03 | Phase 5 | Pending |
+| LTR-04 | Phase 5 | Pending |
+| LTR-05 | Phase 5 | Pending |
+| LTR-06 | Phase 5 | Pending |
+| LTR-07 | Phase 5 | Pending |
+| LTR-08 | Phase 5 | Pending |
+| LTR-09 | Phase 5 | Pending |
+| LTR-10 | Phase 5 | Pending |
+| LTR-11 | Phase 5 | Pending |
+| LTR-12 | Phase 5 | Pending |
+| LTR-13 | Phase 5 | Pending |
+| LTR-14 | Phase 5 | Pending |
+| LTR-15 | Phase 5 | Pending |
+| LTR-16 | Phase 5 | Pending |
+| LTR-17 | Phase 5 | Pending |
+| GAP-01 | Phase 4 | Pending |
+| GAP-02 | Phase 4 | Pending |
+| GAP-03 | Phase 4 | Pending |
+| GAP-04 | Phase 4 | Pending |
+| GAP-05 | Phase 4 | Pending |
+| GAP-06 | Phase 1 | Pending |
+| GAP-07 | Phase 4 | Pending |
+| GAP-08 | Phase 4 | Pending |
+| GAP-09 | Phase 4 | Pending |
+| RNG-01 | Phase 4 | Pending |
+| RNG-02 | Phase 4 | Pending |
+| RNG-03 | Phase 4 | Pending |
+| RNG-04 | Phase 4 | Pending |
+| EMP-01 | Phase 7 | Pending |
+| EMP-02 | Phase 7 | Pending |
+| EMP-03 | Phase 7 | Pending |
+| EMP-04 | Phase 7 | Pending |
+| EMP-05 | Phase 7 | Pending |
+| EMP-06 | Phase 7 | Pending |
+| EMP-07 | Phase 7 | Pending |
+| EMP-08 | Phase 7 | Pending |
+| EMP-09 | Phase 7 | Pending |
+| EMP-10 | Phase 7 | Pending |
+| EMP-11 | Phase 7 | Pending |
+| EMP-12 | Phase 7 | Pending |
+| EMP-13 | Phase 6 | Pending |
+| EMP-14 | Phase 7 | Pending |
+| ENG-01 | Phase 1 | Pending |
+| ENG-02 | Phase 6 | Pending |
+| ENG-03 | Phase 6 | Pending |
+| ENG-04 | Phase 6 | Pending |
+| ENG-05 | Phase 6 | Pending |
+| ENG-06 | Phase 1 | Pending |
+| DSN-01 | Phase 2 | Pending |
+| DSN-02 | Phase 2 | Pending |
+| DSN-03 | Phase 2 | Pending |
+| DSN-04 | Phase 2 | Pending |
+| DSN-05 | Phase 2 | Pending |
+| DSN-06 | Phase 2 | Pending |
+| DSN-07 | Phase 2 | Pending |
+| PRIV-01 | Phase 3 | Pending |
+| PRIV-02 | Phase 3 | Pending |
+| PRIV-03 | Phase 3 | Pending |
+| PRIV-04 | Phase 3 | Pending |
+| PRIV-05 | Phase 3 | Pending |
+| I18N-01 | Phase 3 | Pending |
+| I18N-02 | Phase 3 | Pending |
+| I18N-03 | Phase 3 | Pending |
+| I18N-04 | Phase 5 | Pending |
+| QUAL-01 | Phase 3 | Pending |
+| QUAL-02 | Phase 3 | Pending |
+| QUAL-03 | Phase 3 | Pending |
+| QUAL-04 | Phase 3 | Pending |
+| LNCH-01 | Phase 7 | Pending |
+| LNCH-02 | Phase 7 | Pending |
+| LNCH-03 | Phase 7 | Pending |
+
+**Phase totals:**
+
+| Phase | Name | Requirements |
+|-------|------|--------------|
+| 1 | Ground Truth and Governance | 13 |
+| 2 | Design System | 7 |
+| 3 | Shell, Country Pages and the Zero-Egress Proof | 14 |
+| 4 | Career Gap and Range-o-meter | 12 |
+| 5 | Article 7 Letter Generator | 18 |
+| 6 | directive-engine and the Payroll Worker | 5 |
+| 7 | Article 9 Calculator and Launch | 16 |
 
 **Coverage:**
 - v1 requirements: 85 total
-- Mapped to phases: 0
-- Unmapped: 85 ⚠️ (roadmap not yet created)
+- Mapped to phases: 85
+- Unmapped: 0
+- Duplicated across phases: 0
 
 ---
 *Requirements defined: 2026-09-10*
-*Last updated: 2026-09-10 after initial definition*
+*Last updated: 2026-09-10 after roadmap creation (traceability populated)*
