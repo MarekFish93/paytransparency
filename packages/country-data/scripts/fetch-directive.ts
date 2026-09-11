@@ -13,18 +13,22 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SourceDefect, normaliseForMatch, scopeToSubdivision, textOf } from '../src/verifier.ts';
+import {
+  MAX_BODY_BYTES,
+  SourceDefect,
+  normaliseForMatch,
+  scopeToSubdivision,
+  textOf,
+} from '../src/verifier.ts';
 
-export { SourceDefect, normaliseForMatch };
+// Re-exported so a caller can reach the retrieval helpers and the verifier primitives
+// they depend on from one module. `MAX_BODY_BYTES` is IMPORTED, never redeclared: two
+// copies of a byte cap drift, and a silently loosened cap is the same class of failure
+// as a weakened byte floor.
+export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES };
 
 export const CELEX = '32023L0970';
 export const BASE = `http://publications.europa.eu/resource/celex/${CELEX}`;
-
-/**
- * Upper bound on an accepted body (threat T-1-05): an unbounded remote body is an
- * unbounded build-time allocation. The authentic expression is ~193 KB.
- */
-export const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
 export type FetchUnchanged = { unchanged: true; etag: string };
 export type FetchFresh = {

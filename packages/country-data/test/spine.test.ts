@@ -232,7 +232,7 @@ describe('the envelope invariants', () => {
   it('rejects a verified fact citing no source', () => {
     const result = DirectiveFact.safeParse({
       ...base,
-      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      value: { text: ANCHOR, citation_key: CITATION_KEY, article: 7, paragraph: 4 },
       sources: [],
     });
     expect(result.success).toBe(false);
@@ -242,7 +242,7 @@ describe('the envelope invariants', () => {
     const result = DirectiveFact.safeParse({
       ...base,
       status: 'pending_verification',
-      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      value: { text: ANCHOR, citation_key: CITATION_KEY, article: 7, paragraph: 4 },
       sources: [],
     });
     expect(result.success).toBe(false);
@@ -251,7 +251,7 @@ describe('the envelope invariants', () => {
   it('rejects a source URL that is neither https nor the Cellar http exception', () => {
     const result = DirectiveFact.safeParse({
       ...base,
-      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      value: { text: ANCHOR, citation_key: CITATION_KEY, article: 7, paragraph: 4 },
       sources: [sourceLiteral('http://example.org/statute')],
     });
     expect(result.success).toBe(false);
@@ -260,7 +260,7 @@ describe('the envelope invariants', () => {
   it('rejects a source URL carrying a tracking parameter', () => {
     const result = DirectiveFact.safeParse({
       ...base,
-      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      value: { text: ANCHOR, citation_key: CITATION_KEY, article: 7, paragraph: 4 },
       sources: [sourceLiteral('https://dziennikustaw.gov.pl/DU/2026/1?utm_source=x')],
     });
     expect(result.success).toBe(false);
@@ -274,7 +274,7 @@ describe('the envelope invariants', () => {
     ];
     const parsed = Fact(DirectiveQuotation).parse({
       ...base,
-      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      value: { text: ANCHOR, citation_key: CITATION_KEY, article: 7, paragraph: 4 },
       sources: urls.map(sourceLiteral),
     });
     expect(parsed.sources.map((s) => s.url)).toEqual(urls);
