@@ -117,6 +117,44 @@ function stripComments(source: string): string {
   return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
 }
 
+interface DecisionFacts {
+  /** Every line that claims to state the Directive's position, well-formed or not. */
+  positionLines: string[];
+  /** Every line that claims to state the default's origin, well-formed or not. */
+  originLines: string[];
+  /** The single stated position, or `null` if there is not exactly one well-formed line. */
+  position: Position | null;
+  /** The single stated origin, or a `form: null` origin if there is not exactly one. */
+  origin: Origin;
+}
+
+/**
+ * The two orthogonal facts every decision must state, read once.
+ *
+ * Extracted rather than repeated at each call site: four separate assertions depend on
+ * exactly this reading, and a future edit that changed one of four copies would silently
+ * make the cross-check (a `silent` position may not claim `directive_text`) disagree with
+ * the per-line form check about what a decision actually says.
+ */
+function factsOf(decision: Decision): DecisionFacts {
+  const positionLines = linesStartingWith(decision.body, POSITION_PREFIX);
+  const originLines = linesStartingWith(decision.body, ORIGIN_PREFIX);
+  const positions = positionLines.map(classifyPosition);
+  const origins = originLines.map(classifyOrigin);
+  const noOrigin: Origin = { form: null, document: null, url: null };
+  return {
+    positionLines,
+    originLines,
+    position: positions.length === 1 ? (positions[0] ?? null) : null,
+    origin: origins.length === 1 ? (origins[0] ?? noOrigin) : noOrigin,
+  };
+}
+
+/** The facts of one named decision — an absent heading reads as a decision that states nothing. */
+function factsFor(key: string): DecisionFacts {
+  return factsOf(byKey.get(key) ?? { key, body: '' });
+}
+
 const conventionsDoc = readArtefact(CONVENTIONS_DOC);
 const engineReportDoc = readArtefact(ENGINE_REPORT_DOC);
 const decisions = parseDecisions(conventionsDoc);
@@ -125,10 +163,10 @@ const byKey = new Map(decisions.map((d) => [d.key, d]));
 describe('CONVENTIONS.md — one recorded decision per convention key', () => {
   it('carries exactly the eleven CONVENTION_KEYS as its decision headings, with no missing and no orphan key', () => {
     const documented = decisions.map((d) => d.key);
-    const declared = [...CONVENTION_KEYS];
+    const declared: readonly string[] = CONVENTION_KEYS;
 
     const missing = declared.filter((k) => !documented.includes(k));
-    const orphaned = documented.filter((k) => !declared.includes(k as never));
+    const orphaned = documented.filter((k) => !declared.includes(k));
 
     expect({ missing, orphaned }).toEqual({ missing: [], orphaned: [] });
     expect(documented).toHaveLength(declared.length);
@@ -140,12 +178,7 @@ describe('CONVENTIONS.md — one recorded decision per convention key', () => {
 
   it('states exactly one Directive position per decision, in one of the three recognised words', () => {
     const offenders = decisions
-      .map((d) => {
-        const lines = linesStartingWith(d.body, POSITION_PREFIX);
-        const positions = lines.map(classifyPosition);
-        const ok = positions.length === 1 && positions[0] !== null;
-        return ok ? null : { key: d.key, lines };
-      })
+      .map((d) => (factsOf(d).position === null ? { key: d.key, lines: factsOf(d).positionLines } : null))
       .filter((x) => x !== null);
 
     expect(offenders).toEqual([]);
@@ -154,12 +187,7 @@ describe('CONVENTIONS.md — one recorded decision per convention key', () => {
 
   it('carries exactly one Default origin line per decision, in one of the four recognised forms', () => {
     const offenders = decisions
-      .map((d) => {
-        const lines = linesStartingWith(d.body, ORIGIN_PREFIX);
-        const forms = lines.map((l) => classifyOrigin(l).form);
-        const ok = forms.length === 1 && forms[0] !== null;
-        return ok ? null : { key: d.key, lines };
-      })
+      .map((d) => (factsOf(d).origin.form === null ? { key: d.key, lines: factsOf(d).originLines } : null))
       .filter((x) => x !== null);
 
     expect(offenders).toEqual([]);
@@ -167,21 +195,20 @@ describe('CONVENTIONS.md — one recorded decision per convention key', () => {
   });
 
   it('names both a document and a URL on every external_guidance origin', () => {
-    const offenders = decisions
-      .flatMap((d) => linesStartingWith(d.body, ORIGIN_PREFIX).map((l) => ({ key: d.key, origin: classifyOrigin(l), line: l })))
+    const malformed = decisions
+      .flatMap((d) => linesStartingWith(d.body, ORIGIN_PREFIX).map((line) => ({ key: d.key, line, origin: classifyOrigin(line) })))
       .filter((x) => x.origin.form === 'external_guidance')
       .filter((x) => x.origin.document === null || x.origin.url === null)
       .map((x) => ({ key: x.key, line: x.line }));
 
-    expect(offenders).toEqual([]);
+    expect(malformed).toEqual([]);
   });
 
   it('never lets a decision whose Directive position is silent claim directive_text as its own default origin', () => {
     const offenders = decisions
       .map((d) => {
-        const position = linesStartingWith(d.body, POSITION_PREFIX).map(classifyPosition)[0] ?? null;
-        const origin = linesStartingWith(d.body, ORIGIN_PREFIX).map((l) => classifyOrigin(l).form)[0] ?? null;
-        return position === 'silent' && origin === 'directive_text' ? d.key : null;
+        const facts = factsOf(d);
+        return facts.position === 'silent' && facts.origin.form === 'directive_text' ? d.key : null;
       })
       .filter((x) => x !== null);
 
@@ -189,24 +216,21 @@ describe('CONVENTIONS.md — one recorded decision per convention key', () => {
   });
 
   it('attributes joinerLeaverPolicy as project_invented in those words, so an invented default is distinguishable from the borrowed one under quartileTieRule', () => {
-    const body = byKey.get('joinerLeaverPolicy')?.body ?? '';
-    const origin = linesStartingWith(body, ORIGIN_PREFIX).map(classifyOrigin)[0];
-    expect(origin?.form).toBe('project_invented');
-    expect(body).toMatch(/project convention/i);
+    expect(factsFor('joinerLeaverPolicy').origin.form).toBe('project_invented');
+    expect(byKey.get('joinerLeaverPolicy')?.body ?? '').toMatch(/project convention/i);
   });
 
   it('attributes quartileTieRule to a named external guidance document with a URL, not to the Directive', () => {
-    const body = byKey.get('quartileTieRule')?.body ?? '';
-    const origin = linesStartingWith(body, ORIGIN_PREFIX).map(classifyOrigin)[0];
-    expect(origin?.form).toBe('external_guidance');
-    expect(origin?.document ?? '').not.toBe('');
-    expect(origin?.url ?? '').toMatch(/^https?:\/\//);
-    expect(linesStartingWith(body, POSITION_PREFIX).map(classifyPosition)[0]).toBe('silent');
+    const facts = factsFor('quartileTieRule');
+    expect(facts.origin.form).toBe('external_guidance');
+    expect(facts.origin.document ?? '').not.toBe('');
+    expect(facts.origin.url ?? '').toMatch(/^https?:\/\//);
+    expect(facts.position).toBe('silent');
   });
 
   it('records no default and a throwing behaviour for partialPeriodPolicy — the flagship case the Directive does not settle', () => {
     const body = byKey.get('partialPeriodPolicy')?.body ?? '';
-    expect(linesStartingWith(body, ORIGIN_PREFIX).map((l) => classifyOrigin(l).form)[0]).toBe('no_default');
+    expect(factsFor('partialPeriodPolicy').origin.form).toBe('no_default');
     expect(body).toMatch(/no default/i);
     expect(body).toMatch(/throw/i);
     expect(body).toContain('E_CONVENTION_REQUIRED');
