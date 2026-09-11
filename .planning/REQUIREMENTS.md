@@ -18,7 +18,7 @@
 - [ ] **LEGAL-06**: Each country record names the national equality body and the applicable anti-retaliation provision
 - [ ] **LEGAL-07**: Directive Articles 3, 6, 7, 9, 10 and 12 are re-verified against EUR-Lex primary text, with quotations stored alongside the data **[research]**
 - [ ] **LEGAL-08**: A build fails when any fact's `verified_at` is older than the agreed freshness window
-- [ ] **LEGAL-09**: The fact verifier asserts a non-empty response body and an expected anchor string, not merely HTTP 200 **[research]**
+- [x] **LEGAL-09**: The fact verifier asserts a non-empty response body and an expected anchor string, not merely HTTP 200 **[research]**
 - [ ] **LEGAL-10**: A contributor can correct or add a country fact by pull request, gated by CI schema validation and source checking
 - [ ] **LEGAL-11**: The UI never displays a guessed value — an unknown field renders as "pending verification"
 - [ ] **LEGAL-12**: Where the underlying source says "draft", the UI says "draft"
@@ -185,7 +185,7 @@ success criteria.
 | LEGAL-06 | Phase 1 | Pending |
 | LEGAL-07 | Phase 1 | Pending |
 | LEGAL-08 | Phase 1 | Pending |
-| LEGAL-09 | Phase 1 | Pending |
+| LEGAL-09 | Phase 1 | Complete |
 | LEGAL-10 | Phase 1 | Pending |
 | LEGAL-11 | Phase 3 | Pending |
 | LEGAL-12 | Phase 3 | Pending |
@@ -276,6 +276,7 @@ success criteria.
 | 7 | Article 9 Calculator and Launch | 16 |
 
 **Coverage:**
+
 - v1 requirements: 85 total
 - Mapped to phases: 85
 - Unmapped: 0
