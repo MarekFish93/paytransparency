@@ -1,0 +1,14 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+# Single source of truth for cross-package versions (pnpm catalogs).
+# zod is pinned to 4.5.4 — NOT 4.6.x. The Phase 1 package legitimacy audit
+# returned verdict SUS (reason: too-new) for 4.6.2, published one day before
+# the audit. 4.5.4 (2026-08-28) is the last release with meaningful soak.
+# vitest is pinned to 4.1.11 — the `V4` dist-tag value, not `latest` (5.0.0),
+# which raises the Node floor.
+catalog:
+  zod: 4.5.4
+  vitest: 4.1.11
+  typescript: 7.0.2

@@ -1,0 +1,24 @@
+{
+  "name": "jafn",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -b",
+    "fetch:directive": "node packages/country-data/scripts/fetch-directive.ts",
+    "seed:nim": "node packages/country-data/scripts/seed-from-nim.ts",
+    "verify:sources": "node packages/country-data/scripts/verify-sources.ts",
+    "validate:country-data": "node packages/country-data/scripts/validate.ts",
+    "rederive:vectors": "node packages/directive-engine/scripts/rederive.ts"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vitest": "4.1.11",
+    "zod": "4.5.4"
+  }
+}

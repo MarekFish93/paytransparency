@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.turbo/
+*.tsbuildinfo
+coverage/
+
+# GSD runtime state (run-scoped, not project output)
+.gsd/
