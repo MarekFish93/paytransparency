@@ -75,3 +75,57 @@ export function freshnessOf(
   if (elapsed >= ttl * AGEING_AT) return 'ageing';
   return 'fresh';
 }
+
+// ---------------------------------------------------------------------------
+// D-10 — RED SKELETON
+// ---------------------------------------------------------------------------
+
+/** RED skeleton. The D-10 degradation, gate and unchanged-bump rules are not here yet. */
+export type DegradationDescriptor = {
+  render: 'normal' | 'degraded';
+  lastConfirmed: string | null;
+  ageDays: number | null;
+  freshness: Freshness;
+  suppressFromShareCard: boolean;
+  suppressFromLetterCitation: boolean;
+};
+
+export type FreshnessFailure = {
+  country: string;
+  field: string;
+  ageDays: number | null;
+  ttlDays: number | null;
+  volatility: Volatility;
+  message: string;
+};
+
+export type UnchangedBump = { country: string; field: string; message: string };
+
+/** RED skeleton — always reports a normal render. */
+export function degradationFor(
+  _fact: unknown,
+  _volatility: Volatility,
+  _today: string,
+): DegradationDescriptor {
+  return {
+    render: 'normal',
+    lastConfirmed: null,
+    ageDays: null,
+    freshness: 'fresh',
+    suppressFromShareCard: false,
+    suppressFromLetterCitation: false,
+  };
+}
+
+/** RED skeleton — never fails. */
+export function freshnessGate(_records: unknown[], _today: string): FreshnessFailure[] {
+  return [];
+}
+
+/** RED skeleton — never reports a bump. */
+export function unchangedBumps(_previous: unknown, _next: unknown): UnchangedBump[] {
+  return [];
+}
+
+/** RED skeleton — never throws. */
+export function assertNoUnchangedBump(_previous: unknown, _next: unknown): void {}
