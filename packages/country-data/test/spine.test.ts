@@ -347,3 +347,35 @@ describe('the gate bites: a recital-scoped anchor on an allowlisted, live source
     expect(result.message).toMatch(/floor/);
   });
 });
+
+/**
+ * The PR profile's defining property, asserted rather than merely documented.
+ *
+ * `legal-data.yml` must never retrieve a legal source over the network. A gate that goes
+ * red on somebody else's outage gets disabled within a month, and a disabled gate is
+ * worse than no gate. This assertion lives here rather than as a step inside the
+ * workflow because a step that greps its own file for these verbs would match its own
+ * pattern and fail permanently.
+ */
+describe('the PR-profile workflow stays offline', () => {
+  const WORKFLOW = readFileSync(
+    resolve(pkgRoot, '..', '..', '.github', 'workflows', 'legal-data.yml'),
+    'utf8',
+  );
+
+  it('performs no network retrieval of any legal source', () => {
+    for (const verb of ['curl', 'wget', 'fetch', 'Invoke-WebRequest']) {
+      expect(WORKFLOW).not.toContain(verb);
+    }
+  });
+
+  it('installs from the committed lockfile rather than re-resolving versions', () => {
+    // A floating resolve would quietly swap out the versions the legitimacy audit
+    // cleared — zod 4.5.4 rather than the one-day-old 4.6.x it rejected as too new.
+    expect(WORKFLOW).toContain('pnpm install --frozen-lockfile');
+  });
+
+  it('runs the offline suite that the decoy fixture turns red', () => {
+    expect(WORKFLOW).toContain('pnpm vitest run --dir packages/country-data');
+  });
+});

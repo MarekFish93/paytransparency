@@ -1,0 +1,61 @@
+# The PR profile for the legal-data spine.
+#
+# This job is OFFLINE BY DESIGN, and that is a correctness property rather than an
+# optimisation. Its only network access is to GitHub's own runner infrastructure and to
+# the package registry for a lockfile-pinned install. It retrieves no legal source.
+#
+# The reason: a gate that goes red because a third party had an outage gets disabled
+# within a month, and a disabled gate is worse than no gate at all. A contributor's pull
+# request must never turn red because the Publications Office was briefly unavailable.
+# Live re-verification against the network belongs to the nightly job (plan 01-02), whose
+# suites are named `*.live.test.ts` and are excluded from this profile by
+# `vitest.config.ts`.
+#
+# What this job DOES prove, entirely from committed fixtures: that a correct,
+# allowlisted, live, above-floor source cited for the WRONG PROVISION is rejected. If
+# somebody weakens the byte floor, broadens an anchor, or drops the subtree scope in
+# order to turn a red gate green, `cellar-art7-recital-decoy.xhtml` turns this job red.
+#
+# The "stays offline" property is itself asserted in `spine.test.ts`, which reads this
+# file and fails if a network-retrieval verb appears in it. That assertion deliberately
+# lives in the suite rather than in a step here, so this file stays clean of the very
+# verbs it forbids.
+#
+# Jobs `schema-and-lint` and `freshness-gate` are added by plans 01-02 and 01-05. They
+# are not stubbed here: an always-green placeholder job reads as coverage that does not
+# exist.
+name: legal-data
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-suite:
+    name: offline-suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      # Resolves the pnpm version pinned in package.json's `packageManager` field.
+      - name: Enable corepack
+        run: corepack enable
+
+      # `--frozen-lockfile` fails rather than silently resolving a different tree, so the
+      # versions the package legitimacy audit cleared are the versions that run here.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # The spine plus the proof-of-teeth. Committed fixtures only.
+      - name: Offline legal-data suite
+        run: pnpm vitest run --dir packages/country-data

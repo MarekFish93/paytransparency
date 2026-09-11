@@ -275,13 +275,17 @@ export function verifySource(source: Source, response: VerifierResponse): Verify
   const haystack = normaliseForMatch(textOf(subtree));
   const needle = normaliseForMatch(source.anchor);
   if (!haystack.includes(needle)) {
-    const window = haystack.slice(0, 200);
+    // Report BOTH: the raw markup a reviewer can diff against the document, and the
+    // readable rendering the matcher actually compared. A citation dispute is settled
+    // on the document's bytes, so a normalised, tag-stripped paraphrase is not enough
+    // evidence on its own — it is not what is in the file.
     return {
       disposition: 'data_defect',
       message:
         `anchor not found inside the id="${scope.id}" subtree of ${source.url}.\n` +
-        `  looked for: ${needle}\n` +
-        `  scope began: ${window}`,
+        `  looked for:  ${needle}\n` +
+        `  scope began (verbatim): ${subtree.slice(0, 200)}\n` +
+        `  scope began (as matched): ${haystack.slice(0, 200)}`,
     };
   }
 
