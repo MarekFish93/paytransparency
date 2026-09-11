@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import {
   MAX_BODY_BYTES,
   SourceDefect,
+  byteLengthOf,
   normaliseForMatch,
   scopeToSubdivision,
   textOf,
@@ -24,8 +25,9 @@ import {
 // Re-exported so a caller can reach the retrieval helpers and the verifier primitives
 // they depend on from one module. `MAX_BODY_BYTES` is IMPORTED, never redeclared: two
 // copies of a byte cap drift, and a silently loosened cap is the same class of failure
-// as a weakened byte floor.
-export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES };
+// as a weakened byte floor. `byteLengthOf` is imported for the same reason — this script
+// and the verifier must agree on what "bytes" means, and `String.length` is not it.
+export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES, byteLengthOf };
 
 export const CELEX = '32023L0970';
 export const BASE = `http://publications.europa.eu/resource/celex/${CELEX}`;
@@ -88,12 +90,13 @@ export async function fetchExpression(
   }
 
   const body = await res.text();
-  if (body.length === 0) {
+  const bodyBytes = byteLengthOf(body);
+  if (bodyBytes === 0) {
     throw new SourceDefect(`empty body on a 200 for ${BASE} (${lang3}) — a 200 is not evidence`);
   }
-  if (body.length > MAX_BODY_BYTES) {
+  if (bodyBytes > MAX_BODY_BYTES) {
     throw new SourceDefect(
-      `body for ${BASE} (${lang3}) is ${body.length} bytes, above the ${MAX_BODY_BYTES}-byte cap`,
+      `body for ${BASE} (${lang3}) is ${bodyBytes} bytes, above the ${MAX_BODY_BYTES}-byte cap`,
     );
   }
 
@@ -237,7 +240,7 @@ async function main(): Promise<void> {
       `pinned expression URI: ${res.pinnedUri}`,
       `ETag:                  ${res.etag}`,
       `Last-Modified:         ${res.lastModified}`,
-      `body bytes:            ${res.body.length}`,
+      `body bytes:            ${byteLengthOf(res.body)}`,
       `citation key:          ${extracted.citationKey}`,
       `wrote:                 ${outPath}`,
       `wrote fixture:         ${fixturePath}`,

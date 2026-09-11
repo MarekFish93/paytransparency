@@ -175,7 +175,7 @@ const defect = (reason: DefectReason, message: string): VerifyResult => ({
  * is actually held to depending on its language. `Buffer.byteLength` does not allocate,
  * so it is also the right tool for a size cap whose job is to bound allocation.
  */
-function byteLengthOf(body: string): number {
+export function byteLengthOf(body: string): number {
   return Buffer.byteLength(body, 'utf8');
 }
 
