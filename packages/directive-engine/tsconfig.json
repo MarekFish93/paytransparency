@@ -1,0 +1,14 @@
+{
+  // The shipped project. `types: []` is deliberate and load-bearing: nothing under
+  // `src/` may touch a Node global, because this package is consumed in the browser
+  // (the result page and the card renderer both import the share-URL contract).
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
+    "types": []
+  },
+  "include": ["src/**/*.ts"]
+}

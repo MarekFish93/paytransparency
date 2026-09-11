@@ -1,0 +1,29 @@
+{
+  "name": "@jafn/directive-engine",
+  "version": "0.0.0",
+  "description": "The frozen Article 9 report contract for Directive (EU) 2023/970 — types, recorded calculation conventions, golden vectors and the share-URL contract. Zero runtime dependencies, ever.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./docs/*": "./docs/*",
+    "./vectors/*": "./vectors/*"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "vectors",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {}
+}

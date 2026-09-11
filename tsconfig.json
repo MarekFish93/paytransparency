@@ -2,6 +2,8 @@
   "files": [],
   "references": [
     { "path": "packages/country-data" },
-    { "path": "packages/country-data/tsconfig.tools.json" }
+    { "path": "packages/country-data/tsconfig.tools.json" },
+    { "path": "packages/directive-engine" },
+    { "path": "packages/directive-engine/tsconfig.tools.json" }
   ]
 }
