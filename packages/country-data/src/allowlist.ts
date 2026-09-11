@@ -188,7 +188,7 @@ export function assertFetchable(url: string, countryCode: string): void {
       'scheme_not_https',
       host,
       country,
-      `${parsed.protocol}//${host} — the only ${'http:'} exception is ${HTTP_EXEMPT_HOST}, whose canonical resource URI is content-negotiated over http`,
+      `${parsed.protocol}//${host} — https is required; the single exception is ${HTTP_EXEMPT_HOST}, whose canonical resource URI is content-negotiated over plain http`,
     );
   }
 
