@@ -1,4 +1,7 @@
 {
   "files": [],
-  "references": [{ "path": "packages/country-data" }]
+  "references": [
+    { "path": "packages/country-data" },
+    { "path": "packages/country-data/tsconfig.tools.json" }
+  ]
 }

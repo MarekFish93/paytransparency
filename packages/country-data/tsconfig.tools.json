@@ -1,0 +1,15 @@
+{
+  // Build scripts and tests are typechecked but never shipped. They are a separate
+  // project so `rootDir` of the shipped project stays `src`, which is what makes the
+  // package `exports` entry `./dist/index.js` honest rather than `./dist/src/index.js`.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": ".tsbuild",
+    "tsBuildInfoFile": ".tsbuild/.tsbuildinfo",
+    "types": ["node"],
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"]
+}

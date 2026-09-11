@@ -1,0 +1,287 @@
+/**
+ * The spine test: one Directive fact proved through every layer, offline.
+ *
+ * This suite must never reach the network. A third party's outage turning a
+ * contributor's pull request red is how a gate gets disabled, and a disabled gate is
+ * worse than no gate. Live-source verification belongs to the nightly job (plan 01-02),
+ * whose files end in `.live.test.ts` and are excluded from this profile by
+ * `vitest.config.ts`.
+ */
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { describe, expect, it } from 'vitest';
+
+import {
+  DirectiveFact,
+  DirectiveFile,
+  DirectiveQuotation,
+  Fact,
+  FactStatus,
+  SourceVerification,
+  type Source,
+} from '../src/schema.ts';
+import { normaliseForMatch, verifySource, type VerifierResponse } from '../src/verifier.ts';
+import { freshnessOf, TTL_DAYS } from '../src/freshness.ts';
+import { extractParagraph, SourceDefect } from '../scripts/fetch-directive.ts';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const pkgRoot = resolve(here, '..');
+
+const FIXTURE = readFileSync(resolve(here, 'fixtures', 'cellar-art7-en.xhtml'), 'utf8');
+const DIRECTIVE = JSON.parse(readFileSync(resolve(pkgRoot, 'data', '_directive.json'), 'utf8')) as unknown;
+
+const CITATION_KEY = '32023L0970#007.004';
+
+/** The authentic Art. 7(4) deadline wording, as published. */
+const ANCHOR = 'within a reasonable period of time but in any event within two months';
+
+/** Build a synthesised 200 from the fixture — no network, deterministic. */
+const respond = (overrides: Partial<VerifierResponse> = {}): VerifierResponse => ({
+  status: 200,
+  body: FIXTURE,
+  etag: '"Con-20231213063525000"',
+  lastModified: 'Wed, 13 Dec 2023 05:35:25 GMT',
+  ...overrides,
+});
+
+const storedFact = () => {
+  const parsed = DirectiveFile.parse(DIRECTIVE);
+  const fact = parsed[CITATION_KEY];
+  if (fact === undefined) throw new Error(`${CITATION_KEY} missing from _directive.json`);
+  return fact;
+};
+
+const storedSource = (): Source => {
+  const source = storedFact().sources[0];
+  if (source === undefined) throw new Error('the stored fact cites no source');
+  return source;
+};
+
+describe('the frozen unions', () => {
+  it('freezes FactStatus at exactly five members, including directive_fallback', () => {
+    expect(FactStatus.options).toEqual([
+      'verified',
+      'directive_default',
+      'directive_fallback',
+      'pending_verification',
+      'not_applicable',
+    ]);
+  });
+
+  it('freezes SourceVerification at exactly five members, including manual-attest', () => {
+    expect(SourceVerification.options).toEqual([
+      'cellar',
+      'html-anchor',
+      'jsonld',
+      'metadata-only',
+      'manual-attest',
+    ]);
+  });
+});
+
+describe('extraction by the publisher’s own structural ids', () => {
+  it('extracts 007.004 from inside the art_7 subtree', () => {
+    const extracted = extractParagraph(FIXTURE, 7, 4);
+    expect(extracted.citationKey).toBe(CITATION_KEY);
+    expect(extracted.article).toBe(7);
+    expect(extracted.paragraph).toBe(4);
+    expect(normaliseForMatch(extracted.text)).toContain(ANCHOR);
+  });
+
+  it('preserves U+00A0 between the paragraph number and the first word', () => {
+    const extracted = extractParagraph(FIXTURE, 7, 4);
+    // The authentic bytes are `4.\xa0\xa0\xa0Employers`. Storing an ASCII space here
+    // would be rewriting the Official Journal.
+    expect(extracted.text).toMatch(/^4\.\u00A0+Employers/);
+    expect(extracted.text).toContain('\u00A0');
+  });
+
+  it('throws SourceDefect for an article id absent from the document', () => {
+    expect(() => extractParagraph(FIXTURE, 99, 1)).toThrow(SourceDefect);
+    expect(() => extractParagraph(FIXTURE, 99, 1)).toThrow(/art_99/);
+  });
+
+  it('throws SourceDefect for a paragraph id absent from inside the located article', () => {
+    // Article 7 exists and has paragraphs 007.001 through 007.006; 007.009 does not.
+    expect(() => extractParagraph(FIXTURE, 7, 9)).toThrow(SourceDefect);
+    expect(() => extractParagraph(FIXTURE, 7, 9)).toThrow(/007\.009/);
+  });
+});
+
+describe('normalisation is for matching only', () => {
+  it('matches an ASCII-spaced anchor only after normalisation, never before', () => {
+    // "Article 7" with an ASCII space occurs ZERO times in the authentic document;
+    // the U+00A0 form occurs once. A verifier anchored on the obvious string would
+    // fail on a perfect document — this is the failure normalisation exists to prevent.
+    const asciiForm = 'Article 7';
+    expect(FIXTURE.includes(asciiForm)).toBe(false);
+    expect(FIXTURE.includes('Article\u00A07')).toBe(true);
+    expect(normaliseForMatch(FIXTURE)).toContain(asciiForm);
+  });
+});
+
+describe('the stored fact', () => {
+  it('parses against the Fact schema and holds exactly one entry', () => {
+    const parsed = DirectiveFile.parse(DIRECTIVE);
+    expect(Object.keys(parsed)).toEqual([CITATION_KEY]);
+  });
+
+  it('carries full provenance: verified, stable, anchored, with a recorded ETag', () => {
+    const fact = storedFact();
+    const source = storedSource();
+    expect(fact.status).toBe('verified');
+    expect(fact.volatility).toBe('stable');
+    expect(source.anchor.length).toBeGreaterThan(0);
+    expect(source.etag).toBeTruthy();
+    expect(source.verification).toBe('cellar');
+    expect(source.scope?.id).toBe('art_7');
+  });
+
+  it('stores the quotation raw, with the authentic U+00A0 separator', () => {
+    const value = storedFact().value;
+    expect(value).not.toBeNull();
+    expect(value?.text).toContain('\u00A0');
+  });
+});
+
+describe('the verifier', () => {
+  it('disposes the stored source verified against a synthesised 200', () => {
+    const result = verifySource(storedSource(), respond());
+    expect(result.disposition).toBe('verified');
+  });
+
+  it('disposes a 202 with an empty body data_defect, not verified', () => {
+    // res.ok is true for 202 — `if (!res.ok) throw` would let this through.
+    const result = verifySource(storedSource(), { status: 202, body: '' });
+    expect(result.disposition).toBe('data_defect');
+  });
+
+  it('disposes a 304 revalidated without touching the body', () => {
+    const result = verifySource(storedSource(), { status: 304, body: '' });
+    expect(result.disposition).toBe('revalidated');
+  });
+
+  it('disposes a transport error source_unreachable, not data_defect', () => {
+    const result = verifySource(storedSource(), { transportError: 'ETIMEDOUT' });
+    expect(result.disposition).toBe('source_unreachable');
+  });
+});
+
+describe('freshness', () => {
+  const ttl = TTL_DAYS.stable;
+
+  const plusDays = (iso: string, days: number): string =>
+    new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+
+  it('is fresh when verified today', () => {
+    expect(freshnessOf('2026-09-11', 'stable', '2026-09-11')).toBe('fresh');
+  });
+
+  // Every boundary asserted explicitly, because the window is the control: a window
+  // that expires "some time after" its stated length is not a window.
+  it('is stale when elapsed days equal the TTL exactly — the boundary day is stale', () => {
+    const base = '2025-01-01';
+    expect(freshnessOf(base, 'stable', plusDays(base, ttl))).toBe('stale');
+  });
+
+  it('is not yet stale one day below the TTL', () => {
+    const base = '2025-01-01';
+    // NOTE: at 364 of 365 days the fact is inside the window but well past the 75%
+    // mark, so the honest answer is `ageing`. The plan's acceptance criterion phrases
+    // this as "fresh", which is its two-state reading of a three-state function;
+    // `ageing` IS the non-stale answer here. Asserted exactly so the distinction
+    // cannot be lost in a later refactor.
+    expect(freshnessOf(base, 'stable', plusDays(base, ttl - 1))).toBe('ageing');
+    expect(freshnessOf(base, 'stable', plusDays(base, ttl - 1))).not.toBe('stale');
+  });
+
+  it('crosses from fresh to ageing at 75% of the TTL', () => {
+    const base = '2025-01-01';
+    // 75% of 365 is 273.75: day 273 is still fresh, day 274 is ageing.
+    expect(freshnessOf(base, 'stable', plusDays(base, 273))).toBe('fresh');
+    expect(freshnessOf(base, 'stable', plusDays(base, 274))).toBe('ageing');
+  });
+
+  it('treats a null verified_at as stale', () => {
+    expect(freshnessOf(null, 'stable', '2026-09-11')).toBe('stale');
+  });
+});
+
+describe('the envelope invariants', () => {
+  const base = {
+    status: 'verified' as const,
+    verified_at: '2026-09-11',
+    verified_by: null,
+    volatility: 'stable' as const,
+  };
+
+  const sourceLiteral = (url: string): unknown => ({
+    url,
+    title: 'Directive (EU) 2023/970',
+    publisher: 'Publications Office of the European Union',
+    kind: 'eu_institution',
+    verification: 'cellar',
+    anchor: ANCHOR,
+    language: 'en',
+    accessed_at: '2026-09-11',
+    scope: { id: 'art_7', expected_subtitle: 'Right to information' },
+  });
+
+  it('rejects a verified fact citing no source', () => {
+    const result = DirectiveFact.safeParse({
+      ...base,
+      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      sources: [],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a pending_verification fact carrying a value', () => {
+    const result = DirectiveFact.safeParse({
+      ...base,
+      status: 'pending_verification',
+      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      sources: [],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a source URL that is neither https nor the Cellar http exception', () => {
+    const result = DirectiveFact.safeParse({
+      ...base,
+      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      sources: [sourceLiteral('http://example.org/statute')],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a source URL carrying a tracking parameter', () => {
+    const result = DirectiveFact.safeParse({
+      ...base,
+      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      sources: [sourceLiteral('https://dziennikustaw.gov.pl/DU/2026/1?utm_source=x')],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('preserves the authored order of sources through parse and re-serialisation', () => {
+    const urls = [
+      'http://publications.europa.eu/resource/celex/32023L0970',
+      'https://dziennikustaw.gov.pl/DU/2026/1',
+      'https://normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.legislativo:2026;1',
+    ];
+    const parsed = Fact(DirectiveQuotation).parse({
+      ...base,
+      value: { text: ANCHOR.padEnd(25, ' '), citation_key: CITATION_KEY, article: 7, paragraph: 4 },
+      sources: urls.map(sourceLiteral),
+    });
+    expect(parsed.sources.map((s) => s.url)).toEqual(urls);
+    // sources[0] is the primary citation the UI and the letters quote.
+    expect(parsed.sources[0]?.url).toBe(urls[0]);
+
+    const roundTripped = Fact(DirectiveQuotation).parse(JSON.parse(JSON.stringify(parsed)));
+    expect(roundTripped.sources.map((s) => s.url)).toEqual(urls);
+  });
+});

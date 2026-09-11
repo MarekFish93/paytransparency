@@ -9,7 +9,19 @@
     "noUncheckedIndexedAccess": true,
     "declaration": true,
     "verbatimModuleSyntax": true,
+
+    // Build scripts run under Node's native type stripping (`node foo.ts`) with no
+    // script-runner dependency, so only erasable syntax is permitted: no enums, no
+    // namespaces, no parameter properties.
     "erasableSyntaxOnly": true,
+
+    // Native type stripping resolves ESM specifiers literally, so a TS file importing
+    // another TS file must write `./foo.ts`. These two options let tsc accept that
+    // specifier and rewrite it to `./foo.js` on emit, so the same source is valid for
+    // `node scripts/fetch-directive.ts`, for vitest, and for the published dist/.
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

@@ -1,0 +1,33 @@
+{
+  "32023L0970#007.004": {
+    "value": {
+      "text": "4.   Employers shall provide the information referred to in paragraph 1 within a reasonable period of time but in any event within two months from the date on which the request is made.",
+      "citation_key": "32023L0970#007.004",
+      "article": 7,
+      "paragraph": 4
+    },
+    "status": "verified",
+    "volatility": "stable",
+    "verified_at": "2026-09-11",
+    "verified_by": null,
+    "sources": [
+      {
+        "url": "http://publications.europa.eu/resource/cellar/5bbb9daf-f470-11ed-a05c-01aa75ed71a1.0006.03/DOC_1",
+        "title": "Directive (EU) 2023/970 — Article 7, Right to information",
+        "publisher": "Publications Office of the European Union",
+        "kind": "eu_institution",
+        "verification": "cellar",
+        "anchor": "within a reasonable period of time but in any event within two months",
+        "language": "en",
+        "published_at": "2023-05-17",
+        "accessed_at": "2026-09-11",
+        "etag": "\"Con-20231213063525000\"",
+        "last_modified": "Wed, 13 Dec 2023 05:35:25 GMT",
+        "scope": {
+          "id": "art_7",
+          "expected_subtitle": "Right to information"
+        }
+      }
+    ]
+  }
+}

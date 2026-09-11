@@ -17,6 +17,7 @@
     "rederive:vectors": "node packages/directive-engine/scripts/rederive.ts"
   },
   "devDependencies": {
+    "@types/node": "24.13.1",
     "typescript": "7.0.2",
     "vitest": "4.1.11",
     "zod": "4.5.4"

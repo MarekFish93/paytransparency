@@ -1,0 +1,14 @@
+# Normalise source and config to LF in the repository, and check it out as LF on every
+# platform. CI runs on ubuntu-latest; a contributor on Windows must not produce a diff
+# that is nothing but line endings.
+* text=auto eol=lf
+
+# Retrieved primary-source fixtures are BYTES, not text. Line-ending translation would
+# silently rewrite an Official Journal document — the exact class of mutation the raw
+# storage rule exists to prevent — and would change the byte count the verifier's floor
+# is asserted against.
+*.xhtml -text
+packages/country-data/test/fixtures/** -text
+
+# The seeded legal data carries authentic U+00A0 and U+2019. Keep it LF, never CRLF.
+packages/country-data/data/*.json text eol=lf
