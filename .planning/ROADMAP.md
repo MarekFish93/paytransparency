@@ -49,7 +49,16 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A contributor's pull request putting a wrong statute in the data is rejected before merge by schema validation, a per-country source-domain allowlist and a verifier that fails an empty 200 as loudly as it fails a 404 — tested with a deliberately bad PR before the repo is public
   4. A build fails when any fact is older than its freshness window, and the freshness window varies by how volatile the fact is
   5. Golden vectors and a frozen `EngineReport` type exist as reviewed data with no engine code written, and every calculation convention plus the share-URL parameter contract is a recorded decision the engine and the card must be given rather than assume
-**Plans**: TBD
+**Plans**: 7 plans in 3 waves
+
+Plans:
+- [ ] 01-01-cellar-spine-PLAN.md — Prove the whole legal-data spine end to end on one fact: Cellar reachable from CI, Art. 7(4) retrieved by structural id, stored with provenance, verified, freshness-evaluated, and a deliberately broken copy rejected
+- [ ] 01-02-verifier-strategies-PLAN.md — The five-strategy verification table, the pre-fetch allowlist guard, six captured response fixtures, the data-defect versus transport-failure split, and the nightly live profile with ETag-keyed caching
+- [ ] 01-03-directive-corpus-PLAN.md — Articles 3, 6, 7, 9, 10 and 12 in full across eleven authentic language versions, paragraph-tagged by the publisher's own ids, with the four inherited citation errors regression-locked
+- [ ] 01-04-country-schema-and-seeding-PLAN.md — The country record schema and emitted JSON Schema, all 27 states seeded from the Commission register, five launch countries drafted for maintainer promotion, and staleness that degrades rather than darkens
+- [ ] 01-05-governance-gates-PLAN.md — Nine policy lint rules on top of schema parse, the full governance document set, the written Polish gate, five rejected bad-PR drill cases, and the repository made public
+- [ ] 01-06-frozen-contracts-PLAN.md — The frozen `EngineReport` with its amendment path, one recorded decision per calculation convention, the versioned share-URL contract, and ten hand-computed golden vectors
+- [ ] 01-07-vector-rederivation-PLAN.md — Every golden vector independently re-derived by a separate agent, compared, with each disagreement fixed in the convention wording rather than in a number
 
 **Open questions to resolve in this phase:**
 - Which member states have taken the Art. 12(3) option of routing requests only via workers' representatives, the labour inspectorate or the equality body — a per-country field, needed during seeding because it changes what a worker should even ask for
@@ -157,7 +166,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Ground Truth and Governance | 0/TBD | Not started | - |
+| 1. Ground Truth and Governance | 0/7 | Planned | - |
 | 2. Design System | 0/TBD | Not started | - |
 | 3. Shell, Country Pages and the Zero-Egress Proof | 0/TBD | Not started | - |
 | 4. Career Gap and Range-o-meter | 0/TBD | Not started | - |
