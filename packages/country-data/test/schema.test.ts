@@ -13,11 +13,13 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
 import {
+  CITATION_KEY_SHAPE,
   CountryRecord,
   EU_COUNTRY_CODES,
   LAUNCH_COUNTRIES,
   LEGALLY_OPERATIVE_FIELDS,
 } from '../src/country.ts';
+import { DirectiveQuotation } from '../src/schema.ts';
 import type { Source } from '../src/schema.ts';
 
 const QUERY_DATE = '2026-09-11';
@@ -393,6 +395,29 @@ describe('the country record: directive_fallback', () => {
       },
     };
     expect(CountryRecord.safeParse(record).success).toBe(false);
+  });
+
+  /**
+   * `schema.ts` froze the citation-key regex on `DirectiveQuotation`; `country.ts`
+   * restates it as `CITATION_KEY_SHAPE` because a fallback value is not a quotation. The
+   * two must never drift, or a key the corpus accepts would be rejected here (or worse,
+   * the reverse). Proved by behaviour rather than by comparing regex sources.
+   */
+  test('the record and the frozen Directive quotation agree on the citation-key shape', () => {
+    const quotation = (key: string): unknown => ({
+      text: 'Employers shall provide the information referred to in paragraph 1 within two months.',
+      citation_key: key,
+      article: 7,
+      paragraph: 4,
+    });
+    for (const key of ['32023L0970#007.004', '32023L0970#012.003']) {
+      expect(CITATION_KEY_SHAPE.test(key)).toBe(true);
+      expect(DirectiveQuotation.safeParse(quotation(key)).success).toBe(true);
+    }
+    for (const key of ['Directive 2023/970 Art. 7(4)', '32023L0970#7.4', '32023L0970-007.004']) {
+      expect(CITATION_KEY_SHAPE.test(key)).toBe(false);
+      expect(DirectiveQuotation.safeParse(quotation(key)).success).toBe(false);
+    }
   });
 
   test('rejects a hand-rolled citation key that is not the publisher id shape', () => {

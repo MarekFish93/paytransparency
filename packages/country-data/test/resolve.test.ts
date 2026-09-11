@@ -102,7 +102,7 @@ describe('resolve: fallback', () => {
   test('a fallback lookup that misses fails loudly with the key named', () => {
     expect(() =>
       resolve(pendingDeadline, {}, { field: 'article_7.response_deadline', today: TODAY }),
-    ).toThrowError(new RegExp(DEADLINE_KEY.replace('#', '#')));
+    ).toThrowError(DEADLINE_KEY);
   });
 
   test('DIRECTIVE_FALLBACK_KEYS is the single enumerable table plan 01-05 will check', () => {
