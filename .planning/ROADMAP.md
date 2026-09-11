@@ -53,7 +53,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A build fails when any fact is older than its freshness window, and the freshness window varies by how volatile the fact is
   5. Golden vectors and a frozen `EngineReport` type exist as reviewed data with no engine code written, and every calculation convention plus the share-URL parameter contract is a recorded decision the engine and the card must be given rather than assume
 
-**Plans**: 1/7 plans executed in 3 waves
+**Plans**: 5/7 plans executed in 3 waves
 
 Plans:
 **Wave 1**
@@ -62,10 +62,10 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-verifier-strategies-PLAN.md — The five-strategy verification table, the pre-fetch allowlist guard, six captured response fixtures, the data-defect versus transport-failure split, and the nightly live profile with ETag-keyed caching
-- [ ] 01-03-directive-corpus-PLAN.md — Articles 3, 6, 7, 9, 10 and 12 in full across eleven authentic language versions, paragraph-tagged by the publisher's own ids, with the four inherited citation errors regression-locked
-- [ ] 01-04-country-schema-and-seeding-PLAN.md — The country record schema and emitted JSON Schema, all 27 states seeded from the Commission register, five launch countries drafted for maintainer promotion, and staleness that degrades rather than darkens
-- [ ] 01-06-frozen-contracts-PLAN.md — The frozen `EngineReport` with its amendment path, one recorded decision per calculation convention, the versioned share-URL contract, and ten hand-computed golden vectors
+- [x] 01-02-verifier-strategies-PLAN.md — The five-strategy verification table, the pre-fetch allowlist guard, six captured response fixtures, the data-defect versus transport-failure split, and the nightly live profile with ETag-keyed caching
+- [x] 01-03-directive-corpus-PLAN.md — Articles 3, 6, 7, 9, 10 and 12 in full across eleven authentic language versions, paragraph-tagged by the publisher's own ids, with the four inherited citation errors regression-locked
+- [x] 01-04-country-schema-and-seeding-PLAN.md — The country record schema and emitted JSON Schema, all 27 states seeded from the Commission register, five launch countries drafted for maintainer promotion, and staleness that degrades rather than darkens
+- [x] 01-06-frozen-contracts-PLAN.md — The frozen `EngineReport` with its amendment path, one recorded decision per calculation convention, the versioned share-URL contract, and ten hand-computed golden vectors
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Ground Truth and Governance | 1/7 | In Progress|  |
+| 1. Ground Truth and Governance | 5/7 | In Progress|  |
 | 2. Design System | 0/TBD | Not started | - |
 | 3. Shell, Country Pages and the Zero-Egress Proof | 0/TBD | Not started | - |
 | 4. Career Gap and Range-o-meter | 0/TBD | Not started | - |

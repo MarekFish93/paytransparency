@@ -7,3 +7,6 @@ coverage/
 # GSD runtime state (run-scoped, not project output)
 .gsd/
 .tsbuild/
+
+# GSD executor worktrees — live git worktrees, never project content
+.claude/worktrees/
