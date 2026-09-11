@@ -10,3 +10,7 @@ coverage/
 
 # GSD executor worktrees — live git worktrees, never project content
 .claude/worktrees/
+
+# GSD runtime state — regenerated per session, not project content
+.planning/state.json
+.planning/milestone.lock
