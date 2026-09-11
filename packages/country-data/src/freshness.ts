@@ -6,6 +6,7 @@
  * Phase 5 suppresses on (D-10 — a stale fact degrades the UI and is suppressed from any
  * share card or letter citation; the build hard-fails only for launch countries).
  */
+import { LAUNCH_COUNTRIES, LEGALLY_OPERATIVE_FIELDS } from './country.ts';
 import type { Volatility } from './schema.ts';
 
 /**
@@ -157,21 +158,15 @@ export function degradationFor(
 }
 
 /**
- * The five states whose legally-operative facts hard-fail the build, and the three fields
- * that count.
+ * The gate is scoped to exactly `LAUNCH_COUNTRIES` × `LEGALLY_OPERATIVE_FIELDS`, imported
+ * from their one definition rather than restated here.
  *
- * Duplicated from `country.ts` rather than imported so that `freshness.ts` stays free of a
- * dependency on the record schema — `country.ts` already imports nothing from here, and a
- * cycle between the two would be worse than two short lists. `country.ts` exports the
- * canonical `LAUNCH_COUNTRIES` and `LEGALLY_OPERATIVE_FIELDS`, and `freshness.test.ts`
- * asserts the gate is scoped to exactly those, so a divergence fails the suite.
+ * `country.ts` imports nothing from this module, so the edge is one-way and there is no
+ * cycle. Restating the two lists locally would work today and drift the first time a
+ * launch country is added.
  */
-const GATED_COUNTRIES: readonly string[] = ['PL', 'SK', 'IT', 'LT', 'MT'];
-const GATED_FIELDS: readonly string[] = [
-  'article_7.legal_basis',
-  'article_7.response_deadline',
-  'article_12_3',
-];
+const GATED_COUNTRIES: readonly string[] = LAUNCH_COUNTRIES;
+const GATED_FIELDS: readonly string[] = LEGALLY_OPERATIVE_FIELDS;
 
 function factAtPath(record: unknown, path: string): FactLike | null {
   let node: unknown = record;
