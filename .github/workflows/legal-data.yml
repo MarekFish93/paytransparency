@@ -43,6 +43,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+          # MUST stay false. setup-node's package-manager cache probes for the pnpm
+          # executable during its own step, which runs before corepack has provisioned
+          # one — leaving the step to fail with "Unable to locate executable file: pnpm".
+          package-manager-cache: false
 
       # Resolves the pnpm version pinned in package.json's `packageManager` field.
       - name: Enable corepack
