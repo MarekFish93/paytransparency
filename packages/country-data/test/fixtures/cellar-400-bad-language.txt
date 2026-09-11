@@ -1,0 +1,7 @@
+HTTP/1.1 400 Bad Request
+connection: keep-alive
+content-security-policy: script-src 'self';
+date: Fri, 11 Sep 2026 11:32:07 GMT
+transfer-encoding: chunked
+
+None of the requests returned successfully a redirection. The following exception was thrown: [Invalid content type CONTENT_STREAM for WORK ['cellar:5bbb9daf-f470-11ed-a05c-01aa75ed71a1'] without language]

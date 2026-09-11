@@ -20,7 +20,7 @@
  *   5. The Cellar 200 carries an EMPTY `Content-Language`. The server does not tell you
  *      which language it gave you. Hence the subtitle check.
  */
-import type { Source } from './schema.ts';
+import type { Source, Volatility } from './schema.ts';
 
 /**
  * The outcome of a verification attempt.
@@ -89,16 +89,110 @@ export type VerifierResponse = {
   transportError?: string | null;
   status?: number;
   body?: string;
+  /** Lower-cased response headers. The challenge recognition reads two of them. */
+  headers?: Record<string, string>;
   etag?: string | null;
   lastModified?: string | null;
 };
+
+/** Machine-readable cause. A message is for a human; this is for a workflow. */
+export type DefectReason =
+  | 'allowlist_violation'
+  | 'anti_automation_gate'
+  | 'client_error'
+  | 'server_error'
+  | 'transport_error'
+  | 'no_status'
+  | 'unexpected_status'
+  | 'empty_body'
+  | 'below_byte_floor'
+  | 'body_too_large'
+  | 'no_scope_id'
+  | 'scope_absent'
+  | 'anchor_absent'
+  | 'language_unconfirmed'
+  | 'jsonld_absent'
+  | 'jsonld_unparseable'
+  | 'eli_mismatch'
+  | 'attestation_missing'
+  | 'attestation_stale';
+
+/** A maintainer's recorded decision to proceed despite an unreachable source (D-09). */
+export type UnreachableOverride = { maintainer: string; reason: string; at: string };
 
 export type VerifyResult = {
   disposition: Disposition;
   /** Human-readable, and on a defect it quotes what was actually there. */
   message: string;
+  reason?: DefectReason | null;
   etag?: string | null;
+  /** What this strategy did NOT machine-verify. Never implied by a bare `verified`. */
+  notes?: string[];
+  override?: UnreachableOverride;
 };
+
+/** The attestation and country facts `verifySource` cannot read off a `Source`. */
+export type VerifyContext = {
+  countryCode?: string;
+  verified_by?: string | null;
+  verified_at?: string | null;
+  volatility?: Volatility;
+  /** `YYYY-MM-DD`. Injected in tests so a freshness boundary is not a moving target. */
+  today?: string;
+};
+
+/** The shape `verifySourceLive` needs from a fetcher. The global `fetch` satisfies it. */
+export type FetchLike = (
+  url: string,
+  init: { headers: Record<string, string>; redirect: 'manual' },
+) => Promise<{
+  status: number;
+  headers: { get(name: string): string | null };
+  text(): Promise<string>;
+}>;
+
+/**
+ * RED-phase stub (plan 01-02 Task 2). Deliberately PERMISSIVE / inert so every behaviour
+ * test fails on its own assertion rather than on a module that will not load.
+ */
+export function isChallengeInterstitial(
+  _body: string,
+  _headers: Record<string, string> = {},
+): boolean {
+  return false;
+}
+
+/** RED-phase stub. Applies nothing and validates nothing. */
+export function overrideUnreachable(
+  result: VerifyResult,
+  _maintainer: string,
+  _reason: string,
+): VerifyResult {
+  return result;
+}
+
+export type LiveOptions = {
+  countryCode: string;
+  fetchImpl: FetchLike;
+  context?: VerifyContext;
+  maxRetries?: number;
+  baseBackoffMs?: number;
+  maxRedirects?: number;
+  sleep?: (ms: number) => Promise<void>;
+};
+
+export type LiveResult = VerifyResult & { retries: number; fetchCalls: number };
+
+/** RED-phase stub: one request, no guard, no retry, no redirect handling. */
+export async function verifySourceLive(
+  source: Source,
+  options: LiveOptions,
+): Promise<LiveResult> {
+  const res = await options.fetchImpl(source.url, { headers: {}, redirect: 'manual' });
+  const body = await res.text();
+  const result = verifySource(source, { status: res.status, body, headers: {} }, options.context);
+  return { ...result, retries: 0, fetchCalls: 1 };
+}
 
 const NOT_IMPLEMENTED = (strategy: string): VerifyResult => {
   throw new Error(
@@ -169,7 +263,11 @@ export function textOf(xhtml: string): string {
  * failure: body checks before the 304 branch break cache revalidation, an anchor
  * assertion before the subtree scope verifies a recital.
  */
-export function verifySource(source: Source, response: VerifierResponse): VerifyResult {
+export function verifySource(
+  source: Source,
+  response: VerifierResponse,
+  _context: VerifyContext = {},
+): VerifyResult {
   if (source.verification === 'manual-attest') {
     // No fetch is performed at all. The honest answer for a client-rendered shell
     // (slov-lex.sk) or a WAF interstitial (e-tar.lt): record that a human looked.
