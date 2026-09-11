@@ -13,14 +13,21 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { MAX_BODY_BYTES, SourceDefect, normaliseForMatch, textOf } from '../src/verifier.ts';
+import {
+  MAX_BODY_BYTES,
+  SourceDefect,
+  byteLengthOf,
+  normaliseForMatch,
+  textOf,
+} from '../src/verifier.ts';
 import { CELEX, citationKey, extractArticle, extractParagraph, listParagraphIds } from '../src/extract.ts';
 
 // Re-exported so a caller can reach the retrieval helpers and the verifier primitives
 // they depend on from one module. `MAX_BODY_BYTES` is IMPORTED, never redeclared: two
 // copies of a byte cap drift, and a silently loosened cap is the same class of failure
-// as a weakened byte floor.
-export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES };
+// as a weakened byte floor. `byteLengthOf` is imported for the same reason — this script
+// and the verifier must agree on what "bytes" means, and `String.length` is not it.
+export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES, byteLengthOf };
 
 // `extractParagraph` moved to `src/extract.ts` in plan 01-03, where it became a thin
 // wrapper over `extractArticle` so the package holds exactly ONE scoping implementation.
@@ -88,12 +95,13 @@ export async function fetchExpression(
   }
 
   const body = await res.text();
-  if (body.length === 0) {
+  const bodyBytes = byteLengthOf(body);
+  if (bodyBytes === 0) {
     throw new SourceDefect(`empty body on a 200 for ${BASE} (${lang3}) — a 200 is not evidence`);
   }
-  if (body.length > MAX_BODY_BYTES) {
+  if (bodyBytes > MAX_BODY_BYTES) {
     throw new SourceDefect(
-      `body for ${BASE} (${lang3}) is ${body.length} bytes, above the ${MAX_BODY_BYTES}-byte cap`,
+      `body for ${BASE} (${lang3}) is ${bodyBytes} bytes, above the ${MAX_BODY_BYTES}-byte cap`,
     );
   }
 

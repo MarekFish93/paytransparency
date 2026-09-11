@@ -1,0 +1,17 @@
+HTTP/1.1 202 Accepted
+access-control-allow-methods: OPTIONS,GET,POST
+access-control-allow-origin: *
+access-control-expose-headers: x-amzn-waf-action
+access-control-max-age: 86400
+cache-control: no-store, max-age=0
+connection: keep-alive
+content-length: 0
+content-type: text/html; charset=UTF-8
+date: Fri, 11 Sep 2026 11:33:27 GMT
+server: CloudFront
+via: 1.1 b42eb3d87622a28f769121f374a92fda.cloudfront.net (CloudFront)
+x-amz-cf-id: cbKr1vhNXnoRubd3qDWSPresstlWyBRF05fxMtrE13AxcSIGwYZlUw==
+x-amz-cf-pop: WAW51-P4
+x-amzn-waf-action: challenge
+x-cache: Error from cloudfront
+

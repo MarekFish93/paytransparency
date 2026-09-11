@@ -1,0 +1,7 @@
+HTTP/1.1 404 Not Found
+connection: keep-alive
+content-security-policy: script-src 'self';
+date: Fri, 11 Sep 2026 11:32:07 GMT
+transfer-encoding: chunked
+
+Resource [system 'celex' - id '32023L9999'] not found.
