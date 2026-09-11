@@ -1,0 +1,514 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "RO",
+    "name_en": "Romania",
+    "official_languages": [
+      "ro"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "RON"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970ROU_245357",
+      "title": "Lege nr.229/2015 pentru modificarea şi completarea Legii nr. 202/2002 privind egalitatea de şanse şi de tratament între femei şi bărbaţi",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "749",
+      "oj_date": "2015-10-07",
+      "notified_at": "2017-02-24",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202403997",
+      "title": "Legea nr. 53/2003 — Codul muncii, republicată",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "345",
+      "oj_date": "2011-05-18",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202403999",
+      "title": "Legea nr. 283/2022 pentru modificarea și completarea Legii nr. 53/2003 — Codul muncii, precum și a Ordonanței de urgență a Guvernului nr. 57/2019 privind Codul administrativ",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "1013",
+      "oj_date": "2022-10-19",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404000",
+      "title": "Legea nr. 151/2020 pentru modificarea și completarea Legii nr. 53/2003 — Codul muncii",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "658",
+      "oj_date": "2020-07-24",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404001",
+      "title": "Legea nr. 213/2020 pentru modificarea și completarea Legii nr. 53/2003 — Codul muncii",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "893",
+      "oj_date": "2020-09-30",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404003",
+      "title": "Legea nr. 269/2021 pentru modificarea Legii dialogului social nr. 62/2011 și a Legii nr. 53/2003 — Codul muncii",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "1076",
+      "oj_date": "2021-11-10",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404004",
+      "title": "Ordonanța de urgență nr. 42/2023 pentru modificarea și completarea Legii nr. 367/2022 privind dialogul social și a Legii nr. 53/2003 — Codul muncii..............",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "459",
+      "oj_date": "2023-05-25",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404005",
+      "title": "Legea nr. 367/2022 privind dialogul social",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "1238",
+      "oj_date": "2022-12-22",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404006",
+      "title": "Legea nr. 108/1999 pentru înființarea și organizarea Inspecției Muncii, Republicată",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "290",
+      "oj_date": "2012-05-03",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404008",
+      "title": "Legea nr. 100/2016 privind concesiunile de lucrări și concesiunile de servicii",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "392",
+      "oj_date": "2016-05-23",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404009",
+      "title": "Ordonanța nr. 3/2021 pentru modificarea și completarea unor acte normative în domeniul achizițiilor publice",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "821",
+      "oj_date": "2021-08-27",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404010",
+      "title": "Ordonanța de urgență nr. 114/2020 privind modificarea și completarea unor acte normative cu impact în domeniul achizițiilor publice",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "614",
+      "oj_date": "2020-07-13",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404011",
+      "title": "Legea nr. 98/2016 privind achizițiile publice",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "390",
+      "oj_date": "2016-05-23",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404012",
+      "title": "Legea nr. 99/2016 privind achizițiile sectoriale",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "391",
+      "oj_date": "2016-05-23",
+      "notified_at": "2024-10-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202404955",
+      "title": "Legea nr. 283/2024 privind modificarea și completarea unor acte normative, pentru stabilirea salariilor minime adecvate",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "1139",
+      "oj_date": "2024-11-14",
+      "notified_at": "2024-11-18",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202601709",
+      "title": "Ordonanța nr. 137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "431",
+      "oj_date": "2000-09-02",
+      "notified_at": "2026-03-27",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202601757",
+      "title": "Legea nr. 167/2020 pentru modificarea și completarea Ordonanței Guvernului nr. 137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare, precum și pentru completarea art. 6 din Legea nr. 202/2002 privind egalitatea de șanse și de tratament între femei și bărbați",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "713",
+      "oj_date": "2020-08-07",
+      "notified_at": "2026-03-27",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202601759",
+      "title": "Legea nr. 193/2022 pentru modificarea art. 23 alin. (2) din Ordonanța Guvernului nr. 137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "643",
+      "oj_date": "2022-06-29",
+      "notified_at": "2026-03-27",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202601764",
+      "title": "Ordonanță de urgență a Guvernului nr. 45/2020 pentru completarea Ordonanței Guvernului nr. 137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "309",
+      "oj_date": "2020-04-13",
+      "notified_at": "2026-03-27",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602724",
+      "title": "Legea nr. 202/2002 privind egalitatea de șanse și de tratament între femei și bărbați, republicată",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "326",
+      "oj_date": "2013-06-05",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602756",
+      "title": "Lege nr. 363/2018 privind protecția persoanelor fizice referitor la prelucrarea datelor cu caracter personal de către autoritățile competente în scopul prevenirii, descoperirii, cercetării, urmăririi penale și combaterii infracțiunilor sau al executării pedepselor, măsurilor educative și de siguranță, precum și privind libera circulație a acestor date",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "13",
+      "oj_date": "2019-01-07",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602757",
+      "title": "Lege nr. 178/2018 pentru modificarea și completarea Legii nr. 202/2002 privind egalitatea de șanse și de tratament între femei și bărbați",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "627/2018",
+      "oj_date": "2018-07-19",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602758",
+      "title": "Lege nr. 232/2018 pentru modificarea și completarea Legii nr. 202/2002 privind egalitatea de șanse și de tratament între femei și bărbați",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "679/2018",
+      "oj_date": "2018-08-06",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602759",
+      "title": "Hotărâre nr. 933/2013 pentru aprobarea Regulamentului de organizare și funcționare a Comisiei naționale în domeniul egalității de șanse între femei și bărbați (CONES)",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "747",
+      "oj_date": "2013-12-03",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602760",
+      "title": "Lege nr. 287/2009 privind Codul civil",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "511",
+      "oj_date": "2009-07-24",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602761",
+      "title": "Legea nr. 134/2010 privind Codul de procedură civilă, republicată",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "247",
+      "oj_date": "2015-04-10",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ROU_202602762",
+      "title": "Ordonanța Guvernului nr. 137/2000 privind prevenirea și sancționarea tuturor formelor de discriminare, republicată",
+      "official_journal": "Monitorul Oficial al României",
+      "oj_number": "166",
+      "oj_date": "2014-03-07",
+      "notified_at": "2026-05-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

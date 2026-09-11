@@ -1,0 +1,558 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "CZ",
+    "name_en": "Czechia",
+    "official_languages": [
+      "cs"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "CZK"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970CZE_26292",
+      "title": "Zákon č. 99/1963 Sb., občanský soudní řád",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "1963-12-04",
+      "notified_at": "2004-01-15",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_26294",
+      "title": "Zákon č. 30/2000 Sb., kterým se mění zákon č. 99/1963 Sb., občanský soudní řád, ve znění pozdějších předpisů, a některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2000-02-23",
+      "notified_at": "2004-01-15",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_26295",
+      "title": "Zákon č. 151/2002 Sb., kterým se mění některé zákony v souvislosti s přijetím soudního řádu správního",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2002-04-17",
+      "notified_at": "2004-01-15",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_26626",
+      "title": "Zákon č. 150/2002 Sb., soudní řád správní",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2002-04-17",
+      "notified_at": "2004-04-07",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_120150",
+      "title": "Zákon č. 519/1991 Sb., kterým se mění a doplňuje občanský soudní řád a notářský řád",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "1991-12-18",
+      "notified_at": "2005-04-08",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_120152",
+      "title": "Zákon č. 349/1999 Sb., o Veřejném ochránci práv",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "1999-12-30",
+      "notified_at": "2005-04-08",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_123500",
+      "title": "Zákon č. 251/2005 Sb., o inspekci práce",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2005-06-29",
+      "notified_at": "2005-08-23",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_129582",
+      "title": "Zákon č. 413/2005 Sb., o změně zákonů v souvislosti s přijetím zákona o ochraně utajovaných informací a o bezpečnostní způsobilosti",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2005-10-18",
+      "notified_at": "2006-03-17",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_132324",
+      "title": "Zákon č. 238/1995 Sb., kterým se mění a doplňuje zákon č. 99/1963 Sb., občanský soudní řád, ve znění pozdějších předpisů, a zákon České národní rady č. 114/1988 Sb., o působnosti orgánů České socialistické republiky v sociálním zabezpečení, ve znění pozdějších předpisů",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "1995-10-26",
+      "notified_at": "2006-06-07",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_135697",
+      "title": "Zákon č. 262/2006 Sb., zákoník práce",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2006-06-07",
+      "notified_at": "2006-09-25",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_139834",
+      "title": "Zákon č. 264/2006 Sb., kterým se mění některé zákony v souvislosti s přijetím zákoníku práce",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2006-06-07",
+      "notified_at": "2007-01-03",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_153762",
+      "title": "Zákon č. 362/2007, kterým se mění zákon č. 262/2006 Sb., zákoník práce, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2007-12-28",
+      "notified_at": "2008-02-11",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_155098",
+      "title": "Zákon č. 213/2007 Sb., kterým se mění zákon č. 117/1995 Sb., o státní sociální podpoře, ve znění pozdějších předpisů, zákon č. 435/2004 Sb., o zaměstnanosti, ve znění pozdějších předpisů, zákon č. 251/2005 Sb., o inspekci práce, ve znění pozdějších předpisů, a zákon č. 108/2006 Sb., o sociálních službách, ve znění zákona č. 29/2007 Sb.",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2007-08-22",
+      "notified_at": "2008-04-11",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_163128",
+      "title": "Zákon č. 198/2009 Sb., o rovném zacházení a o právních prostředcích ochrany před diskriminací a o změně některých zákonů (antidiskriminační zákon)",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2009-06-29",
+      "notified_at": "2009-07-15",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_185248",
+      "title": "Zákon č. 185/2011 Sb., kterým se mění zákon č. 262/2006 Sb., zákoník práce, ve znění pozdějších předpisů",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2011-07-08",
+      "notified_at": "2011-08-10",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_188488",
+      "title": "Zákon č. 365/2011 Sb., kterým se mění zákon č. 262/2006 Sb., zákoník práce, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2011-12-06",
+      "notified_at": "2012-01-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_189062",
+      "title": "Zákon č. 367/2011 Sb., kterým se mění zákon č. 435/2004 Sb., o zaměstnanosti, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2011-12-06",
+      "notified_at": "2012-02-01",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_189332",
+      "title": "Zákon č. 303/2011 Sb., kterým se mění zákon č. 150/2002 Sb., soudní řád správní, ve znění pozdějších předpisů, a některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2011-10-14",
+      "notified_at": "2012-02-16",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_194948",
+      "title": "Zákon č. 202/2012 Sb., o mediaci a o změně některých zákonů (zákon o mediaci)",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2012-06-13",
+      "notified_at": "2012-08-10",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202882",
+      "title": "Zákon č. 89/2012 Sb., občanský zákoník",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2012-03-22",
+      "notified_at": "2013-04-05",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_207748",
+      "title": "Zákon č. 404/2012 Sb., kterým se mění zákon č. 99/1963 Sb., občanský soudní řád, ve znění pozdějších předpisů, a některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2012-11-27",
+      "notified_at": "2013-07-16",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_211450",
+      "title": "Zákon č. 303/2013 Sb., kterým se mění některé zákony v souvislosti s přijetím rekodifikace soukromého práva",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2013-09-30",
+      "notified_at": "2013-12-13",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_215840",
+      "title": "Zákon č. 293/2013 Sb., kterým se mění zákon č. 99/1963 Sb., občanský soudní řád, ve znění pozdějších předpisů, a některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2013-09-27",
+      "notified_at": "2014-05-12",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_232053",
+      "title": "Zákon č. 205/2015 Sb., kterým se mění zákon č. 262/2006 Sb., zákoník práce, ve znění pozdějších předpisů, zrušuje zákon č. 266/2006 Sb., o úrazovém pojištění zaměstnanců, a zrušují nebo mění některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2015-08-17",
+      "notified_at": "2015-11-23",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_250522",
+      "title": "Zákon č. 206/2017 Sb., kterým se mění zákon č. 435/2004 Sb., o zaměstnanosti, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2017-07-14",
+      "notified_at": "2017-08-30",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_252527",
+      "title": "Zákon č. 365/2017 Sb., kterým se mění zákon č. 198/2009 Sb., o rovném zacházení a o právních prostředcích ochrany před diskriminací a o změně některých zákonů (antidiskriminační zákon), ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2017-11-07",
+      "notified_at": "2017-11-10",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202303575",
+      "title": "Zákon č. 172/2023 Sb., kterým se mění některé zákony v souvislosti s přijetím zákona o ochraně oznamovatelů",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2023-06-20",
+      "notified_at": "2023-06-20",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202405533",
+      "title": "Zákon č. 263/2024 Sb., o veřejných kulturních institucích a o změně souvisejících zákonů (zákon o veřejných kulturních institucích)",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2024-09-12",
+      "notified_at": "2024-12-07",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202502213",
+      "title": "Zákon č. 77/2025 Sb., kterým se mění zákon č. 349/1999 Sb., o Veřejném ochránci práv, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2025-03-25",
+      "notified_at": "2025-04-22",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202502994",
+      "title": "Zákon č. 84/2025 Sb., kterým se mění zákon č. 247/2014 Sb., o poskytování služby péče o dítě v dětské skupině a o změně souvisejících zákonů, ve znění pozdějších předpisů, a další související zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2025-03-27",
+      "notified_at": "2025-05-23",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970CZE_202503570",
+      "title": "Zákon č. 120/2025 Sb., kterým se mění zákon č. 262/2006 Sb., zákoník práce, ve znění pozdějších předpisů, a některé další zákony",
+      "official_journal": "Sbirka Zakonu CR",
+      "oj_number": null,
+      "oj_date": "2025-04-29",
+      "notified_at": "2025-06-21",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

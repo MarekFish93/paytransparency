@@ -1,0 +1,275 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "MT",
+    "name_en": "Malta",
+    "official_languages": [
+      "mt",
+      "en"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "proposed.transposition_status_is_asserted_in_data_not_here"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970MLT_202603933",
+      "title": "Equal Pay (Transparency and Reporting) Regulations, 2026",
+      "official_journal": "The Malta government gazette",
+      "oj_number": "21,661",
+      "oj_date": "2026-06-05",
+      "notified_at": "2026-06-11",
+      "national_link": "https://legislation.mt/eli/ln/2026/173/eng",
+      "kind": "transposing_candidate",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  },
+  "proposals": [
+    {
+      "field": "article_7.legal_basis",
+      "proposed_value": {
+        "instrument": "national",
+        "short_title": "Equal Pay (Transparency and Reporting) Regulations, 2026",
+        "official_title": "Equal Pay (Transparency and Reporting) Regulations, 2026",
+        "journal_ref": "The Malta government gazette no. 21,661",
+        "article": null,
+        "adopted_at": "2026-06-05",
+        "in_force_from": null,
+        "url": "https://legislation.mt/eli/ln/2026/173/eng"
+      },
+      "candidates": [],
+      "rationale_key": "proposed.mt.equal_pay_regulations_2026",
+      "verification_strategy": "jsonld",
+      "national_register_host": "legislation.mt",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/resource/celex/72023L0970MLT_202603933",
+          "title": "Equal Pay (Transparency and Reporting) Regulations, 2026",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "72023L0970MLT_202603933",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        },
+        {
+          "url": "https://legislation.mt/eli/ln/2026/173/eng",
+          "title": "Equal Pay (Transparency and Reporting) Regulations, 2026",
+          "publisher": "legislation.mt",
+          "kind": "official_journal",
+          "verification": "jsonld",
+          "anchor": "eli/ln/2026/173",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "drafted_by": "agent:gsd-executor/01-04",
+      "drafted_at": "2026-09-11",
+      "status": "awaiting_maintainer_promotion"
+    }
+  ]
+}

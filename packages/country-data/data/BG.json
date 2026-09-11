@@ -1,0 +1,349 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "BG",
+    "name_en": "Bulgaria",
+    "official_languages": [
+      "bg"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": null
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970BGR_202603721",
+      "title": "Кодекс на труда",
+      "official_journal": "Държавен вестник",
+      "oj_number": "16",
+      "oj_date": "2026-02-10",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241044",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603722",
+      "title": "Закон за концесиите",
+      "official_journal": "Държавен вестник",
+      "oj_number": "16",
+      "oj_date": "2026-02-10",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241044",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603723",
+      "title": "Закон за обществените поръчки",
+      "official_journal": "Държавен вестник",
+      "oj_number": "16",
+      "oj_date": "2026-02-10",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241044",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603724",
+      "title": "Закон за защита на лицата, подаващи сигнали или публично оповестяващи информация за нарушения",
+      "official_journal": "Държавен вестник",
+      "oj_number": "16",
+      "oj_date": "2026-02-10",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241044",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603725",
+      "title": "Закон за защита от дискриминация",
+      "official_journal": "Държавен вестник",
+      "oj_number": "30",
+      "oj_date": "2026-03-27",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241982",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603726",
+      "title": "Закон за административните нарушения и наказания",
+      "official_journal": "Държавен вестник",
+      "oj_number": "17",
+      "oj_date": "2026-02-13",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241067",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603727",
+      "title": "Закон за задълженията и договорите",
+      "official_journal": "Държавен вестник",
+      "oj_number": "35",
+      "oj_date": "2021-04-27",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=157744",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603729",
+      "title": "Закон за насъраване на заетостта",
+      "official_journal": "Държавен вестник",
+      "oj_number": "26",
+      "oj_date": "2025-03-27",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=233694",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603731",
+      "title": "Закон за държавния служител",
+      "official_journal": "Държавен вестник",
+      "oj_number": "16",
+      "oj_date": "2026-02-10",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=241044",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603733",
+      "title": "Правилник за устройството и организацията на дейността на Комисията за защита от дискриминация",
+      "official_journal": "Държавен вестник",
+      "oj_number": "48",
+      "oj_date": "2026-05-26",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=243472",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603734",
+      "title": "Наредба за структурата и организацията на работната заплата",
+      "official_journal": "Държавен вестник",
+      "oj_number": "115",
+      "oj_date": "2025-12-30",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=240361",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970BGR_202603735",
+      "title": "Правилник за прилагане на Закона за насърчаване на заетостта",
+      "official_journal": "Държавен вестник",
+      "oj_number": "26",
+      "oj_date": "2024-03-26",
+      "notified_at": "2026-06-04",
+      "national_link": "https://dv.parliament.bg/DVWeb/showMaterialDV.jsp?idMat=210446",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

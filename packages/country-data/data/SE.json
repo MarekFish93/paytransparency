@@ -1,0 +1,580 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "SE",
+    "name_en": "Sweden",
+    "official_languages": [
+      "sv"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "SEK"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970SWE_202603254",
+      "title": "Diskrimineringslag (2008:567)",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2008:567",
+      "oj_date": "2008-06-25",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603255",
+      "title": "5 kap. 2§ Lag (1982:88) om ändring av lagen (1974:371) om rättegången i arbetstvister",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1982:88",
+      "oj_date": "1982-03-16",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603257",
+      "title": "4 och 5 §§ lag (1974:358) om facklig förtroendemans ställning på arbetsplatsen",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1974:358",
+      "oj_date": "1974-06-17",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603258",
+      "title": "1-3 §§ lag (1990:1039) om ändring av lag (1974:358) om facklig förtroendemans ställning på arbetsplatsen",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1990:1039",
+      "oj_date": "1990-12-04",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603259",
+      "title": "1,6-8,64-66 och 68 §§ lag (1976:580) om medbestämmande i arbetslivet",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1976:580",
+      "oj_date": "1976-07-19",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603263",
+      "title": "Lag (2003:365) om ändring i arbetsmiljölagen (1977:1160) 2 kap 1 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2003:365",
+      "oj_date": "2003-06-17",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603289",
+      "title": "Lag (1994:579) om ändring i arbetsmiljölagen (1977:1160) 6 kap 10 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1994:579",
+      "oj_date": "1994-06-13",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603290",
+      "title": "8 § Lag (1982:80) om anställningsskydd",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1982:80",
+      "oj_date": "1982-03-16",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603291",
+      "title": "Lag (2022:835) om ändring i lagen (1982:80) om anställningsskydd 7 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2022:835",
+      "oj_date": "2022-06-15",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603300",
+      "title": "Lag (1993:1496) om ändring i lagen (1982:80) om anställningsskydd 18 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1993:1496",
+      "oj_date": "1993-12-28",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603301",
+      "title": "3 och 4 §§ lag (1985:206) om viten",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1985:206",
+      "oj_date": "1985-04-30",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603302",
+      "title": "Lag (2022:1292) om ändring i lagen (1998:1465) om ledighet för närståendevård 10 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2022:1292",
+      "oj_date": "2022-07-06",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603303",
+      "title": "Lag (2006:442) om ändring i föräldraledighetslagen (1995:584) 16 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2006:442",
+      "oj_date": "2006-05-24",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603304",
+      "title": "Lag (2022:1294) om ändring i föräldraledighetslagen (1995:584) 16 a §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2022:1294",
+      "oj_date": "2022-07-06",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603305",
+      "title": "4 § Lag (1998:209) om rätt till ledighet av trängande familjeskäl",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1998:209",
+      "oj_date": "1998-05-19",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603322",
+      "title": "Förordning (2015:383) om ändring i förordningen (2000:605) om årsredovisning och budgetunderlag 9 kap. 3 och 6 §§",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2015:383",
+      "oj_date": "2015-06-22",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603323",
+      "title": "Förordning (2026:202) om ändring i förordningen (2001:100) om den officiella statistiken (bilagan)",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2026:202",
+      "oj_date": "2026-03-10",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603325",
+      "title": "Förordning (2024:919) om ändring i förordningen  (2007:912) med instruktion för Medlingsinstitutet  2 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2024:919",
+      "oj_date": "2024-10-15",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603327",
+      "title": "2 och 3 §§ Lag (2008:568) om Diskrimineringsombudsmannen",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2008:568",
+      "oj_date": "2008-06-25",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603329",
+      "title": "Lag (2014:959) om ändring i lagen (2008:568) om Diskrimineringsombudsmannen 1 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2014:959",
+      "oj_date": "2014-07-08",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603333",
+      "title": "2 § Förordning (2008:1401) med instruktion för Diskrimineringsombudsmannen",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2008:1401",
+      "oj_date": "2008-12-30",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603338",
+      "title": "Lag (2014:259) om ändring i offentlighets- och sekretesslagen (2009:400)  10 kap. 3 §",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2014:259",
+      "oj_date": "2014-05-13",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603340",
+      "title": "9 kap. 1 § Budgetlag (2011:203)",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2011:203",
+      "oj_date": "2011-03-22",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603341",
+      "title": "Lag (2025:1430) om ändring i budgetlagen (2011:203) 9 kap. 3 och 5 §§",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2025:1430",
+      "oj_date": "2025-12-06",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603584",
+      "title": "13, 16 och 17 kap lagen (2016:1145) om offentlig upphandling",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2016:1145",
+      "oj_date": "2016-12-09",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603586",
+      "title": "13, 15 och 16 kap. lag (2016:1146) om upphandling inom försöjrningssektorerna",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2016:1146",
+      "oj_date": "2016-12-09",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603588",
+      "title": "2 kap 1 §, 3 kap 2 § lag (2018:218) med kompletterande bestämmelser till EU:s dataskyddsförordning",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2018:218",
+      "oj_date": "2018-04-24",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603589",
+      "title": "11, 13 och 14 kap. lag (2016:1147) om upphandling av koncessioner",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2016:1147",
+      "oj_date": "2016-12-09",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603593",
+      "title": "35 kap. 1 §, 38 kap. 2 § Rättegångsbalken",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1942:740",
+      "oj_date": "1942-08-29",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603594",
+      "title": "Arbetsmiljöverkets föreskrifter och allmänna råd (2023:1) om systematiskt arbetsmiljöarbete",
+      "official_journal": "Arbetsmiljöverkets författningssamling (AFS)",
+      "oj_number": "2023:1",
+      "oj_date": "2023-11-22",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603595",
+      "title": "Arbetsmiljöverkets föreskrifter och allmänna råd (2023:2) om planering och organisering av arbetsmiljöarbete",
+      "official_journal": "Arbetsmiljöverkets författningssamling (AFS)",
+      "oj_number": "2023:2",
+      "oj_date": "2023-11-22",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603720",
+      "title": "5 kap. 3 § lag (1991:638) om ändring av lagen (1974:371) om rättegången i arbetstvister",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "1991:638",
+      "oj_date": "1991-06-17",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SWE_202603774",
+      "title": "1 kap. 3 och 4 §§ förordning (2017:862) om ändring i förordningen (2000:605) om årsredovisning och budgetunderlag",
+      "official_journal": "Svensk författningssamling (SFS)",
+      "oj_number": "2017:862",
+      "oj_date": "2017-09-12",
+      "notified_at": "2026-06-05",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

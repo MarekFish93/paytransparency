@@ -1,9 +1,9 @@
 ---
 schema_version: 1
-open_count: 3
+open_count: 5
 waived_count: 0
 fixed_count: 1
-total_count: 4
+total_count: 6
 last_updated: 2026-09-11T12:11:23.044Z
 ---
 
@@ -17,8 +17,10 @@ last_updated: 2026-09-11T12:11:23.044Z
 |----|-------|------|------|------|-------------|--------|--------|-------------|-------------|
 | 1 | 01 | stub | packages/country-data/src/verifier.ts |  | verifySource implements the cellar strategy only; html-anchor, jsonld and metadata-only throw not-implemented against a frozen signature (plan 01-02 fills them) | fixed |  | 2026-09-11T11:16:20.879Z | 2026-09-11T11:54:42.911Z |
 | 2 | 01 | unrun-verify | .github/workflows/nightly.yml |  | nightly.yml dispatch verification could not run: gh workflow run returns HTTP 404 until the file is on the default branch. Re-run 'gh workflow run nightly.yml' after the phase branch merges. | open |  | 2026-09-11T11:54:27.074Z |  |
-| 3 | 01 | unmet-truth | docs/share-url-contract.md |  | Share-URL bucket population estimates are MODELLED, not sourced; a Eurostat-grounded figure must replace them before the card ships in Phase 4, widening any band that falls under the 25,000 k-anonymity floor | open |  | 2026-09-11T12:11:18.365Z |  |
-| 4 | 01 | unmet-truth | packages/directive-engine/docs/ENGINE-REPORT.md |  | The single-number reduction on metrics (e), (f) and (g) is an authoring decision forced by the frozen MetricValue carrying one nullable number; Phase 6 must confirm it or amend the contract through the recorded amendment path | open |  | 2026-09-11T12:11:23.044Z |  |
+| 3 | 01 | stub | packages/country-data/data/BG.json |  | Bulgaria's country.currency is null pending verification of its euro-adoption date; every other member state carries an ISO-4217 code | open |  | 2026-09-11T12:03:37.975Z |  |
+| 4 | 01 | deviation | packages/country-data/src/country.ts |  | transposition.draft_asserting_sources replaces a says_draft flag on Source, because Source is frozen by plan 01-01 and a Fact's sources array strips added keys | open |  | 2026-09-11T12:03:42.330Z |  |
+| 5 | 01 | unmet-truth | docs/share-url-contract.md |  | Share-URL bucket population estimates are MODELLED, not sourced; a Eurostat-grounded figure must replace them before the card ships in Phase 4, widening any band that falls under the 25,000 k-anonymity floor | open |  | 2026-09-11T12:11:18.365Z |  |
+| 6 | 01 | unmet-truth | packages/directive-engine/docs/ENGINE-REPORT.md |  | The single-number reduction on metrics (e), (f) and (g) is an authoring decision forced by the frozen MetricValue carrying one nullable number; Phase 6 must confirm it or amend the contract through the recorded amendment path | open |  | 2026-09-11T12:11:23.044Z |  |
 
 ````json
 [
@@ -48,6 +50,30 @@ last_updated: 2026-09-11T12:11:23.044Z
   },
   {
     "id": 3,
+    "kind": "stub",
+    "phase": "01",
+    "file": "packages/country-data/data/BG.json",
+    "line": null,
+    "description": "Bulgaria's country.currency is null pending verification of its euro-adoption date; every other member state carries an ISO-4217 code",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-11T12:03:37.975Z",
+    "resolved_at": null
+  },
+  {
+    "id": 4,
+    "kind": "deviation",
+    "phase": "01",
+    "file": "packages/country-data/src/country.ts",
+    "line": null,
+    "description": "transposition.draft_asserting_sources replaces a says_draft flag on Source, because Source is frozen by plan 01-01 and a Fact's sources array strips added keys",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-11T12:03:42.330Z",
+    "resolved_at": null
+  },
+  {
+    "id": 5,
     "kind": "unmet-truth",
     "phase": "01",
     "file": "docs/share-url-contract.md",
@@ -59,7 +85,7 @@ last_updated: 2026-09-11T12:11:23.044Z
     "resolved_at": null
   },
   {
-    "id": 4,
+    "id": 6,
     "kind": "unmet-truth",
     "phase": "01",
     "file": "packages/directive-engine/docs/ENGINE-REPORT.md",

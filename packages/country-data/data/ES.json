@@ -1,0 +1,327 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "ES",
+    "name_en": "Spain",
+    "official_languages": [
+      "es"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970ESP_237605",
+      "title": "Real Decreto Legislativo 5/2000, de 4 de agosto, por el que se aprueba el texto refundido de la Ley sobre Infracciones y Sanciones en el Orden Social",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "189/2000",
+      "oj_date": "2000-08-08",
+      "notified_at": "2016-05-19",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_237777",
+      "title": "Ley 36/2011, de 10 de octubre, reguladora de la jurisdicción social.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "245/2011",
+      "oj_date": "2011-10-11",
+      "notified_at": "2016-05-20",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_237858",
+      "title": "Real Decreto Legislativo 2/2015, de 23 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto de los Trabajadores.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "255/2015",
+      "oj_date": "2015-10-24",
+      "notified_at": "2016-05-23",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_251547",
+      "title": "Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común de las Administraciones Públicas.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "236/2015",
+      "oj_date": "2015-10-02",
+      "notified_at": "2017-10-04",
+      "national_link": "http://www.boe.es/boe/dias/2015/10/02/pdfs/BOE-A-2015-10565.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_252601",
+      "title": "Ley 9/2017, de 8 de noviembre, de Contratos del Sector Público, por la que se transponen al ordenamiento jurídico español las Directivas del Parlamento Europeo y del Consejo 2014/23/UE y 2014/24/UE, de 26 de febrero de 2014",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "272/2017",
+      "oj_date": "2017-11-09",
+      "notified_at": "2017-11-13",
+      "national_link": "http://www.boe.es/boe/dias/2017/11/09/pdfs/BOE-A-2017-12902.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_202058519",
+      "title": "Constitución Española",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "311/2020",
+      "oj_date": "1978-12-29",
+      "notified_at": "2020-12-10",
+      "national_link": "https://www.boe.es/boe/dias/1978/12/29/pdfs/A29313-29424.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_202500132",
+      "title": "Ley 50/1997, de 27 de noviembre, del Gobierno.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "285/1997",
+      "oj_date": "1997-12-28",
+      "notified_at": "2025-01-07",
+      "national_link": "https://www.boe.es/boe/dias/1997/11/28/pdfs/A35082-35088.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_202604312",
+      "title": "Real Decreto 901/2020, de 13 de octubre, por el que se regulan los planes de igualdad y su registro y se modifica el Real Decreto 713/2010, de 28 de mayo, sobre registro y depósito de convenios y acuerdos colectivos de trabajo.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "272/2020",
+      "oj_date": "2020-10-14",
+      "notified_at": "2026-06-18",
+      "national_link": "https://www.boe.es/boe/dias/2020/10/14/pdfs/BOE-A-2020-12214.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_202604316",
+      "title": "Ley Orgánica 3/2007, de 22 de marzo, para la igualdad efectiva de mujeres y hombres.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "71/2007",
+      "oj_date": "2007-03-23",
+      "notified_at": "2026-06-18",
+      "national_link": "https://www.boe.es/boe/dias/2007/03/23/pdfs/A12611-12645.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970ESP_202604320",
+      "title": "Real Decreto 902/2020, de 13 de octubre, de igualdad retributiva entre mujeres y hombres.",
+      "official_journal": "Boletín Oficial del Estado ( B.O.E )",
+      "oj_number": "272/2020",
+      "oj_date": "2020-10-14",
+      "notified_at": "2026-06-18",
+      "national_link": "https://www.boe.es/boe/dias/2020/10/14/pdfs/BOE-A-2020-12215.pdf",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

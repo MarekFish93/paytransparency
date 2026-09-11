@@ -14,10 +14,10 @@
 - [ ] **LEGAL-02**: `country-data` covers all 27 member states with transposition status (in force / from date / draft / pending)
 - [ ] **LEGAL-03**: Each country record states the legal basis — the national article where verified, otherwise the Directive article
 - [ ] **LEGAL-04**: Each country record states the response deadline as *"within a reasonable period of time but in any event within two months"* unless national law verifiably sets a different period **[corrects brief]**
-- [ ] **LEGAL-05**: Each country record states whether that state took the Art. 12(3) option of routing requests only via workers' representatives, the labour inspectorate or the equality body **[research]**
+- [ ] **LEGAL-05**: Each country record states whether that state took the Art. 12(3) option — under which, where a disclosure would directly or indirectly reveal the pay of an identifiable worker, only the workers' representatives, the labour inspectorate or the equality body have access to that information — modelled as a condition with the bodies it routes to, never as a blanket routing rule **[research]**
 - [ ] **LEGAL-06**: Each country record names the national equality body and the applicable anti-retaliation provision
 - [x] **LEGAL-07**: Directive Articles 3, 6, 7, 9, 10 and 12 are re-verified against EUR-Lex primary text, with quotations stored alongside the data **[research]**
-- [ ] **LEGAL-08**: A build fails when any fact's `verified_at` is older than the agreed freshness window
+- [ ] **LEGAL-08**: A stale fact degrades in the UI to "last confirmed on {date} — status may have changed" and is suppressed from any share card or letter citation; the build hard-fails only when a **launch-country** legally-operative fact is past its freshness window
 - [x] **LEGAL-09**: The fact verifier asserts a non-empty response body and an expected anchor string, not merely HTTP 200 **[research]**
 - [ ] **LEGAL-10**: A contributor can correct or add a country fact by pull request, gated by CI schema validation and source checking
 - [ ] **LEGAL-11**: The UI never displays a guessed value — an unknown field renders as "pending verification"
@@ -40,7 +40,7 @@
 - [ ] **LTR-13**: Worker in a country where the law is pending sees what is already in force, what is coming, and when
 - [ ] **LTR-14**: Worker can save a local-only bookmark to check back when their country's law lands — with no email capture
 - [ ] **LTR-15**: Every generated artefact carries the not-legal-advice disclaimer and a link to the national equality body
-- [ ] **LTR-16**: Where Art. 12(3) applies, the letter is routed to workers' representatives or the equality body rather than direct to the employer
+- [ ] **LTR-16**: Where the Art. 12(3) condition is met — a disclosure would directly or indirectly reveal the pay of an identifiable worker — the letter routes to the workers' representatives, the labour inspectorate or the equality body rather than direct to the employer; where it is not met the Art. 7 request proceeds directly, and the separate Art. 7(2) standing right to request through a representative or an equality body is offered in every state **[corrects brief]**
 - [ ] **LTR-17**: Every letter template is snapshot-tested per locale
 
 ### Module B — Career gap calculator and share card
@@ -284,4 +284,11 @@ success criteria.
 
 ---
 *Requirements defined: 2026-09-10*
-*Last updated: 2026-09-10 after roadmap creation (traceability populated)*
+*Last updated: 2026-09-11 — LEGAL-05, LEGAL-08 and LTR-16 reworded in Phase 1 plan 01-04.
+LEGAL-08 per decision D-10 (staleness degrades the UI; the build hard-fails only for a
+launch-country legally-operative fact), replacing a statement the implementation would
+knowingly have violated. LEGAL-05 and LTR-16 per the Art. 12(3) scope correction: the
+Article makes the restriction conditional on a disclosure revealing the pay of an
+identifiable worker, and the previous wording read it as a blanket routing rule. No
+requirement moved phase, and none was added or removed, so the traceability table, the
+phase totals and the coverage counts are unchanged.*

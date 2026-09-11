@@ -1,0 +1,449 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "SK",
+    "name_en": "Slovakia",
+    "official_languages": [
+      "sk"
+    ],
+    "letter_languages": [
+      "sk",
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970SVK_237649",
+      "title": "Zákon č. 540/2001 Z. z. o štátnej štatistike",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": "215",
+      "oj_date": "2001-12-20",
+      "notified_at": "2016-05-18",
+      "national_link": null,
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202405024",
+      "title": "Zákon č. 400/2015 Z. z. o tvorbe právnych predpisov a o Zbierke zákonov Slovenskej republiky a o zmene a doplnení niektorých zákonov v znení neskorších predpisov (consolidated version as amended by 32/2024 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2015-12-19",
+      "notified_at": "2024-11-20",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202601567",
+      "title": "Vyhláška Štatistického úradu Slovenskej republiky č. 361/2025 Z. z., ktorou sa mení a dopĺňa vyhláška Štatistického úradu Slovenskej republiky č. 425/2023 Z. z., ktorou sa vydáva Program štátnych štatistických zisťovaní na roky 2024 až 2026 v znení neskorších predpisov",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2025-12-13",
+      "notified_at": "2026-03-04",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202601568",
+      "title": "Vyhláška Štatistického úradu Slovenskej republiky č. 425/2023 Z. z., ktorou sa vydáva Program štátnych štatistických zisťovaní na roky 2024 až 2026 v znení neskorších predpisov (consolidated version as amended by 361/2025 Z. z.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2023-10-31",
+      "notified_at": "2026-03-04",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603223",
+      "title": "Ústavný zákon č. 460/1992 Zb. -  Ústava Slovenskej republiky v znení neskorších prepisov (consolidated version as amended by 255/2025 Z. z.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "1992-10-01",
+      "notified_at": "2026-05-26",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603225",
+      "title": "Zákon č. 55/2017 Z. z. o štátnej službe a o zmene a doplnení niektorých zákonov v znení neskorších prepisov (consolidated version as amended by 294/2025 Z. z.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2017-03-10",
+      "notified_at": "2026-05-26",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603766",
+      "title": "Zákon č. 343/2015 Z. z. o verejnom obstarávaní a o zmene a doplnení niektorých zákonov v znení neskorších predpisov (consolidated version as amended by 88/2026 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2015-12-03",
+      "notified_at": "2026-06-04",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603886",
+      "title": "Zákon č. 73/1998 Z. z. o štátnej službe príslušníkov Policajného zboru, Slovenskej informačnej služby, Zboru väzenskej a justičnej stráže Slovenskej republiky a Železničnej polície (consolidated version as amended by 154/2025 Z. z.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "1998-03-21",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603888",
+      "title": "Zákon č. 315/2001 Z. z. o Hasičskom a záchrannom zbore v znení neskorších predpisov (consolidated version as amended by 154/2025 Z. z.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2001-08-11",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603894",
+      "title": "Zákon č. 40/1964 Z. z. Občiansky zákonník v znení neskorších predpisov (consolidated version as amended by 294/2025 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "1964-03-05",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603896",
+      "title": "Zákon č. 308/1993 Z. z. o zriadení Slovenského národného strediska pre ľudské práva v znení neskorších predpisov (consolidated version as amended by 110/2023 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "1993-12-30",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603897",
+      "title": "Zákon č. 233/1995 Z. z. o súdnych exekútoroch a exekučnej činnosti (Exekučný poriadok) a o zmene a doplnení ďalších zákonov v znení neskorších predpisov (consolidated version as amended by 416/2025 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "1995-11-02",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603899",
+      "title": "Zákon č. 365/2004 Z. z. o rovnakom zaobchádzaní v niektorých oblastiach a o ochrane pred diskrimináciou a o zmene a doplnení niektorých zákonov (antidiskriminačný zákon) v znení neskorších predpisov (consolidated version as amended by 150/2025 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2004-06-24",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603902",
+      "title": "Zákon č. 160/2015 Z. z. Civilný sporový poriadok v znení neskorších predpisov (consolidated version as amended by 108/2024 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2015-07-17",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603903",
+      "title": "Zákon č. 76/2026 Z. z. o rovnakom odmeňovaní mužov a žien za rovnakú prácu alebo za prácu rovnakej hodnoty a o zmene a doplnení niektorých zákonov",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2026-05-08",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "transposing_candidate",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603918",
+      "title": "Zákon č. 311/2001 Z. z. Zákonník práce v znení neskorších predpisov (consolidated version as amended by 76/2026 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2001-08-08",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603919",
+      "title": "Zákon č. 281/2015 Z. z. o štátnej službe profesionálnych vojakov a o zmene a doplnení niektorých zákonov v znení neskorších predpisov \n(consolidated version as amended by 176/2025 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2015-10-29",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603920",
+      "title": "Zákon č. 103/2007 Z. z. o trojstranných konzultáciách na celoštátnej úrovni a o zmene a doplnení niektorých zákonov (zákon o tripartite) v znení neskorších predpisov (consolidated version as amended by 289/2024 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2007-03-13",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603921",
+      "title": "Zákon č. 125/2006 Z. z. o inšpekcii práce a o zmene a doplnení zákona č. 82/2005 Z. z. o nelegálnej práci a nelegálnom zamestnávaní a o zmene a doplnení niektorých zákonov v znení neskorších predpisov (consolidated version as amended by 76/2026 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2006-03-09",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603922",
+      "title": "Zákon č. 35/2019 Z. z. o finančnej správe a o zmene a doplnení niektorých zákonov v znení neskorších predpisov (consolidated version as amended by 292/2025 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2019-02-15",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVK_202603923",
+      "title": "Zákon č. 575/2001 Z. z. o organizácii činnosti vlády a organizácii ústrednej štátnej správy v znení neskorších predpisov (consolidated version as amended by 86/2026 Coll.)",
+      "official_journal": "Zbierka zákonov SR",
+      "oj_number": null,
+      "oj_date": "2001-12-29",
+      "notified_at": "2026-06-06",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

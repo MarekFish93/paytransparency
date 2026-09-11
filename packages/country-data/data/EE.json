@@ -1,0 +1,415 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "EE",
+    "name_en": "Estonia",
+    "official_languages": [
+      "et"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970EST_202603878",
+      "title": "Töölepingu seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.02.2026, 15",
+      "oj_date": "2026-02-03",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103022026015",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603879",
+      "title": "Soolise võrdõiguslikkuse seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 30.06.2023, 72",
+      "oj_date": "2023-06-30",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/130062023072",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603880",
+      "title": "Avaliku teenistuse seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.02.2026, 7",
+      "oj_date": "2026-02-03",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103022026007",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603882",
+      "title": "Võrdse kohtlemise seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 17.03.2026, 14",
+      "oj_date": "2026-03-17",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/117032026014",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603883",
+      "title": "Töötajate usaldusisiku seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 07.01.2025, 3",
+      "oj_date": "2025-01-07",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/107012025003",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603884",
+      "title": "Ametiühingute seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.02.2026, 16",
+      "oj_date": "2026-02-03",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103022026016",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603885",
+      "title": "Tsiviilkohtumenetluse seadustik",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.04.2025, 2",
+      "oj_date": "2025-04-03",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103042025002",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603887",
+      "title": "Halduskohtumenetluse seadustik",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 12.05.2026, 6",
+      "oj_date": "2026-05-12",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/112052026006",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603889",
+      "title": "Haldusmenetluse seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 06.07.2023, 31",
+      "oj_date": "2023-07-06",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/106072023031",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603890",
+      "title": "Korrakaitseseadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 07.04.2026, 7",
+      "oj_date": "2026-04-07",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/107042026007",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603891",
+      "title": "Vabariigi Valitsuse seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 07.05.2025, 9",
+      "oj_date": "2025-05-07",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/107052025009",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603892",
+      "title": "Töövaidluse lahendamise seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 24.11.2020, 6",
+      "oj_date": "2020-11-24",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/124112020006",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603893",
+      "title": "Õiguskantsleri seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 26.05.2020, 11",
+      "oj_date": "2020-05-26",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/126052020011",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603895",
+      "title": "Karistusseadustik",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 22.12.2025, 2",
+      "oj_date": "2025-12-22",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/122122025002",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603898",
+      "title": "Riigihangete seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 12.07.2025, 26",
+      "oj_date": "2025-07-12",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/112072025026",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202603900",
+      "title": "Tööinspektsiooni põhimäärus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 01.10.2024, 9",
+      "oj_date": "2024-10-01",
+      "notified_at": "2026-06-05",
+      "national_link": "https://www.riigiteataja.ee/et/akt/101102024009",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202605120",
+      "title": "Töölepingu seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.07.2026, 34",
+      "oj_date": "2026-07-03",
+      "notified_at": "2026-07-06",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103072026034",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970EST_202605121",
+      "title": "Avaliku teenistuse seadus",
+      "official_journal": "Elektrooniline Riigi Teataja",
+      "oj_number": "RT I, 03.07.2026, 42",
+      "oj_date": "2026-07-03",
+      "notified_at": "2026-07-06",
+      "national_link": "https://www.riigiteataja.ee/et/akt/103072026042",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

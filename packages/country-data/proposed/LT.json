@@ -1,0 +1,539 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "LT",
+    "name_en": "Lithuania",
+    "official_languages": [
+      "lt"
+    ],
+    "letter_languages": [
+      "lt",
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "proposed.transposition_status_is_asserted_in_data_not_here"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970LTU_202404788",
+      "title": "Lietuvos Respublikos socialinės apsaugos ir darbo ministro 2024 m. spalio 25 d. įsakymas Nr. A1-709 „Dėl socialinio dialogo ir kolektyvinių derybų skatinimo 2024–2028 metų veiksmų plano patvirtinimo“",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-18591",
+      "oj_date": "2024-10-25",
+      "notified_at": "2024-11-11",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/f601a74492c911efa605b9842742bf37",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202405212",
+      "title": "Lietuvos Respublikos moterų ir vyrų lygių galimybių įstatymas Nr. VIII-947 (suvestinė redakcija nuo 2017-07-01 iki 2024-10-10)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "112-3100",
+      "oj_date": "1998-12-23",
+      "notified_at": "2024-11-29",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.746227138BCB/FwoLSRtKhE",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202405222",
+      "title": "Lietuvos Respublikos lygių galimybių įstatymas Nr. IX-1826 (suvestinė redakcija nuo 2022-08-01 iki 2023-12-31)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "114-5115",
+      "oj_date": "2003-12-05",
+      "notified_at": "2024-11-29",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.0CC6CB2A9E42/FGiMBmKXaQ",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603656",
+      "title": "Lietuvos Respublikos darbo kodekso 23, 26, 39, 40, 41, 42, 48, 51, 52, 65, 71, 79, 140, 147, 148, 196, 217, 219, 226 straipsnių ir priedo pakeitimo įstatymas Nr. XV-969",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-08785",
+      "oj_date": "2026-05-25",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/2ab448a0584211f180c9c618618421ed",
+      "kind": "transposing_candidate",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603657",
+      "title": "Lietuvos Respublikos administracinių nusižengimų kodekso 99, 589 straipsnių ir priedo pakeitimo įstatymas Nr. XV-970",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-08788",
+      "oj_date": "2026-05-25",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/541dfaa2584311f180c9c618618421ed",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603661",
+      "title": "Lietuvos Respublikos darbo kodekso patvirtinimo, įsigaliojimo ir įgyvendinimo įstatymas Nr. XII-2603 (suvestinė redakcija nuo 2023-01-01 iki 2023-05-31)",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2016-23709",
+      "oj_date": "2016-09-19",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/zuOZletGUR",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603684",
+      "title": "Lietuvos Respublikos socialinės apsaugos ir darbo ministro 2009 m. gegužės 12 d. įsakymas Nr. A1-316 „Dėl Lietuvos Respublikos valstybinės darbo inspekcijos prie Socialinės apsaugos ir darbo ministerijos nuostatų patvirtinimo\" (suvestinė redakcija nuo 2021-12-01 iki 2022-03-31)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "58-2262",
+      "oj_date": "2009-05-19",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.232394F03586/OzbBJocoxc",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603693",
+      "title": "Lietuvos Respublikos Vyriausybės 2024 m. sausio 3 d. nutarimas Nr. 12 \"Dėl Lietuvos Respublikos Vyriausybės 2023 m. lapkričio 8 d. nutarimo Nr. 857 „Dėl Darbo apmokėjimo sistemos nustatymo rekomendacijų patvirtinimo“ pakeitimo\"",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-00162",
+      "oj_date": "2024-01-04",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/16f352b0ab0711eea5a28c81c82193a8",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603694",
+      "title": "Lietuvos Respublikos Vyriausybės 2024 m. spalio 9 d. nutarimas Nr. 848 „Dėl darbo statistikos“",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-17839",
+      "oj_date": "2024-10-11",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/225742d2878c11efabdbb4a1fc8b0b63",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603718",
+      "title": "Lietuvos Respublikos asmens duomenų teisinės apsaugos įstatymo Nr. I-1374 pakeitimo įstatymas Nr. XIV-2626",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-09142",
+      "oj_date": "2024-05-21",
+      "notified_at": "2026-06-08",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/66824d50177611efbcbfb318996800a8",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603658",
+      "title": "Lietuvos Respublikos biudžetinių įstaigų darbuotojų darbo apmokėjimo ir komisijų narių atlygio už darbą įstatymo Nr. XIII-198 1, 5 straipsnių pakeitimo ir įstatymo papildymo 3 priedu įstatymas Nr. XV-972",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-08790",
+      "oj_date": "2026-05-25",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/21e719d2584411f180c9c618618421ed",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603659",
+      "title": "Lietuvos Respublikos viešųjų įstaigų, kurių savininkė ar dalininkė, turinti daugiau negu pusę balsų visuotiniame dalininkų susirinkime, yra valstybė ar savivaldybė, vadovų ir darbuotojų darbo apmokėjimo įstatymo Nr. XIV-2349 1, 2, 3 straipsnių ir priedo pakeitimo bei įstatymo papildymo 2 priedu įstatymas Nr. XV-971",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-08789",
+      "oj_date": "2026-05-25",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/e4876e52584311f180c9c618618421ed",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603681",
+      "title": "Lietuvos Respublikos Seimo 2024 m. balandžio 11 d. nutarimas Nr. XIV-2539 „Dėl Lietuvos Respublikos Seimo 2003 m. lapkričio 18 d. nutarimo Nr. IX-1827 „Dėl Moterų ir vyrų lygių galimybių kontrolieriaus tarnybos pavadinimo pakeitimo ir Lygių galimybių kontrolieriaus tarnybos nuostatų patvirtinimo“ pakeitimo\"",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-06816",
+      "oj_date": "2024-04-11",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/98960430f80411eeb15a8086c0c045d4",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603702",
+      "title": "Lietuvos Respublikos valstybės tarnybos įstatymo Nr. VIII-1316 1, 19, 20 straipsnių pakeitimo ir Įstatymo papildymo 3 priedu įstatymas Nr. XV-980",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-09720",
+      "oj_date": "2026-06-02",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/56d128e05e8711f180c9c618618421ed",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603704",
+      "title": "Lietuvos Respublikos valstybinės darbo inspekcijos įstatymas Nr. IX-1768 (suvestinė redakcija nuo 2022-05-01 iki 2024-06-30)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "102-4585",
+      "oj_date": "2003-10-31",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.1FD5C3A4D10A/tcLMIsPgql",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603707",
+      "title": "Lietuvos Respublikos administracinių nusižengimų kodekso patvirtinimo, įsigaliojimo ir įgyvendinimo tvarkos įstatymas Nr. XII-1869 (suvestinė redakcija nuo 2023-05-01 iki 2023-05-01)",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2015-11216",
+      "oj_date": "2015-07-10",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/4ebe66c0262311e5bf92d6af3f6a2e8b/aeTuwhUXtt",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603709",
+      "title": "Lietuvos Respublikos administracinių nusižengimų kodekso 12, 21-1, 373, 374, 375, 376, 377, 378, 380, 381, 382, 421, 484, 576, 577, 579, 581, 584, 587, 588, 589, 594, 608, 609, 616, 617, 619, 620, 621, 627, 644, 666, 671, 673, 675, 676, 678 straipsnių ir priedo pakeitimo, Kodekso papildymo 422-1, 565-1, 574-1 straipsniais ir 591, 677 straipsnių pripažinimo netekusiais galios įstatymas Nr. XIV-1947",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2023-09688",
+      "oj_date": "2023-05-23",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/c64b8c90f96011ed9978886e85107ab2",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603710",
+      "title": "Lietuvos Respublikos civilinio kodekso patvirtinimo, įsigaliojimo ir įgyvendinimo įstatymas Nr. VIII-1864 (suvestinė redakcija nuo 2023-04-01 iki 2023-04-30)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "74-2262",
+      "oj_date": "2000-09-06",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.8A39C83848CB/ypuvYPhZDp",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603713",
+      "title": "Lietuvos Respublikos civilinio proceso kodekso patvirtinimo, įsigaliojimo ir įgyvendinimo įstatymas Nr. IX-743 (suvestinė redakcija nuo 2022-12-31 iki 2022-12-31)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "36-1340",
+      "oj_date": "2002-04-06",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.2E7C18F61454/DfslblYMlq",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603715",
+      "title": "Lietuvos Respublikos viešųjų pirkimų įstatymas Nr. I-1491 (suvestinė redakcija nuo 2023-01-01 iki 2023-12-31)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "84-2000",
+      "oj_date": "1996-09-06",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.C54AFFAA7622/FNhkMBoonT",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603716",
+      "title": "Lietuvos Respublikos asociacijų įstatymas Nr. IX-1969 (suvestinė redakcija nuo 2022-05-01 iki 2023-10-31)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "25-745",
+      "oj_date": "2004-02-14",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.FF00B0EA2F0E/BSipblfVXn",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603719",
+      "title": "Lietuvos Respublikos profesinių sąjungų įstatymas Nr. I-2018 (suvestinė redakcija nuo 2013-06-28)",
+      "official_journal": "Valstybės žinios",
+      "oj_number": "240-0",
+      "oj_date": "1991-11-30",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/TAR.ABF3AEE57087/TAIS_452476",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202603959",
+      "title": "Lietuvos Respublikos socialinės apsaugos ir darbo ministro 2026 m. birželio 5 d. įsakymas Nr. A1-358 „Dėl Lietuvos Respublikos socialinės apsaugos ir darbo ministro 2009 m. gegužės 12 d. įsakymo Nr. A1-316 „Dėl Lietuvos Respublikos valstybinės darbo inspekcijos prie Socialinės apsaugos ir darbo ministerijos nuostatų patvirtinimo“ pakeitimo\"",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2026-10037",
+      "oj_date": "2026-06-05",
+      "notified_at": "2026-06-09",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/4f401bd460b311f1b53dfa020e517810",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202604148",
+      "title": "Lietuvos Respublikos administracinių nusižengimų kodekso 72 ir 589 straipsnių pakeitimo įstatymas Nr. XIV-2916",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2024-13512",
+      "oj_date": "2024-07-24",
+      "notified_at": "2026-06-12",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/f229d00049a611efbdaea558de59136c",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970LTU_202604203",
+      "title": "Lietuvos Respublikos vyriausiojo valstybinio darbo inspektoriaus 2021 m. sausio 14 d. įsakymas Nr. EV-13 \"Dėl Lietuvos Respublikos valstybinės darbo inspekcijos prie Socialinės apsaugos ir darbo ministerijos darbo reglamento patvirtinimo\"",
+      "official_journal": "Teisės aktų registras",
+      "oj_number": "2021-00996",
+      "oj_date": "2021-01-21",
+      "notified_at": "2026-06-12",
+      "national_link": "https://www.e-tar.lt/portal/lt/legalAct/8454ef205b4211eb9dc7b575f08e8bea",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  },
+  "proposals": [
+    {
+      "field": "article_7.legal_basis",
+      "proposed_value": {
+        "instrument": "national",
+        "short_title": "Lietuvos Respublikos darbo kodekso 23, 26, 39, 40, 41, 42, 48, 51, 52, 65, 71, 79, 140, 147, 148, 196, 217, 219, 226 str",
+        "official_title": "Lietuvos Respublikos darbo kodekso 23, 26, 39, 40, 41, 42, 48, 51, 52, 65, 71, 79, 140, 147, 148, 196, 217, 219, 226 straipsnių ir priedo pakeitimo įstatymas Nr. XV-969",
+        "journal_ref": "Teisės aktų registras no. 2026-08785",
+        "article": null,
+        "adopted_at": "2026-05-25",
+        "in_force_from": null,
+        "url": "https://www.e-tar.lt/portal/lt/legalAct/2ab448a0584211f180c9c618618421ed"
+      },
+      "candidates": [],
+      "rationale_key": "proposed.lt.labour_code_amendment_2026",
+      "verification_strategy": "manual-attest",
+      "national_register_host": "e-tar.lt",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/resource/celex/72023L0970LTU_202603656",
+          "title": "Lietuvos Respublikos darbo kodekso 23, 26, 39, 40, 41, 42, 48, 51, 52, 65, 71, 79, 140, 147, 148, 196, 217, 219, 226 straipsnių ir priedo pakeitimo įstatymas Nr. XV-969",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "72023L0970LTU_202603656",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        },
+        {
+          "url": "https://www.e-tar.lt/portal/lt/legalAct/2ab448a0584211f180c9c618618421ed",
+          "title": "Lietuvos Respublikos darbo kodekso 23, 26, 39, 40, 41, 42, 48, 51, 52, 65, 71, 79, 140, 147, 148, 196, 217, 219, 226 straipsnių ir priedo pakeitimo įstatymas Nr. XV-969",
+          "publisher": "e-tar.lt",
+          "kind": "official_journal",
+          "verification": "manual-attest",
+          "anchor": "Lietuvos Respublikos darbo kodekso",
+          "language": "lt",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "drafted_by": "agent:gsd-executor/01-04",
+      "drafted_at": "2026-09-11",
+      "status": "awaiting_maintainer_promotion"
+    }
+  ]
+}
