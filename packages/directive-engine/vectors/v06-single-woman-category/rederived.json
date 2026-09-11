@@ -1,0 +1,142 @@
+{
+  "vector": "v06-single-woman-category",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact.",
+  "metrics": {
+    "a": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 42.2222, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Engineering": { "value": null, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": true, "unreliable": true },
+      "Support": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [{ "category": "Support", "gapPct": 20, "threshold": 5 }],
+  "warnings": [
+    { "code": "W_GROUP_SUPPRESSED", "detail": "Metric (g) for the category Engineering is withheld: the category holds exactly one woman and minGroupSize is 2, so publishing the figure would disclose an identifiable worker's pay." },
+    { "code": "W_GROUP_UNRELIABLE", "detail": "Metric (g) for the category Engineering rests on a female group of one and is too small to be statistically reliable. This is a separate claim from the suppression above and is carried separately, per MetricValue." }
+  ],
+  "resolutions": [
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 100 here.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "Every other metric position in this report is a female-versus-male comparison expressed against the male figure; a bare overall proportion would be the only figure in the report that is not one.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 100 here.",
+      "firstPassChose": "The highest band's female share — 0 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL bands, including the single-sex tie straddling Q3/Q4; only the band reported differed.",
+      "positionsRedone": ["f"]
+    },
+    {
+      "conventionKey": "minGroupSize",
+      "whatWasAmbiguous": "What suppression actually does to the rest of the report — whether the value is nulled, and whether a suppressed category may still appear in art10Flags.",
+      "secondPassOriginallyChose": "Null the value; omit the category from art10Flags; fire unreliable on the same small-group condition.",
+      "firstPassChose": "The same on all three points — the two passes AGREED here and no number changed.",
+      "nowReads": "CONVENTIONS.md, minGroupSize: a suppressed metric reports value null; a suppressed category does not appear in art10Flags, because Art10Flag.gapPct would republish the withheld figure; and unreliable currently shares suppression's condition because no separate statistical threshold is recorded anywhere.",
+      "why": "Recorded despite the agreement, because both passes independently flagged that the wording did not settle it. An agreement reached by two people making the same unstated assumption is not a specification, and Engineering here is the only place in the whole vector set where suppression is reachable at all.",
+      "positionsRedone": []
+    }
+  ],
+  "working": {
+    "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Pay level = BASE + BONUS for (a), (c), (f), (g). minGroupSize is 2 in this vector and null in most others, which is what makes the two flags reachable here at all.",
+    "step1_perWorkerTotals": [
+      "w01 F Engineering 3900 + 300 = 4200",
+      "w02 M Engineering 4500 + 500 = 5000",
+      "w03 M Engineering 4000 + 500 = 4500",
+      "w04 M Engineering 4100 + 400 = 4500",
+      "w05 F Support 2000 + 200 = 2200",
+      "w06 F Support 2200 + 400 = 2600",
+      "w07 M Support 2500 + 300 = 2800",
+      "w08 M Support 2900 + 300 = 3200"
+    ],
+    "step2_sexSplit": "Three women (w01, w05, w06) and five men (w02, w03, w04, w07, w08). n = 8, every sex value mapped, excludedN 0.",
+    "step3_metricA": "Female totals 4200+2200+2600 = 9000 over three, mean 3000. Male totals 5000+4500+4500+2800+3200 = 20000 over five, mean 4000. (4000-3000)/4000 = 1000/4000 = 0.25 -> 25.",
+    "step4_metricB": "Female BONUS 300+200+400 = 900, mean 300. Male BONUS 500+500+400+300+300 = 2000, mean 400. (400-300)/400 = 0.25 -> 25. The equality with metric (a) is a coincidence of these rows, not a rule.",
+    "step5_metricC": "Both headcounts are ODD, so lower_of_two is not reached. Female ascending 2200, 2600, 4200 -> middle 2600. Male ascending 2800, 3200, 4500, 4500, 5000 -> middle 4500. (4500-2600)/4500 = 1900/4500 = 0.4222222... -> 42.2222. The median gap is far wider than the mean gap here because the one highly paid woman sits at the top of the female list rather than in its middle.",
+    "step6_metricD": "Female BONUS ascending 200, 300, 400 -> middle 300. Male BONUS ascending 300, 300, 400, 500, 500 -> middle 400. (400-300)/400 = 0.25 -> 25.",
+    "step7_metricE": "All eight BONUS figures are strictly positive: 3 of 3 women, 5 of 5 men. Under the settled rule the scalar is 100 - 100 = 0 percentage points. (Originally reported as the overall proportion, 100; see resolutions.) Note that the org-level groups are 3 and 5, both at or above minGroupSize 2, so no org-level metric is suppressed.",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["2200 w05 F", "2600 w06 F", "2800 w07 M", "3200 w08 M", "4200 w01 F", "4500 w03 M", "4500 w04 M", "5000 w02 M"],
+      "sizes": "n = 8, 8/4 = 2 exactly, no remainder. Groups of two at positions 1-2, 3-4, 5-6, 7-8.",
+      "tie": "w03 and w04 share 4500 at positions 6 and 7, straddling the Q3/Q4 boundary. The block is single-sex — two men — so ukgov_proportional is a no-op: one man to Q3, one to Q4.",
+      "composition": {
+        "Q1": "w05 F, w06 F -> 100 percent female",
+        "Q2": "w07 M, w08 M -> 0 percent female",
+        "Q3": "w01 F, one tied man -> 50 percent female",
+        "Q4": "the other tied man, w02 M -> 0 percent female"
+      },
+      "scalarChosen": "0, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 100; see resolutions.)",
+      "suppressionNote": "Q1 holds two workers and both are women. It was considered whether minGroupSize 2 should suppress metric (f) as well. It does not: the quartile metric reports a proportion of headcounts, not a pay figure, so publishing it does not disclose an identifiable worker's PAY, which is the harm MetricValue.suppressed names. Recorded as an ambiguity because no convention states the scope of suppression."
+    },
+    "step9_metricG": {
+      "Engineering": "Women: w01 alone at 4200, mean 4200. Men: w02 5000, w03 4500, w04 4500 -> 14000 over three, mean 4666.6667. The gap is (4666.6667-4200)/4666.6667 = 466.6667/4666.6667 = exactly 0.10, so the underlying figure is 10. It is NOT reported. The female group is one worker and minGroupSize is 2, so the figure is suppressed and the reported value is null. Emitting the number alongside suppressed=true would make the suppression decorative, since the withheld figure would sit in the report next to the flag saying it was withheld.",
+      "Support": "Women w05 2200 and w06 2600, mean 2400. Men w07 2800 and w08 3200, mean 3000. (3000-2400)/3000 = 600/3000 = 0.20 -> 20. Both groups hold two workers, meeting minGroupSize 2, so nothing is suppressed."
+    },
+    "step10_suppression": "This is the vector where the two flags have to be shown to be different claims. Engineering carries BOTH: suppressed=true because publishing the figure would identify the single woman in it, and unreliable=true because a female group of one cannot support a statistical statement. They are recorded as two separate warnings with two separate codes rather than one combined flag, because an authority reading the export has to be able to tell a privacy withholding from a noise warning.",
+    "step11_art10": "Support at 20 clears the five-point trigger and is flagged. Engineering is NOT flagged even though its underlying figure of 10 would clear it: Art10Flag carries gapPct as a plain number, so flagging a suppressed category would republish the figure that was just withheld and defeat the suppression entirely. Recorded as an ambiguity — no convention governs the interaction."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "minGroupSize",
+      "issue": "Whether a suppressed metric reports its underlying value alongside suppressed=true, or reports null.",
+      "readings": [
+        "Report the value and let the consumer decide — suppressed is then only a rendering hint.",
+        "Report null — the value must not appear in the artefact at all."
+      ],
+      "chosen": "Report null",
+      "why": "Suppression exists because publishing the figure would disclose an identifiable worker's pay. A figure present in the JSON has been published to everyone who receives the JSON. The MetricValue comment that null means no DEFENSIBLE value supports this: a figure that may not lawfully be shown is not a defensible value to emit."
+    },
+    {
+      "conventionKey": "minGroupSize",
+      "issue": "Nothing in the convention document governs MetricValue.unreliable. minGroupSize is documented as a suppression threshold only, yet this vector's own case text requires the unreliable flag to fire.",
+      "readings": [
+        "unreliable has its own, separate and currently unrecorded threshold.",
+        "unreliable fires on the same small-group condition as suppression."
+      ],
+      "chosen": "unreliable fires on the same small-group condition",
+      "why": "It is the only reading the recorded conventions can support, since no other threshold exists to consult. It has an uncomfortable consequence worth stating plainly: on this reading the two flags can never differ in any vector in this set, so the separation the type insists on is asserted but never actually exercised by a case where one fires and the other does not. A statistical-reliability threshold of its own belongs in the convention document."
+    },
+    {
+      "conventionKey": "minGroupSize",
+      "issue": "Whether a suppressed category may still appear in art10Flags, whose gapPct field would carry the withheld figure.",
+      "readings": ["Flag it — the Art. 10(1) obligation is independent of publication.", "Omit it — the flag would republish the suppressed number."],
+      "chosen": "Omit it",
+      "why": "Art10Flag.gapPct is a plain number with no suppression flag of its own, so including Engineering would put the withheld 10 back into the report one field along. If the Art. 10(1) obligation genuinely survives suppression, the type needs a way to say a category is over the trigger without saying by how much — which is a contract question, not something a vector should settle silently."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): total pay, or ordinary basic wage or salary alone.",
+      "readings": ["Total pay.", "Basic only, per the payBasis heading's SEPARATELY wording."],
+      "chosen": "Total pay",
+      "why": "Metric (a) happens to be 25 under both readings in this vector — female BASE mean 2700 against male BASE mean 3600 also gives 25 — but metric (g) does not: Engineering is 7.1429 and Support 22.2222 over BASE alone, against 10 and 20 over total pay."
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue; and separately, whether suppression applies to a quartile proportion at all.",
+      "readings": ["A named quartile's female share, unsuppressed.", "null, or suppressed when a band holds fewer workers than minGroupSize."],
+      "chosen": "The female share of the lowest quartile pay band, unsuppressed",
+      "why": "A quartile proportion is a headcount ratio, not a pay figure, so it does not disclose an identifiable worker's pay. The scope of suppression is nonetheless unstated in the convention document.",
+      "supersededBy": "resolutions[1] as to WHICH band — the HIGHEST now governs. The unsuppressed half of this entry was agreed by both passes and stands."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "No convention key governs rounding; 1900/4500 and 14000/3 do not terminate.",
+      "readings": ["Two decimal places.", "Four decimal places."],
+      "chosen": "Four decimal places, half-up",
+      "why": "The document has no rounding heading. Here the intermediate male mean 4666.6667 is itself non-terminating, which raises a second unrecorded question: whether rounding applies only to the reported percentage or also to intermediate figures. This derivation rounds only at the end."
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "vector": "v05-n-mod-4-three",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact.",
+  "metrics": {
+    "a": { "value": 3.3333, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 20.4545, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 14.2857, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 50, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Ops": { "value": 3.3333, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [],
+  "warnings": [],
+  "resolutions": [
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 100 here.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "Every other metric position in this report is a female-versus-male comparison expressed against the male figure; a bare overall proportion would be the only figure in the report that is not one.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 66.6667 here.",
+      "firstPassChose": "The highest band's female share — 50 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL bands, including the 3/3/3/2 split this vector's three leftovers produce; only the band reported differed.",
+      "positionsRedone": ["f"]
+    }
+  ],
+  "working": {
+    "step0_payDefinition": "Same map as v02 to v04. This vector is v04 plus one highly paid woman, w11, at total 4800 — which is what pulls the female mean up and drops the org-level gap below the Art. 10(1) trigger.",
+    "step1_perWorkerTotals": [
+      "w01 F 1800 + 200 = 2000",
+      "w02 F 2100 + 300 = 2400",
+      "w03 F 2600 + 400 = 3000",
+      "w04 F 2900 + 500 = 3400",
+      "w05 M 2000 + 200 = 2200",
+      "w06 M 2400 + 400 = 2800",
+      "w07 M 3000 + 600 = 3600",
+      "w08 M 3400 + 800 = 4200",
+      "w09 F 1650 + 150 = 1800",
+      "w10 M 2000 + 200 = 2200",
+      "w11 F 4250 + 550 = 4800"
+    ],
+    "step2_sexSplit": "Six women (w01-w04, w09, w11) and five men (w05-w08, w10). n = 11, excludedN 0.",
+    "step3_metricA": "Female totals 12600 (from v04) + 4800 = 17400 over six women, mean 2900. Male mean unchanged at 15000 / 5 = 3000. (3000-2900)/3000 = 100/3000 = 0.0333333... -> 3.3333. This is the vector that exercises the Art. 10(1) threshold in the NEGATIVE direction: the gap is real but below five percentage points, so no flag is raised.",
+    "step4_metricB": "Female BONUS 1550 + 550 = 2100 over six, mean 350. Male BONUS mean 2200 / 5 = 440. (440-350)/440 = 90/440 = 0.2045454... -> 20.4545. Note the contrast with metric (a): the variable-component gap stays well over five points while the total-pay gap does not, which is precisely why Art. 9(1) reports them separately.",
+    "step5_metricC": "The female headcount is now EVEN at six, so lower_of_two applies again on that side: ascending 1800, 2000, 2400, 3000, 3400, 4800 -> the two middle values are 2400 and 3000 -> 2400. The added high earner sits above both middles and therefore does not move the female median at all. Male headcount is odd at five -> middle 2800. (2800-2400)/2800 = 0.1428571... -> 14.2857.",
+    "step6_metricD": "Female BONUS ascending 150, 200, 300, 400, 500, 550 -> middles 300 and 400 -> lower_of_two takes 300. Male BONUS ascending 200, 200, 400, 600, 800 -> middle 400. (400-300)/400 = 0.25 -> 25.",
+    "step7_metricE": "All eleven BONUS figures are strictly positive: 6 of 6 women, 5 of 5 men. Under the settled rule the scalar is 100 - 100 = 0 percentage points. (Originally reported as the overall proportion, 100; see resolutions.)",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["1800 w09 F", "2000 w01 F", "2200 w05 M", "2200 w10 M", "2400 w02 F", "2800 w06 M", "3000 w03 F", "3400 w04 F", "3600 w07 M", "4200 w08 M", "4800 w11 F"],
+      "sizes": "n = 11 gives 11 = 4 x 2 + 3. Under to_lower the three leftovers go one per quarter from the lowest upward, so Q1, Q2 and Q3 each take an extra worker and Q4 does not: sizes 3, 3, 3, 2. Boundaries fall after positions 3, 6 and 9.",
+      "tie": "w05 and w10 again share 2200 at positions 3 and 4, straddling the Q1/Q2 boundary. The block is single-sex, so ukgov_proportional resolves to one man in Q1 and one in Q2 without any fractional arithmetic.",
+      "composition": {
+        "Q1": "positions 1-3: w09 F, w01 F, one tied man -> 2 F and 1 M -> 66.6667 percent female",
+        "Q2": "positions 4-6: the other tied man, w02 F, w06 M -> 1 F and 2 M -> 33.3333 percent female",
+        "Q3": "positions 7-9: w03 F, w04 F, w07 M -> 2 F and 1 M -> 66.6667 percent female",
+        "Q4": "positions 10-11: w08 M, w11 F -> 1 F and 1 M -> 50 percent female"
+      },
+      "checksum": "3 + 3 + 3 + 2 = 11; females 2+1+2+1 = 6 and males 1+2+1+1 = 5.",
+      "scalarChosen": "50, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 66.6667; see resolutions.)"
+    },
+    "step9_metricG": "One category, Ops, holding all eleven workers, so the category gap equals metric (a) at 3.3333.",
+    "step10_suppression": "minGroupSize null: no suppression, no unreliability.",
+    "step11_art10": "Ops at 3.3333 is BELOW the five-percentage-point trigger, so art10Flags is empty. This is the only vector in the quartile series where the trigger is exercised by not firing, and an empty flag list is the correct positive result here rather than a missing one."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): total pay, or ordinary basic wage or salary alone. This vector is the one where the fork changes an Art. 10(1) OUTCOME rather than only a number.",
+      "readings": [
+        "Total pay — Art. 3(1)(a) is inclusive and METRIC_DEFINITIONS restricts only (b) and (d).",
+        "Basic only — the payBasis heading says Art. 9(1)(a)-(d) report the two sides SEPARATELY."
+      ],
+      "chosen": "Total pay",
+      "why": "Under the other reading metric (a) runs over BASE alone: female mean 2550, male mean 2560, giving 0.3906 rather than 3.3333. Both readings stay below the trigger here, but the two answers differ by an order of magnitude and either could be the number an employer defends to an authority."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
+      "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
+      "chosen": "The overall proportion receiving a component",
+      "why": "The difference reading reads zero everywhere and erases v09's intended contrast.",
+      "supersededBy": "resolutions[0] — the passes disagreed and the difference reading now governs; the coverage objection recorded here is carried forward under componentMap in CONVENTIONS.md."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue, and this vector is where the three-worker remainder distributes across three different bands.",
+      "readings": ["A named quartile's female share.", "null."],
+      "chosen": "The female share of the lowest quartile pay band",
+      "why": "Consistency with v01 to v04. This is the vector that shows the cost of the choice most clearly: the remainder rule changes Q1, Q2 and Q3 here, and a single scalar reports only one of the three.",
+      "supersededBy": "resolutions[1] — the passes disagreed and the HIGHEST band now governs. The objection recorded here is unaffected by which band was chosen and is the strongest single argument for the D-16 amendment that would let Metrics.f carry all four bands."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "No convention key governs rounding; 100/3000 and 90/440 do not terminate.",
+      "readings": ["Two decimal places.", "Four decimal places."],
+      "chosen": "Four decimal places, half-up",
+      "why": "The document has no rounding heading. Precision matters more here than elsewhere because metric (a) sits near enough to the Art. 10(1) trigger that the reported figure is doing real work."
+    }
+  ]
+}

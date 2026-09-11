@@ -46,6 +46,33 @@ and make the ordered-equality test unsatisfiable by construction.
 
 ---
 
+### How to read the "settled by re-derivation" notes
+
+*(A level-3 heading deliberately: every level-2 heading in this document is a convention
+key, and `test/conventions-documented.test.ts` reads them as the ordered key list.)*
+
+Several decisions below carry a note headed **Settled by re-derivation (plan 01-07)**.
+Each records a question that D-13's independent second pass proved this document did not
+answer: two passes read the same wording and produced different answers, or read it the
+same way only by luck. The note states both readings, which one now governs, and why.
+
+These notes exist because a convention that admits two readings is not a convention. The
+disagreement is evidence about the WORDING, so it was fixed here and both passes were then
+redone for the affected vectors — never by editing whichever number looked wrong, which
+would have discarded the evidence and kept the ambiguity.
+
+**Four of them record decisions the `Conventions` type has no key for**: how a percentage
+is rounded, what the single scalar of metrics (e) and (f) denotes, whether the Art. 10(1)
+trigger is signed, and how suppression interacts with the rest of the report. They are
+recorded under the nearest existing key because this document must carry exactly the eleven
+`CONVENTION_KEYS` headings in their fixed order, and a twelfth heading would break that
+invariant by construction. **That is a workaround, not a design.** The honest fix is a
+`Conventions` amendment adding keys for them under the D-16 path, and it is written up in
+`01-07-SUMMARY.md` as a recommendation rather than applied here — amending a frozen
+contract is a decision for a human, not a side effect of a re-derivation.
+
+---
+
 ## denominator
 
 **Type:** `'male_mean' | 'male_median'` — the mean-based metrics take the former, the
@@ -65,6 +92,46 @@ Directive position: **fixed**
 female figure, by the overall mean, or by the midpoint `((M+F)/2)` each produces a number
 that is not the Art. 9(1)(a) or 9(1)(c) figure, however reasonable it looks. `conventionSource`
 reports `directive` for this key in every report.
+
+### Settled by re-derivation (plan 01-07): the gap is SIGNED, and the Art. 10(1) trigger tests its MAGNITUDE
+
+Both passes agreed that the expression is signed — a category where women out-earn men
+reports a negative figure, and the sign is never discarded. **They disagreed about whether a
+negative figure can raise an Art. 10(1) flag**, and the negative-gap vector is where that
+showed: one pass flagged a category at `-25`, the other left the flag list empty.
+
+- **Reading now rejected:** signed. "A gender pay gap of at least 5 %" means at least
+  *positive* five, so `-25` does not trigger.
+- **Reading now governing:** **magnitude**. Art. 10(1) is engaged by a *difference* in
+  average pay level of at least 5 %, and a difference of 25 % is a difference of 25 %
+  whichever sex it favours. The signed reading would silently exempt every category in which
+  men are the underpaid group, which the Directive's equal-pay principle does not permit.
+  **`Art10Flag.gapPct` carries the SIGNED value**, so a consumer reading the flag sees both
+  that the trigger fired and in which direction; the flag remains one of the three
+  cumulative Art. 10(1) conditions and never asserts the other two.
+
+This is a project convention about how a threshold is applied, not a Directive rule about
+the threshold's existence, and it must not be presented to an authority as the latter.
+
+### Settled by re-derivation (plan 01-07): rounding
+
+Nothing in this document governed the precision of a reported percentage. The two passes
+happened to choose the same rule independently, which is agreement by luck rather than by
+specification — `200/3000` does not terminate, and an engine built against these vectors
+could have rounded differently and still claimed to satisfy them.
+
+**Recorded default: exact where the division terminates within four decimal places,
+otherwise rounded half-up to four decimal places.** Rounding is applied ONCE, to the final
+percentage, never to an intermediate mean or median. For a negative figure the magnitude is
+rounded and the sign reapplied, so a gap and its mirror image are the same size. Two decimal
+places was rejected because it would turn exact values such as `15.625` into rounded ones for
+no reason.
+
+**This is a project convention and it was invented here.** No external guidance document
+supplies a precision rule for this Directive. It is stated plainly rather than left for a
+reader to assume a source exists. The `Default origin:` line below attributes the DENOMINATOR
+decision, which is the Directive's; this rounding rule is not, and is labelled as invented in
+these words instead.
 
 Default origin: directive_text
 
@@ -120,6 +187,28 @@ the rule differently.
 
 **This is a project convention borrowed from national guidance, and it is labelled as one.**
 It is not a Directive rule and must never be presented to an authority as one.
+
+### Settled by re-derivation (plan 01-07): which band metric (f) reports
+
+The two passes constructed **identical** quartile bands on all ten vectors — same sizes, same
+remainder distribution, same fractional split of a straddling tie — and then reported
+different numbers, because Art. 9(1)(f) is the proportion of female and male workers in EACH
+of four bands (eight figures) while `Metrics.f` is a single `MetricValue` carrying one scalar.
+One pass reported the lowest band's female share, the other the highest.
+
+- **Reading now rejected:** the lowest band, on the ground that the remainder and tie rules
+  land there in these particular vectors. That is an argument about test coverage, not about
+  what the metric means.
+- **Reading now governing:** **the female share of the HIGHEST (fourth) quartile pay band**,
+  as a percentage. It is the figure the same national guidance document this key already
+  borrows from treats as the headline quartile statistic, so the choice is attributable
+  rather than invented — which is the whole reason that document is cited here.
+
+**The scalar is lossy and this is recorded rather than hidden.** Seven of the eight figures
+Art. 9(1)(f) asks for cannot be carried by the contract as it stands, and a national filing
+would need all four bands. The full four-band composition is written out in each vector's
+`working`, and extending `Metrics.f` to carry the bands is the D-16 amendment recommended in
+`01-07-SUMMARY.md`.
 
 Default origin: external_guidance: UK Government, Gender pay gap reporting: making your calculations — https://www.gov.uk/government/publications/gender-pay-gap-reporting-guidance-for-employers/making-your-calculations
 
@@ -236,6 +325,38 @@ free text, and the correct mapping is an employer fact.
 exactly how a confidently wrong percentage is produced: four per cent of a workforce
 disappearing without a trace moves the gap and leaves nothing in the report to notice.
 
+### Settled by re-derivation (plan 01-07): an unmapped row is RANKED but not COUNTED
+
+Both passes agreed and both flagged the wording as not having settled it, so it is recorded.
+The rule above fixes the sex breakdown but says nothing about the quartile ranking, and the
+two are different questions.
+
+**An unmapped row still occupies its place in the pay ranking that builds the quartile
+bands**, because Art. 3(1)(f) divides *workers* into four equal groups by pay level and an
+unmapped worker is still a worker. It is excluded only from the female and male counts.
+Striking the row from the ranking as well would move other workers between bands with nothing
+in the report to show why — the same silent distortion the exclusion rule exists to prevent,
+one metric along.
+
+It follows that `populationN` and the ranked headcount can differ. **`populationN` is the
+sexed population — the workers the figure could actually report on** — with the unmapped rows
+in `excludedN`. Reporting the ranked headcount would imply the female share has a denominator
+that includes workers of no recorded sex.
+
+**An unmapped value is not `other` or `undisclosed`.** Those `SexCode`s are for values an
+employer's map deliberately assigns to them. A value the map does not mention at all is
+unmapped, and the difference is the point of the warning.
+
+### Settled by re-derivation (plan 01-07): a one-sex category is null, not unreliable
+
+Both passes agreed. A category holding workers of one sex only reports `value: null` with
+`W_CATEGORY_ALL_ONE_SEX`, and **`suppressed` and `unreliable` both stay `false`**. The metric
+is not noisy and it is not withheld: it does not exist, because one of the two populations
+being compared is empty. `unreliable` is documented as meaning the figure is *computable* but
+too noisy to rely on, so setting it here would be a category error. Nor is this a division by
+zero — the male denominator is well defined; it is the numerator that has no meaning. And the
+value is never `0`, which would assert that women in that category are paid the same as men.
+
 Default origin: no_default
 
 ## componentMap
@@ -261,6 +382,55 @@ metric (g)), so the engine requires a supplied category column and **refuses to 
 from a job title**. Auto-grouping by job title would raise an Art. 10 five-percent flag on a
 category the employer never defined — the single most damaging thing this package could do.
 
+### Settled by re-derivation (plan 01-07): which components each metric runs over
+
+Both passes independently read this the same way, but the wording admitted a second reading
+and the two answers differ on nine of the ten vectors, so it is recorded rather than left to
+luck.
+
+- **Metrics (a), (c), (f) and (g) run over TOTAL pay** — every column mapped `basic` plus
+  every column mapped `complementary_variable`, excluding only what is mapped `excluded`.
+  Art. 3(1)(c) takes its meaning of "pay" from Art. 3(1)(a), which is the ordinary basic wage
+  **and** any other consideration; and `METRIC_DEFINITIONS` restricts (b) and (d) to the
+  components explicitly while leaving (a) and (c) unrestricted, an absence that is meaningful.
+- **Metrics (b) and (d) run over the `complementary_variable` columns alone.**
+- **Reading now rejected:** that (a)/(b) and (c)/(d) partition pay, so (a) covers the basic
+  wage only. The sentence under `payBasis` saying Art. 9(1)(a)–(d) report the two sides
+  "separately" describes that the components get their own metric positions, **not** that the
+  headline gap excludes them. That sentence is the one that made the second reading available.
+- Metrics (b) and (d) are computed over **all** workers, including those receiving no
+  components at all. Excluding the zeros would answer metric (e)'s question instead of (b)'s.
+
+### Settled by re-derivation (plan 01-07): what metric (e)'s single scalar denotes
+
+Art. 9(1)(e) is the proportion of female **and** male workers receiving complementary or
+variable components — two figures — while `Metrics.e` is a single `MetricValue` carrying one
+scalar. The two passes read the scalar differently and disagreed on nine of the ten vectors.
+
+- **Reading now rejected:** the overall proportion of workers receiving a component.
+- **Reading now governing:** **the difference between the male and the female proportion, in
+  PERCENTAGE POINTS**, positive meaning men are the more likely to receive components. Every
+  other metric position in this report is a female-versus-male comparison expressed against
+  the male figure, and a bare overall proportion would be the only figure in the report that
+  is not a comparison — a consumer has no reason to expect that. The two per-sex proportions
+  are written out in each vector's `working`.
+
+**Known coverage gap, recorded rather than smoothed over.** Under this reading metric (e)
+reads `0` in all ten vectors, because every vector gives both sexes the same access to
+components. A metric position that never varies across the whole golden set is not specified
+by it. An eleventh vector — a workforce in which only some workers receive components, split
+unevenly by sex, and exercising the sign — is recommended in `01-07-SUMMARY.md`.
+
+### Settled by re-derivation (plan 01-07): the scope of `W_COMPONENTS_ALL_ZERO`
+
+Both passes agreed; the wording did not say so. The code attaches to metrics **(b) and (d)
+only** — the ones whose percentage expression is degenerate, a difference of zero over a
+denominator of zero. It does **not** attach to metric (e), whose zero in that case is an
+ordinary, fully defined proportion. Marking (e) would suggest its zero is a value rescued by
+a convention rather than a true one, which is the exact confusion the all-zero vector exists
+to prevent. `EngineWarning` carries no metric field, so the affected positions are named in
+the warning's `detail`.
+
 Default origin: no_default
 
 ## minGroupSize
@@ -284,6 +454,29 @@ unreliability (`W_GROUP_UNRELIABLE`) in `MetricValue`.
 rule.** § 12 EntgTranspG attaches it to the *individual* information right, not to Art. 9
 reporting. It belongs in `country-data`, per country, and asserting it as a Directive rule was
 one of the four inherited errors corrected at initialisation.
+
+### Settled by re-derivation (plan 01-07): what suppression actually does to a report
+
+Both passes agreed on all three points below and both flagged that the wording did not state
+them. Suppression is worth nothing if it is only a rendering hint, so the consequences are
+recorded here rather than left to an exporter.
+
+1. **A suppressed metric reports `value: null`.** A figure present in the JSON has been
+   published to everyone who receives the JSON, so emitting it beside `suppressed: true`
+   would make the suppression decorative. A figure that may not lawfully be shown is not a
+   defensible value to emit.
+2. **A suppressed category does NOT appear in `art10Flags`.** `Art10Flag.gapPct` is a plain
+   number with no suppression flag of its own, so flagging the category would republish the
+   withheld figure one field along. If an Art. 10(1) obligation genuinely survives
+   suppression, the contract needs a way to say a category is over the trigger without saying
+   by how much — a D-16 question written up in `01-07-SUMMARY.md`, not something a vector may
+   settle silently.
+3. **`unreliable` currently fires on the same small-group condition as suppression**, because
+   no separate statistical threshold is recorded anywhere and there is nothing else to
+   consult. This has an uncomfortable consequence, stated plainly: the two flags cannot differ
+   in any vector in the current set, so the separation `MetricValue` insists on is asserted
+   but never exercised by a case where one fires and the other does not. A reliability
+   threshold of its own belongs in this document, and is recommended in the same write-up.
 
 The `null` default adds no project judgement — it encodes the Directive's own absence of a
 number — so its origin is the Directive's text.

@@ -1,0 +1,124 @@
+{
+  "vector": "v08-negative-gap",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact. Rounding is applied to the magnitude and the sign is preserved.",
+  "metrics": {
+    "a": { "value": -25, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": -25, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": -19.4444, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": -25, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 100, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Research": { "value": -25, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [{ "category": "Research", "gapPct": -25, "threshold": 5 }],
+  "warnings": [],
+  "resolutions": [
+    {
+      "conventionKey": "denominator",
+      "whatWasAmbiguous": "Whether the Art. 10(1) five-percent trigger tests the SIGNED gap or its MAGNITUDE. This is the only disagreement in the whole set that changed an outcome rather than a number.",
+      "secondPassOriginallyChose": "Signed — 'a gender pay gap of at least 5 %' means at least positive five, so -25 does not trigger and art10Flags stays empty.",
+      "firstPassChose": "Magnitude — Research is flagged, with gapPct carrying the signed -25.",
+      "nowReads": "CONVENTIONS.md, denominator: Art. 10(1) is engaged by a DIFFERENCE in average pay level of at least 5 %, whichever sex it favours; Art10Flag.gapPct carries the SIGNED value so the direction is not lost.",
+      "why": "Art. 10(1) speaks of a difference of at least 5 %, and a difference of 25 % is a difference of 25 % in either direction. The signed reading would silently exempt every category in which men are the underpaid group, which the Directive's equal-pay principle does not permit. The objection that a bare gapPct could be misread is answered by the sign being preserved in the flag rather than by refusing to raise it.",
+      "positionsRedone": ["art10Flags"]
+    },
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 100 here.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "Every other metric position in this report is a female-versus-male comparison expressed against the male figure; a bare overall proportion would be the only figure in the report that is not one.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 0 here, a true zero, no woman in the bottom quarter.",
+      "firstPassChose": "The highest band's female share — 100 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL 2/2/1/1 bands; only the band reported differed.",
+      "positionsRedone": ["f"]
+    }
+  ],
+  "working": {
+    "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Pay level = BASE + BONUS for (a), (c), (f), (g). The whole point of this vector is that the Art. 3(1)(c) expression is a signed difference: female minus male over male, and nothing in the definition constrains it to be positive.",
+    "step1_perWorkerTotals": [
+      "w01 F Research 4400 + 600 = 5000",
+      "w02 F Research 3800 + 500 = 4300",
+      "w03 F Research 3800 + 400 = 4200",
+      "w04 M Research 3500 + 500 = 4000",
+      "w05 M Research 3200 + 400 = 3600",
+      "w06 M Research 2900 + 300 = 3200"
+    ],
+    "step2_sexSplit": "Three women (w01, w02, w03) and three men (w04, w05, w06). n = 6, all mapped, excludedN 0. One category, Research.",
+    "step3_metricA": "Female totals 5000+4300+4200 = 13500 over three, mean 4500. Male totals 4000+3600+3200 = 10800 over three, mean 3600. (3600-4500)/3600 = -900/3600 = -0.25 -> -25. The sign says women are paid 25 percent more, measured against the male figure as Art. 3(1)(c) requires. Taking the absolute value here would report the same magnitude with the opposite meaning, which is the failure this vector exists to catch.",
+    "step4_metricB": "Female BONUS 600+500+400 = 1500, mean 500. Male BONUS 500+400+300 = 1200, mean 400. (400-500)/400 = -100/400 = -0.25 -> -25.",
+    "step5_metricC": "Both headcounts are ODD at three, so lower_of_two is not reached. Female ascending 4200, 4300, 5000 -> middle 4300. Male ascending 3200, 3600, 4000 -> middle 3600. (3600-4300)/3600 = -700/3600 = -0.1944444... -> -19.4444. The median gap is narrower in magnitude than the mean gap because the female mean is pulled up by w01.",
+    "step6_metricD": "Female BONUS ascending 400, 500, 600 -> middle 500. Male BONUS ascending 300, 400, 500 -> middle 400. (400-500)/400 = -0.25 -> -25.",
+    "step7_metricE": "All six BONUS figures are strictly positive: 3 of 3 women, 3 of 3 men. Under the settled rule the scalar is 100 - 100 = 0 percentage points. (Originally reported as the overall proportion, 100; see resolutions.) A negative pay gap does not drag metric (e) negative with it — here men and women have identical access to components, and the zero says exactly that.",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["3200 w06 M", "3600 w05 M", "4000 w04 M", "4200 w03 F", "4300 w02 F", "5000 w01 F"],
+      "sizes": "n = 6 gives 6 = 4 x 1 + 2. Under to_lower, one leftover to Q1 and one to Q2: sizes 2, 2, 1, 1.",
+      "tie": "No two workers share a total pay level; quartileTieRule is not exercised.",
+      "composition": {
+        "Q1": "w06 M, w05 M -> 0 percent female",
+        "Q2": "w04 M, w03 F -> 50 percent female",
+        "Q3": "w02 F -> 100 percent female",
+        "Q4": "w01 F -> 100 percent female"
+      },
+      "scalarChosen": "100, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 0 — a TRUE zero, no woman in the bottom quarter, and not a missing value; see resolutions.) Worth keeping the observation: this vector and v07 are mirror images, and under the settled rule they report 100 and 0 respectively, so a zero in metric (f) must never be read as an absence."
+    },
+    "step9_metricG": "One category, Research, holding all six workers, so the category gap equals metric (a) at -25.",
+    "step10_suppression": "minGroupSize null: no suppression, no unreliability. Both sex groups hold three workers.",
+    "step11_art10": "Research is FLAGGED, with gapPct carrying the signed -25. Under the settled rule Art. 10(1) is engaged by a difference of at least five percentage points whichever sex it favours, and 25 clears that. (This pass originally left the flag list empty on a signed reading of 'at least 5 %'; see resolutions. The objection behind that reading — that a bare gapPct in an Art. 10 context invites being read as a disadvantage to women — is answered by the sign being carried in the flag itself rather than by refusing to raise it.) The flag remains one of the three cumulative Art. 10(1) conditions; the other two are employer judgements and are not asserted here."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "denominator",
+      "issue": "Whether the Art. 10(1) five-percent trigger tests the signed gap or its magnitude. This vector is the only one in the set where the two readings give different OUTCOMES rather than different numbers.",
+      "readings": [
+        "Signed — a gap of at least 5 means at least positive 5, so -25 does not trigger and art10Flags is empty.",
+        "Magnitude — any difference of 5 or more in either direction triggers, so Research is flagged with gapPct -25."
+      ],
+      "chosen": "Signed",
+      "why": "Art. 10(1) says a gender pay gap of at least 5 percent, and the arithmetic Art. 3(1)(c) fixes is signed. Art10Flag has no direction field, so a flag carrying -25 would be read by a consumer as a five-point-plus problem of the ordinary kind. But the alternative reading is genuinely defensible: a 25 percent difference in either direction is a difference the Directive's equal-pay purpose would want examined. This is a contract-level question the vectors should not settle by preference, and it is the single most consequential ambiguity this pass found.",
+      "supersededBy": "resolutions[0] — the passes disagreed on the OUTCOME here, and MAGNITUDE now governs. This entry correctly identified the question as the most consequential one in the set; it reached the answer the convention now rejects."
+    },
+    {
+      "conventionKey": "denominator",
+      "issue": "Whether rounding a negative percentage rounds the magnitude or the signed value, which differ at a half.",
+      "readings": ["Round the magnitude and reapply the sign.", "Round the signed value, so half goes towards positive infinity."],
+      "chosen": "Round the magnitude and reapply the sign",
+      "why": "It keeps a negative gap and its positive mirror image the same size, which is what a reader comparing two employers would expect. No value in this vector actually lands on a half, so the choice does not change an answer here — it is recorded because a future vector could land on one."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): total pay, or ordinary basic wage or salary alone.",
+      "readings": ["Total pay.", "Basic only, per the payBasis heading's SEPARATELY wording."],
+      "chosen": "Total pay",
+      "why": "Metric (a) is -25 under both readings here — female BASE mean 4000 against male BASE mean 3200 also gives -25 — but metric (c) is not: over BASE alone the medians are 3800 and 3200, giving -18.75 rather than -19.4444."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
+      "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
+      "chosen": "The overall proportion receiving a component",
+      "why": "The difference reading reads zero everywhere and erases v09's intended contrast.",
+      "supersededBy": "resolutions[1] — the passes disagreed and the difference reading now governs; the coverage objection is carried forward under componentMap in CONVENTIONS.md."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue.",
+      "readings": ["A named quartile's female share.", "null."],
+      "chosen": "The female share of the lowest quartile pay band",
+      "why": "Consistent with v01 to v07. Here it yields a legitimate 0, which is worth recording explicitly so that a comparison never treats a real zero as a missing value.",
+      "supersededBy": "resolutions[2] — the HIGHEST band now governs, so this vector reports 100. The legitimate-zero point still holds; under the settled rule it is v07 rather than v08 that carries the true zero."
+    }
+  ]
+}

@@ -12,5 +12,7 @@
     "types": ["node"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  // `scripts` joins tests here rather than in the shipped project for the same reason:
+  // the comparison tool is a development gate, never part of the published package.
+  "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"]
 }

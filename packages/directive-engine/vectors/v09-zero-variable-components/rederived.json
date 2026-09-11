@@ -1,0 +1,118 @@
+{
+  "vector": "v09-zero-variable-components",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact.",
+  "metrics": {
+    "a": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Retail": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [{ "category": "Retail", "gapPct": 18.75, "threshold": 5 }],
+  "warnings": [
+    { "code": "W_COMPONENTS_ALL_ZERO", "detail": "No worker receives any complementary or variable component, so the female and male component figures are both zero. Metrics (b) and (d) report 0 rather than null: there is genuinely no difference between the two figures, and a null would claim the difference is unknown." }
+  ],
+  "resolutions": [
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 0 here, since nobody receives one.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — also 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "This vector is the ONLY one where the two readings produce the same number, so it is the one place the disagreement was invisible. That is exactly why an ambiguity is recorded even when the answers agree: agreement here was luck, and the argument built on this vector's legitimate zero — that it only distinguishes v09 from the rest under the proportion reading — turned out to be weaker than it looked, since this vector's case text contrasts zero with NULL, not zero with a non-zero.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 100 here.",
+      "firstPassChose": "The highest band's female share — 0 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL 2/2/1/1 bands, including agreeing that the 2800 tie sits wholly inside Q2 and never has to be resolved; only the band reported differed.",
+      "positionsRedone": ["f"]
+    },
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "Whether W_COMPONENTS_ALL_ZERO also attaches to metric (e), whose value is likewise zero.",
+      "secondPassOriginallyChose": "No — the code names a degenerate percentage expression and metric (e) has no degeneracy.",
+      "firstPassChose": "The same — the two passes AGREED, and the warning names metrics (b) and (d) only.",
+      "nowReads": "CONVENTIONS.md, componentMap: the code attaches to (b) and (d) only. EngineWarning carries no metric field, so the affected positions are named in the warning's detail.",
+      "why": "Recorded despite the agreement, because nothing in the wording scoped the code to particular metrics and this is the only vector where it fires at all.",
+      "positionsRedone": []
+    }
+  ],
+  "working": {
+    "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded — but every BONUS is 0. Total pay therefore equals BASE for every worker, which makes metrics (a) and (c) identical whichever way the component-scope ambiguity is resolved. That is a useful accident: this is the one vector where that fork cannot bite.",
+    "step1_perWorkerTotals": [
+      "w01 F Retail 2400 + 0 = 2400",
+      "w02 F Retail 2600 + 0 = 2600",
+      "w03 F Retail 2800 + 0 = 2800",
+      "w04 M Retail 2800 + 0 = 2800",
+      "w05 M Retail 3200 + 0 = 3200",
+      "w06 M Retail 3600 + 0 = 3600"
+    ],
+    "step2_sexSplit": "Three women (w01, w02, w03) and three men (w04, w05, w06). n = 6, all mapped, excludedN 0. One category, Retail.",
+    "step3_metricA": "Female totals 2400+2600+2800 = 7800 over three, mean 2600. Male totals 2800+3200+3600 = 9600 over three, mean 3200. (3200-2600)/3200 = 600/3200 = 0.1875 -> 18.75.",
+    "step4_metricB": "Female BONUS mean 0. Male BONUS mean 0. The difference is 0 and the denominator is 0, so the percentage expression is degenerate: 0 divided by 0. ENGINE_CODES.COMPONENTS_ALL_ZERO settles it — the metric reports 0, not null, because there IS no difference between the two figures and a null would assert that the difference is unknown. Reported 0 with W_COMPONENTS_ALL_ZERO.",
+    "step5_metricC": "Both headcounts are ODD at three, so lower_of_two is not reached. Female ascending 2400, 2600, 2800 -> middle 2600. Male ascending 2800, 3200, 3600 -> middle 3200. (3200-2600)/3200 = 0.1875 -> 18.75. Identical to metric (a) because each sex's three values are symmetric about their own mean.",
+    "step6_metricD": "Female BONUS median 0, male BONUS median 0. Degenerate in the same way as metric (b): reported 0 with W_COMPONENTS_ALL_ZERO.",
+    "step7_metricE": "NOT ONE of the six workers receives a complementary or variable component, so 0 of 3 women and 0 of 3 men receive one. The scalar is 0 under BOTH candidate readings — the overall proportion is 0 and the male-minus-female difference is 0 - 0 = 0 — which is why this is the one vector where the metric (e) disagreement was invisible. This zero is of a different kind from the zeros in (b) and (d): those are degenerate differences rescued by a named code, whereas this one is an ordinary, fully defined proportion that simply happens to be zero. Neither is null, and the report must not swap them.",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["2400 w01 F", "2600 w02 F", "2800 w03 F", "2800 w04 M", "3200 w05 M", "3600 w06 M"],
+      "sizes": "n = 6 gives 6 = 4 x 1 + 2. Under to_lower: sizes 2, 2, 1, 1. Boundaries fall after positions 2, 4 and 5.",
+      "tie": "w03 F and w04 M share the pay level 2800 at positions 3 and 4. With sizes 2, 2, 1, 1 BOTH sit inside Q2, so the tied block does not straddle a boundary and quartileTieRule never has to fire. Worth stating explicitly, because a tie is only a problem when a quarter boundary cuts through it.",
+      "composition": {
+        "Q1": "w01 F, w02 F -> 100 percent female",
+        "Q2": "w03 F, w04 M -> 50 percent female",
+        "Q3": "w05 M -> 0 percent female",
+        "Q4": "w06 M -> 0 percent female"
+      },
+      "scalarChosen": "0, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 100; see resolutions.)"
+    },
+    "step9_metricG": "One category, Retail, holding all six workers, so the category gap equals metric (a) at 18.75.",
+    "step10_suppression": "minGroupSize null: no suppression, no unreliability.",
+    "step11_art10": "Retail at 18.75 clears the five-point trigger and is flagged. Note that the component gap of 0 does not offset it — Art. 10(1) tests the category's pay gap, not an average of the report's metrics."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "componentMap",
+      "issue": "Whether W_COMPONENTS_ALL_ZERO also attaches to metric (e), whose value is likewise zero.",
+      "readings": [
+        "Yes — all three zero-valued metrics arise from the same fact about the data.",
+        "No — the code names a degenerate percentage expression, and metric (e) has no degeneracy: 0 of 6 is an ordinary proportion."
+      ],
+      "chosen": "No",
+      "why": "The code's own documentation describes a difference of zero over a denominator of zero. Metric (e) divides 0 by 6, which is perfectly well defined. Attaching the warning there would suggest metric (e)'s zero is a rescued value rather than a true one, which is the precise confusion this vector exists to prevent. Recorded because nothing in the convention document scopes the code to particular metrics."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Whether EngineWarning entries are report-level or per-metric. The type puts warnings on EngineReport, but two metrics here are degenerate for the same reason.",
+      "readings": ["One report-level entry naming both metrics.", "One entry per affected metric."],
+      "chosen": "One report-level entry naming both metrics",
+      "why": "EngineReport.warnings is a flat array on the report with no metric key in EngineWarning, so a per-metric entry could not say WHICH metric it belongs to except in its prose. The detail string names (b) and (d) explicitly. If per-metric attribution matters to a consumer, EngineWarning needs a metric field — a contract question, not a vector question."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
+      "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
+      "chosen": "The overall proportion receiving a component",
+      "why": "This is the vector that decides the fork. Under the difference reading metric (e) would be 0 here AND 0 in all nine other vectors, so this vector's stated purpose — showing that the proportion receiving components is a legitimate zero rather than a missing value — would be indistinguishable from every other case. Under the proportion reading it is 0 here and 100 elsewhere, and the contrast is real.",
+      "supersededBy": "resolutions[0] — the difference reading now governs. This argument was NOT simply overruled: its factual claim is correct, metric (e) does now read 0 in all ten vectors, and that is recorded in CONVENTIONS.md as a coverage gap with an eleventh vector recommended. What it got wrong is that this vector's case text contrasts zero with NULL, not zero with a non-zero, so the stated purpose survives the difference reading."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue.",
+      "readings": ["A named quartile's female share.", "null."],
+      "chosen": "The female share of the lowest quartile pay band",
+      "why": "Consistent with v01 to v08.",
+      "supersededBy": "resolutions[1] — the HIGHEST band now governs."
+    }
+  ]
+}
