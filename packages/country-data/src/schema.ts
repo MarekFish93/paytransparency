@@ -276,4 +276,69 @@ export const DirectiveQuotation = z.object({
 export type DirectiveQuotation = z.infer<typeof DirectiveQuotation>;
 
 export const DirectiveFact = Fact(DirectiveQuotation);
-export const DirectiveFile = z.record(z.string(), DirectiveFact);
+
+/**
+ * A citation key: `32023L0970#007.004`, or `32023L0970#003.001(h)` for a lettered
+ * sub-point. Language-invariant in both forms, because the ids are the publisher's own
+ * and are byte-identical across every language version of the Directive.
+ */
+export const CitationKey = z.string().regex(/^3\d{4}[A-Z]\d{4}#\d{3}\.\d{3}(\([a-z]+\))?$/);
+
+/** One lettered sub-point, e.g. Art. 3(1)(h) 'category of workers'. */
+export const DirectiveSubPoint = z.object({
+  citation_key: CitationKey,
+  /** RAW. Never normalised, re-flowed or re-typed. */
+  raw_text: z.string().min(1),
+});
+export type DirectiveSubPoint = z.infer<typeof DirectiveSubPoint>;
+
+/** One numbered paragraph, keyed in its parent by the publisher's own id (`007.004`). */
+export const DirectiveParagraph = z.object({
+  citation_key: CitationKey,
+  /** RAW. */
+  raw_text: z.string().min(1),
+  /** Keyed by the publisher's own letter. Empty for a paragraph with no sub-points. */
+  sub_points: z.record(z.string(), DirectiveSubPoint).default({}),
+});
+export type DirectiveParagraph = z.infer<typeof DirectiveParagraph>;
+
+/**
+ * A whole cited article in one authentic language version — D-04's shape.
+ *
+ * The article is stored IN FULL with every operative unit tagged by id, because
+ * quotations without retrievable context are what produced the four citation errors
+ * this project inherited. The letter and the UI quote the tagged paragraph; the full
+ * article is here so the quotation can be checked in its own context.
+ *
+ * `language` is the ISO-639-3 code the expression was negotiated with (`eng`, `pol`),
+ * which is what the Cellar API speaks. `Source.language` alongside it is BCP-47, which
+ * is what a browser speaks. Both are recorded rather than derived from one another.
+ */
+export const DirectiveArticle = z.object({
+  article: z.number().int().positive(),
+  language: z.string().regex(/^[a-z]{3}$/, 'expected an ISO-639-3 code, e.g. eng'),
+  /** The text of `art_N.tit_1` in this language. */
+  title: z.string().min(3),
+  /** The whole article, RAW. */
+  raw_text: z.string().min(20),
+  /** At least one — an article stored with no paragraphs is an empty citation. */
+  paragraphs: z.record(z.string(), DirectiveParagraph).refine((p) => Object.keys(p).length > 0, {
+    message: 'an article must carry at least one tagged paragraph',
+  }),
+});
+export type DirectiveArticle = z.infer<typeof DirectiveArticle>;
+
+export const DirectiveArticleFact = Fact(DirectiveArticle);
+
+/**
+ * `data/_directive.json`.
+ *
+ * The union is deliberate: plan 01-01 seeded a single PARAGRAPH-shaped fact and plan
+ * 01-03 filled the corpus with ARTICLE-shaped facts. Accepting both keeps every
+ * consumer written against the seeded shape parsing, rather than making a schema
+ * widening into a coordinated breaking change across four plans running in one wave.
+ */
+export const DirectiveFile = z.record(
+  z.string(),
+  z.union([DirectiveArticleFact, DirectiveFact]),
+);

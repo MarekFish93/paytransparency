@@ -34,6 +34,19 @@ const DIRECTIVE = JSON.parse(readFileSync(resolve(pkgRoot, 'data', '_directive.j
 
 const CITATION_KEY = '32023L0970#007.004';
 
+/**
+ * The English Article 7 corpus entry.
+ *
+ * Plan 01-01 seeded `_directive.json` with ONE paragraph-shaped fact keyed
+ * `32023L0970#007.004`. Plan 01-03 filled the corpus with D-04's article-shaped facts —
+ * six articles times eleven authentic language versions — and Art. 7(4) now lives as a
+ * tagged paragraph inside the English Article 7 entry rather than as a top-level record.
+ * Its citation key, its raw bytes, its anchor and its scope are unchanged; only where it
+ * sits in the file moved. The assertions below follow it there rather than pinning a
+ * file layout the corpus was always going to replace.
+ */
+const ARTICLE_KEY = '32023L0970#007@eng';
+
 /** The authentic Art. 7(4) deadline wording, as published. */
 const ANCHOR = 'within a reasonable period of time but in any event within two months';
 
@@ -48,9 +61,19 @@ const respond = (overrides: Partial<VerifierResponse> = {}): VerifierResponse =>
 
 const storedFact = () => {
   const parsed = DirectiveFile.parse(DIRECTIVE);
-  const fact = parsed[CITATION_KEY];
-  if (fact === undefined) throw new Error(`${CITATION_KEY} missing from _directive.json`);
-  return fact;
+  const fact = parsed[ARTICLE_KEY];
+  if (fact === undefined) throw new Error(`${ARTICLE_KEY} missing from _directive.json`);
+  if (fact.value === null || !('paragraphs' in fact.value)) {
+    throw new Error(`${ARTICLE_KEY} is not an article-shaped fact`);
+  }
+  return { ...fact, value: fact.value };
+};
+
+/** The Art. 7(4) paragraph, as stored inside the English Article 7 entry. */
+const storedParagraph = () => {
+  const paragraph = storedFact().value.paragraphs['007.004'];
+  if (paragraph === undefined) throw new Error(`007.004 missing from ${ARTICLE_KEY}`);
+  return paragraph;
 };
 
 const storedSource = (): Source => {
@@ -123,9 +146,12 @@ describe('normalisation is for matching only', () => {
 });
 
 describe('the stored fact', () => {
-  it('parses against the Fact schema and holds exactly one entry', () => {
+  it('parses against the Fact schema and resolves the seeded Art. 7(4) citation key', () => {
     const parsed = DirectiveFile.parse(DIRECTIVE);
-    expect(Object.keys(parsed)).toEqual([CITATION_KEY]);
+    expect(Object.keys(parsed)).toContain(ARTICLE_KEY);
+    // The key plan 01-01 froze still resolves — it is now the paragraph's own key
+    // inside the article entry, which is what makes it language-invariant.
+    expect(storedParagraph().citation_key).toBe(CITATION_KEY);
   });
 
   it('carries full provenance: verified, stable, anchored, with a recorded ETag', () => {
@@ -140,9 +166,9 @@ describe('the stored fact', () => {
   });
 
   it('stores the quotation raw, with the authentic U+00A0 separator', () => {
-    const value = storedFact().value;
-    expect(value).not.toBeNull();
-    expect(value?.text).toContain('\u00A0');
+    expect(storedFact().value).not.toBeNull();
+    expect(storedParagraph().raw_text).toContain('\u00A0');
+    expect(storedParagraph().raw_text).toMatch(/^4\.\u00A0+Employers/);
   });
 });
 
@@ -310,8 +336,22 @@ describe('the gate bites: a recital-scoped anchor on an allowlisted, live source
     lastModified: 'Wed, 13 Dec 2023 05:35:25 GMT',
   });
 
+  /**
+   * The stored Article 7 source, cited for the DEADLINE wording.
+   *
+   * The corpus anchor plan 01-03 derives for Article 7 is cut from Art. 7(1), and the
+   * decoy leaves Art. 7(1) untouched — it removes the operative wording from Art. 7(4)
+   * only. An article-level anchor proves the ARTICLE is present; it cannot prove every
+   * paragraph inside it is intact. So this block cites the same live, allowlisted,
+   * above-floor source for the paragraph the decoy actually attacks, which is the shape
+   * research found most often and the one the scoping rule exists to reject. Paragraph-
+   * level integrity across the corpus is asserted separately, by byte equality, in
+   * `directive-text.test.ts`.
+   */
+  const deadlineCitation = (): Source => ({ ...storedSource(), anchor: ANCHOR });
+
   it('disposes data_defect when the anchor lives only in a recital', () => {
-    const result = verifySource(storedSource(), decoyResponse());
+    const result = verifySource(deadlineCitation(), decoyResponse());
     // The literal disposition, not merely "something threw": a test that accepts any
     // throw would also pass if the verifier crashed for an unrelated reason.
     expect(result.disposition).toBe('data_defect');
@@ -327,11 +367,11 @@ describe('the gate bites: a recital-scoped anchor on an allowlisted, live source
     // The phrase IS present in the document — just not in the cited provision.
     expect(DECOY).toContain('within a reasonable period of time');
 
-    expect(verifySource(storedSource(), response).disposition).toBe('data_defect');
+    expect(verifySource(deadlineCitation(), response).disposition).toBe('data_defect');
   });
 
   it('reports what was actually at the art_7 scope start, verbatim', () => {
-    const result = verifySource(storedSource(), decoyResponse());
+    const result = verifySource(deadlineCitation(), decoyResponse());
     // A reviewer must be able to read the decoy's own markup out of the failure
     // message. A normalised, tag-stripped rendering is not what is in the document,
     // and a citation dispute is settled on the document's bytes.
