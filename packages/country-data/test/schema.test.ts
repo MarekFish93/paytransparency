@@ -464,8 +464,10 @@ describe('the country record: equality body', () => {
 
   test('rejects a local name that is not stored in NFC', () => {
     const record = baseRecord();
-    // "Rzecznik" with a combining acute on the c — NFD, not NFC.
-    const decomposed = 'Rzecznik Praw Obywatelskich'.normalize('NFD') + '́';
+    // U+0105 (ą) decomposes to a + U+0328; U+00F3 (ó) to o + U+0301. The NFD form of
+    // this name is therefore a different byte string from the NFC form a source serves.
+    const decomposed = 'Pełnomocnik Rządu do Spraw Równego Traktowania'.normalize('NFD');
+    expect(decomposed).not.toBe(decomposed.normalize('NFC'));
     (record['enforcement'] as Json)['equality_body'] = bodies([
       {
         name_local: decomposed,
@@ -488,8 +490,19 @@ describe('the country record: no per-worker annual request frequency', () => {
     expect(src).toMatch(/employer_reminder_duty/);
   });
 
+  /**
+   * Plan 01-03 fills `data/_directive.json` in this plan's own wave. A parse-time
+   * assertion that a citation key RESOLVES would fail for every key 01-03 had not yet
+   * written, and weakening it to make it pass would hide the check. So the schema asserts
+   * the citation-key SHAPE and never reads the corpus — which means no file read and no
+   * JSON import in this module at all.
+   */
   test('the schema never reads the Directive corpus at parse time', () => {
     const src = readFileSync(new URL('../src/country.ts', import.meta.url), 'utf8');
-    expect(src).not.toMatch(/_directive\.json/);
+    expect(src).not.toMatch(/readFile/);
+    expect(src).not.toMatch(/node:fs/);
+    expect(src).not.toMatch(/require\s*\(/);
+    expect(src).not.toMatch(/from\s+['"][^'"]+\.json['"]/);
+    expect(src).not.toMatch(/import\s*\(/);
   });
 });

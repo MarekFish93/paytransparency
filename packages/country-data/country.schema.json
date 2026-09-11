@@ -1,0 +1,4666 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 3
+    },
+    "schema_version": {
+      "type": "string",
+      "minLength": 3
+    },
+    "country": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CY",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IE",
+            "IT",
+            "LV",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE"
+          ]
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 3
+        },
+        "official_languages": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "letter_languages": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "name_en",
+        "official_languages",
+        "letter_languages",
+        "currency"
+      ],
+      "additionalProperties": false
+    },
+    "transposition": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "in_force",
+                    "partial",
+                    "draft",
+                    "pending",
+                    "no_measure_notified",
+                    "unknown"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "in_force_from": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "expected_from": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "partial_in_force": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "minLength": 2
+                      },
+                      "from": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "summary_key": {
+                        "type": "string",
+                        "minLength": 3
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "from",
+                      "summary_key"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "national_act": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "short_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "official_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "journal_ref": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "adopted_at": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "short_title",
+                    "official_title",
+                    "journal_ref",
+                    "adopted_at",
+                    "url"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "draft_asserting_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "status",
+        "in_force_from",
+        "expected_from",
+        "partial_in_force",
+        "national_act",
+        "draft_asserting_sources"
+      ],
+      "additionalProperties": false
+    },
+    "article_7": {
+      "type": "object",
+      "properties": {
+        "legal_basis": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "national"
+                        },
+                        "short_title": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "official_title": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "journal_ref": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 3
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "article": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "adopted_at": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "in_force_from": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "short_title",
+                        "official_title",
+                        "journal_ref",
+                        "article",
+                        "adopted_at",
+                        "in_force_from",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "directive_fallback"
+                        },
+                        "directive_citation_key": {
+                          "type": "string",
+                          "pattern": "^3\\d{4}[A-Z]\\d{4}#(\\d{3})\\.(\\d{3})$"
+                        },
+                        "label_key": {
+                          "type": "string",
+                          "minLength": 3
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "directive_citation_key",
+                        "label_key"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "response_deadline": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "national"
+                        },
+                        "amount": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "unit": {
+                          "type": "string",
+                          "enum": [
+                            "day",
+                            "working_day",
+                            "week",
+                            "month"
+                          ]
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "request",
+                            "receipt"
+                          ]
+                        },
+                        "national_citation": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 3
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "amount",
+                        "unit",
+                        "from",
+                        "national_citation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "directive_fallback"
+                        },
+                        "directive_citation_key": {
+                          "type": "string",
+                          "pattern": "^3\\d{4}[A-Z]\\d{4}#(\\d{3})\\.(\\d{3})$"
+                        },
+                        "label_key": {
+                          "type": "string",
+                          "minLength": 3
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "directive_citation_key",
+                        "label_key"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "channel": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "direct": {
+                      "type": "boolean"
+                    },
+                    "works_council": {
+                      "type": "boolean"
+                    },
+                    "trade_union": {
+                      "type": "boolean"
+                    },
+                    "mandatory": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "direct",
+                    "works_council",
+                    "trade_union",
+                    "mandatory"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "employer_reminder_duty": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "national"
+                        },
+                        "annual": {
+                          "type": "boolean"
+                        },
+                        "national_citation": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 3
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "annual",
+                        "national_citation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "instrument": {
+                          "type": "string",
+                          "const": "directive_fallback"
+                        },
+                        "directive_citation_key": {
+                          "type": "string",
+                          "pattern": "^3\\d{4}[A-Z]\\d{4}#(\\d{3})\\.(\\d{3})$"
+                        },
+                        "label_key": {
+                          "type": "string",
+                          "minLength": 3
+                        }
+                      },
+                      "required": [
+                        "instrument",
+                        "directive_citation_key",
+                        "label_key"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "language_requirement": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "languages": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 2
+                      }
+                    },
+                    "mandatory": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "languages",
+                    "mandatory"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "legal_basis",
+        "response_deadline",
+        "channel",
+        "employer_reminder_duty",
+        "language_requirement"
+      ],
+      "additionalProperties": false
+    },
+    "article_12_3": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "option_taken": {
+                      "type": "boolean"
+                    },
+                    "condition": {
+                      "type": "string",
+                      "const": "disclosure_identifies_individual_worker"
+                    },
+                    "bodies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "workers_representatives",
+                          "labour_inspectorate",
+                          "equality_body"
+                        ]
+                      }
+                    },
+                    "national_citation": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "option_taken",
+                    "condition",
+                    "bodies",
+                    "national_citation"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "instrument": {
+                      "type": "string",
+                      "const": "directive_fallback"
+                    },
+                    "directive_citation_key": {
+                      "type": "string",
+                      "pattern": "^3\\d{4}[A-Z]\\d{4}#(\\d{3})\\.(\\d{3})$"
+                    },
+                    "label_key": {
+                      "type": "string",
+                      "minLength": 3
+                    }
+                  },
+                  "required": [
+                    "instrument",
+                    "directive_citation_key",
+                    "label_key"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "directive_default",
+            "directive_fallback",
+            "pending_verification",
+            "not_applicable"
+          ]
+        },
+        "sources": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3
+              },
+              "publisher": {
+                "type": "string",
+                "minLength": 2
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "official_journal",
+                  "legislature",
+                  "ministry",
+                  "equality_body",
+                  "eu_institution",
+                  "law_firm",
+                  "press"
+                ]
+              },
+              "verification": {
+                "type": "string",
+                "enum": [
+                  "cellar",
+                  "html-anchor",
+                  "jsonld",
+                  "metadata-only",
+                  "manual-attest"
+                ]
+              },
+              "anchor": {
+                "type": "string",
+                "minLength": 8
+              },
+              "language": {
+                "type": "string",
+                "minLength": 2
+              },
+              "published_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "accessed_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "etag": {
+                "type": "string"
+              },
+              "last_modified": {
+                "type": "string"
+              },
+              "scope": {
+                "default": null,
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 3
+                      },
+                      "expected_subtitle": {
+                        "default": null,
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "expected_subtitle"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "url",
+              "title",
+              "publisher",
+              "kind",
+              "verification",
+              "anchor",
+              "language",
+              "accessed_at",
+              "scope"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "verified_at": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_by": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "volatility": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "volatile",
+            "pending",
+            "statistical"
+          ]
+        },
+        "note_key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "status",
+        "sources",
+        "verified_at",
+        "verified_by",
+        "volatility"
+      ],
+      "additionalProperties": false
+    },
+    "article_7_2": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "instrument": {
+                      "type": "string",
+                      "const": "national"
+                    },
+                    "available": {
+                      "type": "boolean"
+                    },
+                    "through": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "workers_representatives",
+                          "equality_body"
+                        ]
+                      }
+                    },
+                    "national_citation": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "instrument",
+                    "available",
+                    "through",
+                    "national_citation"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "instrument": {
+                      "type": "string",
+                      "const": "directive_fallback"
+                    },
+                    "directive_citation_key": {
+                      "type": "string",
+                      "pattern": "^3\\d{4}[A-Z]\\d{4}#(\\d{3})\\.(\\d{3})$"
+                    },
+                    "label_key": {
+                      "type": "string",
+                      "minLength": 3
+                    }
+                  },
+                  "required": [
+                    "instrument",
+                    "directive_citation_key",
+                    "label_key"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "directive_default",
+            "directive_fallback",
+            "pending_verification",
+            "not_applicable"
+          ]
+        },
+        "sources": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3
+              },
+              "publisher": {
+                "type": "string",
+                "minLength": 2
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "official_journal",
+                  "legislature",
+                  "ministry",
+                  "equality_body",
+                  "eu_institution",
+                  "law_firm",
+                  "press"
+                ]
+              },
+              "verification": {
+                "type": "string",
+                "enum": [
+                  "cellar",
+                  "html-anchor",
+                  "jsonld",
+                  "metadata-only",
+                  "manual-attest"
+                ]
+              },
+              "anchor": {
+                "type": "string",
+                "minLength": 8
+              },
+              "language": {
+                "type": "string",
+                "minLength": 2
+              },
+              "published_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "accessed_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "etag": {
+                "type": "string"
+              },
+              "last_modified": {
+                "type": "string"
+              },
+              "scope": {
+                "default": null,
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 3
+                      },
+                      "expected_subtitle": {
+                        "default": null,
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "expected_subtitle"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "url",
+              "title",
+              "publisher",
+              "kind",
+              "verification",
+              "anchor",
+              "language",
+              "accessed_at",
+              "scope"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "verified_at": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_by": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "volatility": {
+          "type": "string",
+          "enum": [
+            "stable",
+            "volatile",
+            "pending",
+            "statistical"
+          ]
+        },
+        "note_key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "status",
+        "sources",
+        "verified_at",
+        "verified_by",
+        "volatility"
+      ],
+      "additionalProperties": false
+    },
+    "enforcement": {
+      "type": "object",
+      "properties": {
+        "anti_retaliation": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "citation": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "summary_key": {
+                      "type": "string",
+                      "minLength": 3
+                    }
+                  },
+                  "required": [
+                    "citation",
+                    "summary_key"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "burden_of_proof_reversal": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "equality_body": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name_local": {
+                        "type": "string",
+                        "minLength": 2
+                      },
+                      "name_en": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 2
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "complaint_url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "art20_designation_source": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name_local",
+                      "name_en",
+                      "url",
+                      "complaint_url",
+                      "art20_designation_source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "labour_inspectorate": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "name_local": {
+                      "type": "string",
+                      "minLength": 2
+                    },
+                    "name_en": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 2
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name_local",
+                    "name_en",
+                    "url"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "penalties": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "max_amount": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "currency": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 3
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "basis": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "summary_key": {
+                      "type": "string",
+                      "minLength": 3
+                    }
+                  },
+                  "required": [
+                    "max_amount",
+                    "currency",
+                    "basis",
+                    "summary_key"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "anti_retaliation",
+        "burden_of_proof_reversal",
+        "equality_body",
+        "labour_inspectorate",
+        "penalties"
+      ],
+      "additionalProperties": false
+    },
+    "reporting": {
+      "type": "object",
+      "properties": {
+        "thresholds": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "min_employees": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "max_employees": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "frequency": {
+                        "type": "string",
+                        "enum": [
+                          "annual",
+                          "triennial"
+                        ]
+                      },
+                      "first_report": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "reference_year_offset": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "min_employees",
+                      "max_employees",
+                      "frequency",
+                      "first_report",
+                      "reference_year_offset"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "filing_deadline": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "month": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 12
+                    },
+                    "day": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 31
+                    }
+                  },
+                  "required": [
+                    "month",
+                    "day"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "filing_authority": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "name_local": {
+                      "type": "string",
+                      "minLength": 2
+                    },
+                    "name_en": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 2
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name_local",
+                    "name_en",
+                    "url"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "template": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "format": {
+                      "type": "string",
+                      "minLength": 2
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "format"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "directive_default",
+                "directive_fallback",
+                "pending_verification",
+                "not_applicable"
+              ]
+            },
+            "sources": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 3
+                  },
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "official_journal",
+                      "legislature",
+                      "ministry",
+                      "equality_body",
+                      "eu_institution",
+                      "law_firm",
+                      "press"
+                    ]
+                  },
+                  "verification": {
+                    "type": "string",
+                    "enum": [
+                      "cellar",
+                      "html-anchor",
+                      "jsonld",
+                      "metadata-only",
+                      "manual-attest"
+                    ]
+                  },
+                  "anchor": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "language": {
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "published_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "etag": {
+                    "type": "string"
+                  },
+                  "last_modified": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "default": null,
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "expected_subtitle": {
+                            "default": null,
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 3
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "expected_subtitle"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "publisher",
+                  "kind",
+                  "verification",
+                  "anchor",
+                  "language",
+                  "accessed_at",
+                  "scope"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verified_at": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "verified_by": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "volatility": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "volatile",
+                "pending",
+                "statistical"
+              ]
+            },
+            "note_key": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "status",
+            "sources",
+            "verified_at",
+            "verified_by",
+            "volatility"
+          ],
+          "additionalProperties": false
+        },
+        "adapter_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "thresholds",
+        "filing_deadline",
+        "filing_authority",
+        "template",
+        "adapter_id"
+      ],
+      "additionalProperties": false
+    },
+    "discovery_hints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "celex": {
+            "type": "string",
+            "minLength": 3
+          },
+          "title": {
+            "type": "string",
+            "minLength": 3
+          },
+          "official_journal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "oj_number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "oj_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "national_link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "transposing_candidate",
+              "consolidated_republication",
+              "pre_existing_act",
+              "unclassified"
+            ]
+          },
+          "source_query_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "required": [
+          "celex",
+          "title",
+          "official_journal",
+          "oj_number",
+          "oj_date",
+          "notified_at",
+          "national_link",
+          "kind",
+          "source_query_at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "review_interval_days": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "last_full_review": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "maintainers",
+        "review_interval_days",
+        "last_full_review"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "$schema",
+    "schema_version",
+    "country",
+    "transposition",
+    "article_7",
+    "article_12_3",
+    "article_7_2",
+    "enforcement",
+    "reporting",
+    "discovery_hints",
+    "meta"
+  ],
+  "additionalProperties": false,
+  "$id": "https://github.com/MarekFish93/jafn/packages/country-data/country.schema.json",
+  "title": "JAFN country record",
+  "description": "One EU member state's legal-data record. Every legal fact is a Fact<T> envelope: a value cannot exist without the source and date that justify it. Unknown is value:null with status:\"pending_verification\" — never a guess. Cross-field invariants (launch-country verified_by, Art. 12(3) as a condition, the Directive fallback citation rule) are enforced by CI, not by this file."
+}
