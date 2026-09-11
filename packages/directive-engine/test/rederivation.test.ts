@@ -199,6 +199,25 @@ describe('the end state — all ten vectors carry two independently produced pas
     }
   });
 
+  /**
+   * `compareVectors` only enumerates positions that at least one pass answered, so a
+   * position BOTH passes omitted would agree vacuously. That completeness requirement
+   * belongs here, on the real vectors, rather than inside the differ.
+   */
+  it('answers all seven Art. 9(1) metric positions in both passes of every vector', () => {
+    const offenders = vectors.flatMap((v) => {
+      const answers = readAnswers(v);
+      return ANSWER_FILES.map((file, i) => {
+        const pass = i === 0 ? answers.expected : answers.rederived;
+        const metrics = (pass as { metrics?: Record<string, unknown> })?.metrics ?? {};
+        const missing = METRIC_KEYS.filter((k) => metrics[k] === undefined);
+        return missing.length ? { vector: v, file, missing } : null;
+      }).filter((x) => x !== null);
+    });
+
+    expect(offenders).toEqual([]);
+  });
+
   it('agrees on every metric position of every vector — this is what makes the vectors an executable specification', () => {
     const disagreeing = vectors
       .map((v) => {
