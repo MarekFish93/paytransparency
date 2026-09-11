@@ -285,3 +285,65 @@ describe('the envelope invariants', () => {
     expect(roundTripped.sources.map((s) => s.url)).toEqual(urls);
   });
 });
+
+/**
+ * The proof of teeth.
+ *
+ * Everything above shows the spine works on a good document. These four cases show it
+ * REJECTS the failure research found most often: a correct, allowlisted, live,
+ * above-floor source cited for the WRONG PROVISION.
+ *
+ * The decoy carries the deadline phrase exactly once, inside a recital, before the first
+ * eli-subdivision. Its art_7 subtree is structurally valid and still has id="007.004" —
+ * the provision exists, it simply no longer carries the operative wording. Nothing about
+ * the status, the size or the host is wrong. Only the scoping can catch it.
+ *
+ * The remaining four bad-PR shapes are drilled against real pull requests in plan 01-05.
+ */
+describe('the gate bites: a recital-scoped anchor on an allowlisted, live source', () => {
+  const DECOY = readFileSync(resolve(here, 'fixtures', 'cellar-art7-recital-decoy.xhtml'), 'utf8');
+
+  const decoyResponse = (): VerifierResponse => ({
+    status: 200,
+    body: DECOY,
+    etag: '"Con-20231213063525000"',
+    lastModified: 'Wed, 13 Dec 2023 05:35:25 GMT',
+  });
+
+  it('disposes data_defect when the anchor lives only in a recital', () => {
+    const result = verifySource(storedSource(), decoyResponse());
+    // The literal disposition, not merely "something threw": a test that accepts any
+    // throw would also pass if the verifier crashed for an unrelated reason.
+    expect(result.disposition).toBe('data_defect');
+    expect(result.disposition).not.toBe('verified');
+  });
+
+  it('rejects it despite a 200, a body far above the floor, and an allowlisted host', () => {
+    const response = decoyResponse();
+    // None of the three signals a naive verifier would trust is wrong here.
+    expect(response.status).toBe(200);
+    expect(DECOY.length).toBeGreaterThan(100000);
+    expect(storedSource().url).toContain('publications.europa.eu');
+    // The phrase IS present in the document — just not in the cited provision.
+    expect(DECOY).toContain('within a reasonable period of time');
+
+    expect(verifySource(storedSource(), response).disposition).toBe('data_defect');
+  });
+
+  it('reports what was actually at the art_7 scope start, verbatim', () => {
+    const result = verifySource(storedSource(), decoyResponse());
+    // A reviewer must be able to read the decoy's own markup out of the failure
+    // message. A normalised, tag-stripped rendering is not what is in the document,
+    // and a citation dispute is settled on the document's bytes.
+    const scopeStart = DECOY.slice(DECOY.lastIndexOf('<', DECOY.indexOf('id="art_7"')));
+    expect(result.message).toContain(scopeStart.slice(0, 60));
+  });
+
+  it('disposes data_defect for a correct art_7 subtree truncated below the byte floor', () => {
+    // Truncating the GOOD fixture: the subtree is right, the bytes are not.
+    const truncated = FIXTURE.slice(0, 50000);
+    const result = verifySource(storedSource(), { status: 200, body: truncated });
+    expect(result.disposition).toBe('data_defect');
+    expect(result.message).toMatch(/floor/);
+  });
+});
