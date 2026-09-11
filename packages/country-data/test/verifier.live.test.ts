@@ -29,15 +29,28 @@ const pkgRoot = resolve(here, '..');
 
 const CELEX = '32023L0970';
 const CELEX_URI = `http://publications.europa.eu/resource/celex/${CELEX}`;
-const CITATION_KEY = `${CELEX}#007.004`;
+// Plan 01-03 re-keyed the corpus from a single paragraph-level fact to the six-article,
+// eleven-language corpus: entries are `<CELEX>#<article>@<lang3>`, and the publisher's
+// paragraph ids live inside `value.paragraphs`. The provenance this suite checks is
+// ARTICLE-level — the whole article is retrieved and verified in one fetch — so the source
+// is read from the article entry, while the paragraph id is kept to name what is cited.
+const ARTICLE_KEY = `${CELEX}#007@eng`;
+const PARAGRAPH_ID = '007.004';
+const CITATION_KEY = `${CELEX}#${PARAGRAPH_ID}`;
 
 /** The stored expression, read from the committed data — not hard-coded here. */
 function storedSource() {
   const parsed = DirectiveFile.parse(
     JSON.parse(readFileSync(resolve(pkgRoot, 'data', '_directive.json'), 'utf8')),
   );
-  const fact = parsed[CITATION_KEY];
-  if (fact === undefined) throw new Error(`${CITATION_KEY} missing from _directive.json`);
+  const fact = parsed[ARTICLE_KEY];
+  if (fact === undefined) throw new Error(`${ARTICLE_KEY} missing from _directive.json`);
+  // Assert the cited paragraph is actually present, so a corpus that silently lost
+  // Art. 7(4) fails here rather than passing on the article's provenance alone.
+  const paragraphs = (fact.value as { paragraphs?: Record<string, unknown> }).paragraphs;
+  if (paragraphs?.[PARAGRAPH_ID] === undefined) {
+    throw new Error(`${CITATION_KEY} missing from ${ARTICLE_KEY} in _directive.json`);
+  }
   const source = fact.sources[0];
   if (source === undefined) throw new Error('the stored fact cites no source');
   return source;

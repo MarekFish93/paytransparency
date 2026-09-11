@@ -18,7 +18,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['**/test/**/*.live.test.ts'],
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.tsbuild/**'],
+    // `.claude/worktrees` holds LIVE executor worktrees — full checkouts of other
+    // branches — so without this a local run re-reports a sibling agent's in-progress
+    // copy as a live-source failure. CI never has them; only local runs are misled.
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.tsbuild/**', '**/.claude/worktrees/**'],
     watch: false,
     // The Publications Office is not fast, and a per-file timeout that fires on a slow
     // but successful response is a false alarm — the one failure mode this whole split
