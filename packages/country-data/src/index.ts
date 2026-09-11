@@ -123,7 +123,13 @@ export {
 } from './country.ts';
 export type { CountryCode, LaunchCountry, LegallyOperativeField, FactPath } from './country.ts';
 
-export { resolve, DIRECTIVE_FALLBACK_KEYS, MissingDirectiveCitation } from './resolve.ts';
+export {
+  resolve,
+  DIRECTIVE_FALLBACK_KEYS,
+  DEFAULT_DIRECTIVE_LANGUAGE,
+  directiveArticleKey,
+  MissingDirectiveCitation,
+} from './resolve.ts';
 export type {
   Provenance,
   ResolvedFact,
