@@ -1,0 +1,75 @@
+{
+  "vector": "v10-unmapped-sex",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "conventionNote": "The sexMapping declared for this vector covers only F and M. Row w06 carries the value X, which the map does not cover. This is not a defect in the vector — it is the case the vector exists to pin down.",
+  "metrics": {
+    "a": { "value": 20.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "b": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "c": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "d": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "g": {
+      "Sales": { "value": 20.0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Sales", "gapPct": 20.0, "threshold": 5 }
+  ],
+  "warnings": [
+    { "code": "W_SEX_UNMAPPED", "detail": "1 worker (w06) carries the sex value \"X\", which the declared sexMapping does not cover. The row is counted in excludedN on every sex-based metric and is NOT dropped. It still occupies its place in the pay ranking for the quartile bands, because a quartile pay band is a division of the whole workforce by pay level." }
+  ],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 3000, "w02_F": 3400,
+      "w03_M": 3600, "w04_M": 4000, "w05_M": 4400,
+      "w06_unmapped": 3800
+    },
+    "population": {
+      "rowsIn": 6,
+      "mapped": "5 — two F, three M",
+      "excluded": "1 — w06, sex value X",
+      "note": "populationN is 5 on every sex-based metric and excludedN is 1. Reporting populationN 6 would imply the unmapped worker contributed to a figure they are absent from; reporting excludedN 0 would hide them entirely. One worker in six is 16.7% of this workforce, and a gap computed as though they did not exist would be confidently wrong."
+    },
+    "meanTotalPay": {
+      "F": "3000 + 3400 = 6400 over 2 = 3200",
+      "M": "3600 + 4000 + 4400 = 12000 over 3 = 4000",
+      "a": "(4000 - 3200) / 4000 = 800 / 4000 = 0.20 = 20.0%"
+    },
+    "meanComponents": {
+      "F": "300 + 300 = 600 over 2 = 300",
+      "M": "300 + 300 + 300 = 900 over 3 = 300",
+      "b": "(300 - 300) / 300 = 0 / 300 = 0.0%. A legitimate zero with a real, non-zero denominator — distinct from v09's zero-over-zero, and it carries no warning because nothing about it is degenerate."
+    },
+    "medianTotalPay": {
+      "F": "sorted 3000, 3400 -> middle pair is the whole set -> lower_of_two -> 3000",
+      "M": "sorted 3600, 4000, 4400 -> single middle value -> 4000",
+      "c": "(4000 - 3000) / 4000 = 1000 / 4000 = 0.25 = 25.0%"
+    },
+    "medianComponents": {
+      "F": "sorted 300, 300 -> lower_of_two -> 300",
+      "M": "sorted 300, 300, 300 -> 300",
+      "d": "(300 - 300) / 300 = 0.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "2 of 2 = 100%",
+      "M": "3 of 3 = 100%",
+      "e": "100 - 100 = 0.0 percentage points. The unmapped worker also receives components, but belongs to neither proportion."
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["3000 w01 F", "3400 w02 F", "3600 w03 M", "3800 w06 unmapped", "4000 w04 M", "4400 w05 M"],
+      "sizes": "n = 6 INCLUDING the unmapped worker, 6 / 4 = 1 remainder 2. Under to_lower: Q1 = 2, Q2 = 2, Q3 = 1, Q4 = 1.",
+      "tiedGroup": "none",
+      "Q1": "w01 F, w02 F -> 2 mapped, F 100.0%",
+      "Q2": "w03 M, w06 unmapped -> 1 mapped, F 0.0%",
+      "Q3": "w04 M -> F 0.0%",
+      "Q4": "w05 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female",
+      "note": "The bands are built over all six workers because a band is a division of the workforce by pay; the female and male proportions inside each band count only the five mapped workers. Excluding w06 from the ranking entirely would shift every boundary and change a metric that is not about sex at all."
+    },
+    "categories": {
+      "Sales": "One category, so (g) equals (a): 20.0%, over 5 mapped workers with 1 excluded"
+    },
+    "art10": "Sales flags at 20.0%."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "vector": "v09-zero-variable-components",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Retail": { "value": 18.75, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Retail", "gapPct": 18.75, "threshold": 5 }
+  ],
+  "warnings": [
+    { "code": "W_COMPONENTS_ALL_ZERO", "detail": "No worker of either sex received any complementary or variable component, so metrics (b) and (d) report a difference of zero. The percentage expression is degenerate — zero over zero — but the substantive answer, that there is no difference between the sexes in components neither receives, is true." }
+  ],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 2400, "w02_F": 2600, "w03_F": 2800,
+      "w04_M": 2800, "w05_M": 3200, "w06_M": 3600
+    },
+    "meanTotalPay": {
+      "F": "2400 + 2600 + 2800 = 7800 over 3 = 2600",
+      "M": "2800 + 3200 + 3600 = 9600 over 3 = 3200",
+      "a": "(3200 - 2600) / 3200 = 600 / 3200 = 0.1875 = 18.75%"
+    },
+    "meanComponents": {
+      "F": "0 + 0 + 0 = 0 over 3 = 0",
+      "M": "0 + 0 + 0 = 0 over 3 = 0",
+      "b": "difference 0 - 0 = 0. Reported as 0.0%, NOT null. A null would say the comparison could not be made; the comparison was made and the answer is that there is no difference. A null is reserved for the case where the male figure is zero and the female figure is not, where a real difference genuinely cannot be expressed as a percentage of zero."
+    },
+    "medianTotalPay": {
+      "F": "sorted 2400, 2600, 2800 -> single middle value -> 2600",
+      "M": "sorted 2800, 3200, 3600 -> single middle value -> 3200",
+      "c": "(3200 - 2600) / 3200 = 600 / 3200 = 0.1875 = 18.75%",
+      "note": "(a) and (c) coincide here because both sexes have an odd headcount and a symmetric spread. They diverge as soon as one outlier appears — see v05."
+    },
+    "medianComponents": {
+      "F": "sorted 0, 0, 0 -> 0",
+      "M": "sorted 0, 0, 0 -> 0",
+      "d": "difference 0 - 0 = 0. Reported as 0.0% on the same reasoning as (b)."
+    },
+    "proportionsReceivingComponents": {
+      "F": "0 of 3 = 0%",
+      "M": "0 of 3 = 0%",
+      "e": "0 - 0 = 0.0 percentage points. This is the clearest legitimate zero in the set: nobody receives components, which is a fact about the employer, not a gap in the data."
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["2400 w01 F", "2600 w02 F", "2800 w03 F", "2800 w04 M", "3200 w05 M", "3600 w06 M"],
+      "sizes": "n = 6, 6 / 4 = 1 remainder 2. Under to_lower: Q1 = 2, Q2 = 2, Q3 = 1, Q4 = 1.",
+      "tiedGroup": "w03 F and w04 M are both on 2800 at ranks 3 and 4. Q2 spans ranks 3-4, so the tied pair sits ENTIRELY inside one quarter and the tie rule never has to split it — a tie only matters when it crosses a boundary.",
+      "Q1": "w01 F, w02 F -> F 100.0%",
+      "Q2": "w03 F, w04 M -> F 50.0%",
+      "Q3": "w05 M -> F 0.0%",
+      "Q4": "w06 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female"
+    },
+    "categories": {
+      "Retail": "One category, so (g) equals (a): 18.75%"
+    },
+    "art10": "Retail flags at 18.75%. The all-zero components do not affect the trigger, which is on the pay-level difference."
+  }
+}

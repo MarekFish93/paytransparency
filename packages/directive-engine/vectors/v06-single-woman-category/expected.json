@@ -1,0 +1,71 @@
+{
+  "vector": "v06-single-woman-category",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "conventionNote": "minGroupSize is 2 here, NOT the null default. A national adapter supplied it, so conventionSource reports adapter_default for that key. No EU-level numeric threshold exists; this vector exists to prove the suppression path works when a country does set one.",
+  "metrics": {
+    "a": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 42.2222, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Engineering": { "value": null, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": true, "unreliable": true },
+      "Support": { "value": 20.0, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Support", "gapPct": 20.0, "threshold": 5 }
+  ],
+  "warnings": [
+    { "code": "W_GROUP_SUPPRESSED", "detail": "Engineering contains 1 female worker, below the supplied minGroupSize of 2. The category gap is withheld because publishing it would disclose the pay of an identifiable worker." },
+    { "code": "W_GROUP_UNRELIABLE", "detail": "Engineering's female population is 1. Separately from the suppression, a single observation cannot support a reliable average — the two flags answer different questions and are both recorded." }
+  ],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 4200, "w05_F": 2200, "w06_F": 2600,
+      "w02_M": 5000, "w03_M": 4500, "w04_M": 4500, "w07_M": 2800, "w08_M": 3200
+    },
+    "meanTotalPay": {
+      "F": "4200 + 2200 + 2600 = 9000 over 3 = 3000",
+      "M": "5000 + 4500 + 4500 + 2800 + 3200 = 20000 over 5 = 4000",
+      "a": "(4000 - 3000) / 4000 = 1000 / 4000 = 0.25 = 25.0%"
+    },
+    "meanComponents": {
+      "F": "300 + 200 + 400 = 900 over 3 = 300",
+      "M": "500 + 500 + 400 + 300 + 300 = 2000 over 5 = 400",
+      "b": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "medianTotalPay": {
+      "F": "sorted 2200, 2600, 4200 -> single middle value -> 2600",
+      "M": "sorted 2800, 3200, 4500, 4500, 5000 -> single middle value -> 4500",
+      "c": "(4500 - 2600) / 4500 = 1900 / 4500 = 19/45 = 0.4222222... = 42.2222% to 4 dp"
+    },
+    "medianComponents": {
+      "F": "sorted 200, 300, 400 -> 300",
+      "M": "sorted 300, 300, 400, 500, 500 -> 400",
+      "d": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "3 of 3 = 100%",
+      "M": "5 of 5 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["2200 w05 F", "2600 w06 F", "2800 w07 M", "3200 w08 M", "4200 w01 F", "4500 w03 M", "4500 w04 M", "5000 w02 M"],
+      "sizes": "n = 8, 2 per quarter, remainder 0",
+      "tiedGroup": "w03 M and w04 M on 4500 occupy ranks 6 and 7 and span the Q3/Q4 boundary. Single-sex, so no fractional allocation is needed.",
+      "Q1": "w05 F, w06 F -> F 100.0%",
+      "Q2": "w07 M, w08 M -> F 0.0%",
+      "Q3": "w01 F, w03 M -> F 50.0%",
+      "Q4": "w04 M, w02 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female",
+      "suppressionNote": "Quartile bands are org-wide, so the single woman in Engineering is not suppressed out of (f) — she is one of eight workers there, not one of four."
+    },
+    "categories": {
+      "Engineering": "SUPPRESSED. For the record only, and deliberately not reported: F mean 4200 against M mean (5000 + 4500 + 4500) / 3 = 14000/3 = 4666.6667, which would be (14000/3 - 4200) / (14000/3) = 1400/14000 = exactly 10.0%. It is withheld because a single woman's pay would be recoverable from it.",
+      "Support": "F mean (2200 + 2600) / 2 = 2400; M mean (2800 + 3200) / 2 = 3000; (3000 - 2400) / 3000 = 600 / 3000 = 0.20 = 20.0%"
+    },
+    "art10": "Support flags at 20.0%. Engineering emits NO flag despite a computable 10.0% gap: a figure that may not be shown cannot be the basis of a finding, and the suppression is recorded instead."
+  }
+}

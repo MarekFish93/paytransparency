@@ -1,0 +1,18 @@
+{
+  "vector": "v04-n-mod-4-two",
+  "case": "Ten workers: two left over after four groups of two, and the two leftovers land on a single-sex tie spanning the Q1/Q2 boundary.",
+  "rowCount": 10,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Ops", "pay": { "BASE": 1800, "BONUS": 200 } },
+    { "id": "w02", "sex": "F", "category": "Ops", "pay": { "BASE": 2100, "BONUS": 300 } },
+    { "id": "w03", "sex": "F", "category": "Ops", "pay": { "BASE": 2600, "BONUS": 400 } },
+    { "id": "w04", "sex": "F", "category": "Ops", "pay": { "BASE": 2900, "BONUS": 500 } },
+    { "id": "w05", "sex": "M", "category": "Ops", "pay": { "BASE": 2000, "BONUS": 200 } },
+    { "id": "w06", "sex": "M", "category": "Ops", "pay": { "BASE": 2400, "BONUS": 400 } },
+    { "id": "w07", "sex": "M", "category": "Ops", "pay": { "BASE": 3000, "BONUS": 600 } },
+    { "id": "w08", "sex": "M", "category": "Ops", "pay": { "BASE": 3400, "BONUS": 800 } },
+    { "id": "w09", "sex": "F", "category": "Ops", "pay": { "BASE": 1650, "BONUS": 150 } },
+    { "id": "w10", "sex": "M", "category": "Ops", "pay": { "BASE": 2000, "BONUS": 200 } }
+  ]
+}

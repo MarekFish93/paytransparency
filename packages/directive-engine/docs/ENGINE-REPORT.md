@@ -87,6 +87,61 @@ choice the Directive left open, so it has no decision in `CONVENTIONS.md` either
 
 ---
 
+## How the seven figures are read — the decisions authoring the vectors forced
+
+Writing the golden vectors before the engine surfaced five questions the metric list does
+not answer on its own. They are recorded here, with reasons, because plan 07 re-derives
+every vector from the rows, the conventions and these documents alone — a rule that lives
+only in someone's head cannot be re-derived, only re-run.
+
+**1. Which pay figure each metric is over.** Metric (a) is the gap on **total pay** — the
+ordinary basic wage or salary plus the complementary or variable components — because Art.
+3(1) defines "pay" as exactly that sum, and (g) is the position that asks for the two sides
+"broken down". Metrics (b) and (d) are over the **complementary or variable components
+only**, computed across **all** workers including those receiving none, since metric (e)
+exists separately to report how many receive them; excluding the zeros from (b) would make
+(b) and (e) answer the same question twice and neither correctly.
+
+**2. What ranks workers for the quartile bands.** **Total pay**, for the same reason: Art.
+3(1)(f) divides workers "according to their pay levels", and "pay" is the Art. 3(1)
+definition. Not basic pay alone, and never the pay *range* — four equal groups of workers,
+split by headcount.
+
+**3. The single-number reduction on (e), (f) and (g).** `MetricValue.value` is one nullable
+number, but three of the seven positions are naturally multi-valued. Rather than amend the
+frozen contract on the strength of vector authoring alone, each is reduced to the one number
+that carries the comparison, with the full breakdown in the vector's `working`:
+
+| Position | `value` is | Full breakdown lives in |
+|---|---|---|
+| (e) | the female proportion **minus** the male proportion, in percentage points | `working.proportionsReceivingComponents` |
+| (f) | the proportion of **female** workers in the **upper** quartile, as a percentage | `working.quartiles` |
+| (g) | the gap on total pay **within that category**, keyed by the employer's category name | `working.categories` |
+
+This is a reduction, not a finding, and it is the most likely thing in this document to need
+amending once the engine and the export exist. It is flagged as such deliberately: if Phase 6
+needs the full vectors on the report itself, that is an amendment under the path below, and
+the vectors change with it.
+
+**4. A zero numerator is not a null; a zero denominator with a real difference is.** Where
+the male figure **and** the female figure are both zero — every worker's variable components
+are zero, say — the difference is zero, the answer "there is no difference between them" is
+true, and the metric reports **`0`** with a `W_COMPONENTS_ALL_ZERO` warning recording that
+the percentage expression is degenerate. Where the male figure is zero but the female figure
+is not, the difference is real and cannot be expressed as a percentage of zero: the metric
+reports **`null`** with a warning. And where a category contains workers of one sex only,
+there is no comparison to make at all: **`null`** with `W_CATEGORY_ALL_ONE_SEX`, never a zero
+and never a swallowed division by zero. A zero and a null say different things to an
+authority and must not be interchangeable.
+
+**5. Unmapped workers are counted, and quartile bands still contain them.** A row whose sex
+value the declared `sexMapping` does not cover is counted in `excludedN` and raises
+`W_SEX_UNMAPPED`; it is never dropped. It still occupies its place in the pay ranking, because
+a quartile pay band is a division of the whole workforce by pay, but it contributes to neither
+the female nor the male proportion within its band.
+
+---
+
 ## Article 10 and the publication split
 
 `art10Flags` records categories at or over the Art. 10(1) average-difference threshold of five
@@ -95,6 +150,12 @@ percentage points. A flag is **one of three cumulative conditions**, not the who
 and that it has not been remedied within six months of the report's submission. Both are
 employer judgements the engine cannot make, and the report must never imply that a flag is a
 finding.
+
+**The threshold is on the MAGNITUDE of the difference, not on its sign.** Art. 10(1) speaks of
+a difference in average pay level of at least five per cent and does not restrict which sex it
+favours, so a category whose gap is −7% is flagged exactly as one at +7% would be, and the
+recorded `gapPct` keeps its sign. A **suppressed** category emits no flag: a figure that may
+not be shown cannot be the basis of a finding, and the suppression is recorded instead.
 
 `publishable` splits the metrics per Art. 9(7): the employer **may** self-publish (a)–(f);
 (g) goes to the national monitoring body. Getting this backwards creates a disclosure problem

@@ -1,0 +1,14 @@
+{
+  "vector": "v10-unmapped-sex",
+  "case": "One worker's sex value is not covered by this vector's own sexMapping. The expected output counts that row in excludedN and raises a warning. Silently dropping it would move the gap and leave nothing in the report to notice — which is how a confidently wrong percentage gets produced.",
+  "rowCount": 6,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Sales", "pay": { "BASE": 2700, "BONUS": 300 } },
+    { "id": "w02", "sex": "F", "category": "Sales", "pay": { "BASE": 3100, "BONUS": 300 } },
+    { "id": "w03", "sex": "M", "category": "Sales", "pay": { "BASE": 3300, "BONUS": 300 } },
+    { "id": "w04", "sex": "M", "category": "Sales", "pay": { "BASE": 3700, "BONUS": 300 } },
+    { "id": "w05", "sex": "M", "category": "Sales", "pay": { "BASE": 4100, "BONUS": 300 } },
+    { "id": "w06", "sex": "X", "category": "Sales", "pay": { "BASE": 3500, "BONUS": 300 } }
+  ]
+}

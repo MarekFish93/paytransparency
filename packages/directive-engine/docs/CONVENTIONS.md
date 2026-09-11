@@ -137,6 +137,15 @@ Directive says nothing about the one, two or three workers left over.
 `to_upper` is accepted. The golden vectors exercise headcounts leaving each of the four
 possible remainders on division by four, so this key is never exercised only in its easy state.
 
+**What "the lower quarter" means when the remainder is two or three**, because the phrase is
+singular and the question is otherwise unanswerable: the leftover workers are distributed
+**one per quarter, starting from the lowest**, not all into the first quarter. A remainder of
+two gives sizes `n/4+1, n/4+1, n/4, n/4`; a remainder of three gives `n/4+1, n/4+1, n/4+1,
+n/4`. The alternative reading — all leftovers into the first quarter — puts four workers in
+one quarter against two in each of the others at n=10, which is not four equal groups in any
+sense Art. 3(1)(f) would recognise. Under `to_upper` the same distribution runs from the
+highest quarter downwards.
+
 **This is a project convention borrowed from the same national guidance document as
 `quartileTieRule`**, which settles the boundary tie rule and the leftover side together. It is
 labelled as a convention, not as a Directive rule.

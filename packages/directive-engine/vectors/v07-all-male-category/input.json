@@ -1,0 +1,14 @@
+{
+  "vector": "v07-all-male-category",
+  "case": "Warehouse contains no women at all, so there is no comparison to make. The expected value is null with a recorded warning — never a zero, and never a division by zero swallowed into a number.",
+  "rowCount": 6,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "M", "category": "Warehouse", "pay": { "BASE": 3300, "BONUS": 300 } },
+    { "id": "w02", "sex": "M", "category": "Warehouse", "pay": { "BASE": 3400, "BONUS": 400 } },
+    { "id": "w03", "sex": "M", "category": "Warehouse", "pay": { "BASE": 4100, "BONUS": 500 } },
+    { "id": "w04", "sex": "F", "category": "Office", "pay": { "BASE": 2700, "BONUS": 300 } },
+    { "id": "w05", "sex": "F", "category": "Office", "pay": { "BASE": 3000, "BONUS": 400 } },
+    { "id": "w06", "sex": "M", "category": "Office", "pay": { "BASE": 3600, "BONUS": 400 } }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "denominator": "male_mean",
+  "medianRule": "lower_of_two",
+  "quartileTieRule": "ukgov_proportional",
+  "quartileRemainder": "to_lower",
+  "payBasis": "as_paid",
+  "partialPeriodPolicy": "include",
+  "joinerLeaverPolicy": "any_pay_in_period",
+  "sexMapping": { "F": "F", "M": "M" },
+  "componentMap": { "BASE": "basic", "BONUS": "complementary_variable" },
+  "minGroupSize": 2,
+  "referencePeriod": { "from": "2025-01-01", "to": "2025-12-31" }
+}

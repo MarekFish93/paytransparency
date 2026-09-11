@@ -336,6 +336,12 @@ export const ENGINE_CODES = {
   SEX_UNMAPPED: 'W_SEX_UNMAPPED',
   /** A category contains workers of one sex only, so the gap has no denominator. */
   CATEGORY_ALL_ONE_SEX: 'W_CATEGORY_ALL_ONE_SEX',
+  /**
+   * Both the male and the female figure are zero, so the difference is zero and the
+   * percentage expression is degenerate. The metric reports `0`, not `null` — "there is
+   * no difference between them" is a true answer, and a null would claim otherwise.
+   */
+  COMPONENTS_ALL_ZERO: 'W_COMPONENTS_ALL_ZERO',
   /** Withheld because publishing it would disclose an identifiable worker's pay. */
   GROUP_SUPPRESSED: 'W_GROUP_SUPPRESSED',
   /** Computable but too small to be statistically reliable. */

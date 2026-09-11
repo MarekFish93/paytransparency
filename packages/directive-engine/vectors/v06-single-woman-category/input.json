@@ -1,0 +1,16 @@
+{
+  "vector": "v06-single-woman-category",
+  "case": "Engineering contains exactly one woman. This is the vector where privacy suppression and statistical unreliability have to be shown as two separate flags: the figure is withheld because publishing it would identify her, AND it would be too small to rely on. Those are different statements to an authority.",
+  "rowCount": 8,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Engineering", "pay": { "BASE": 3900, "BONUS": 300 } },
+    { "id": "w02", "sex": "M", "category": "Engineering", "pay": { "BASE": 4500, "BONUS": 500 } },
+    { "id": "w03", "sex": "M", "category": "Engineering", "pay": { "BASE": 4000, "BONUS": 500 } },
+    { "id": "w04", "sex": "M", "category": "Engineering", "pay": { "BASE": 4100, "BONUS": 400 } },
+    { "id": "w05", "sex": "F", "category": "Support", "pay": { "BASE": 2000, "BONUS": 200 } },
+    { "id": "w06", "sex": "F", "category": "Support", "pay": { "BASE": 2200, "BONUS": 400 } },
+    { "id": "w07", "sex": "M", "category": "Support", "pay": { "BASE": 2500, "BONUS": 300 } },
+    { "id": "w08", "sex": "M", "category": "Support", "pay": { "BASE": 2900, "BONUS": 300 } }
+  ]
+}
