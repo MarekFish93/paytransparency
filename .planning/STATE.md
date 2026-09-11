@@ -4,16 +4,16 @@ milestone: v2
 current_phase: 01
 current_phase_name: Ground Truth and Governance
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-09-11T10:16:03.695Z"
-last_activity: 2026-09-10
-last_activity_desc: Roadmap created; 85 v1 requirements mapped across 7 phases
-state_head: f8a1f1a341bbd28eb7817df4fe39f156e8881d22
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-09-11T11:16:14.231Z"
+last_activity: 2026-09-11
+last_activity_desc: Phase 01 execution started
+state_head: d36ee5d864309b25e6729878b980adeaa3916747
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 7
-  completed_plans: 0
+  completed_plans: 1
 ---
 
 # Project State
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-10)
 
 **Core value:** A worker on a phone, with no account and no data ever leaving their browser, gets a correctly cited, legally-grounded artefact in a language they can send — and can trust every legal statement on the page because it carries a source and a verified date.
-**Current focus:** Phase 1 — Ground Truth and Governance
+**Current focus:** Phase 01 — Ground Truth and Governance
 
 ## Current Position
 
-Phase: 01 (Ground Truth and Governance) — READY TO EXECUTE
-Plan: 0 of TBD in current phase
+Phase: 01 (Ground Truth and Governance) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-09-10 — Roadmap created; 85 v1 requirements mapped across 7 phases
+Last activity: 2026-09-11 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -54,6 +54,11 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 01 P01 | 31 min | 3 tasks | 24 files |
 
 ## Accumulated Context
 
@@ -66,6 +71,9 @@ Recent decisions affecting current work:
 - [Roadmap]: Golden vectors and the frozen `EngineReport` type placed in Phase 1 as data with no engine code, so the engine, adapters and Module D are all unblocked at once
 - [Roadmap]: Zero-egress oracle placed in Phase 3, before any input field exists — retrofitting a credible privacy proof after four modules ship is near-impossible
 - [Roadmap]: Module B and Module C sequenced before the engine and Module D, so the B2C launch never waits on the employer door
+- [Phase 01]: D-01 discharged with CI evidence: GitHub Actions run 34591089211 reached Cellar, 200 / 193564 bytes, ETag "Con-20231213063525000", id="art_7" present. No retrieval method was substituted.
+- [Phase 01]: FactStatus and SourceVerification are frozen at five members each; directive_fallback (D-07) and manual-attest are first-class states
+- [Phase 01]: Source carries a required scope id so the verifier asserts anchors inside the cited subdivision — subtree scoping is structural, not conventional
 
 ### Pending Todos
 
@@ -78,6 +86,7 @@ None yet.
 - [Phase 3] Unverified: whether Cloudflare Pages `_headers` applies a CSP to a Web Worker script path — a spike, not research
 - [Phase 4] Unverified: `navigator.canShare({files})` support on launch-market mobile browsers
 - [Phase 6] Unknown: realistic payroll file sizes in the 100–1,000 employee segment, which sets the XLSX memory budget
+- [Phase 1] Repository name 'jafn' is a PLACEHOLDER under MarekFish93/jafn. Plan 01-05 must gate the rename together with the D-12 public flip — publishing cannot be undone.
 
 ## Deferred Items
 
@@ -89,6 +98,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-09-11T08:30:36.112Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-ground-truth-and-governance/01-CONTEXT.md
+Last session: 2026-09-11T11:15:52.361Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
