@@ -9,8 +9,8 @@
     "b": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
     "c": { "value": 42.2222, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
     "d": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
-    "e": { "value": 100, "definitionCite": "32023L0970#009.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
-    "f": { "value": 100, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
     "g": {
       "Engineering": { "value": null, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": true, "unreliable": true },
       "Support": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": false, "unreliable": false }
@@ -20,6 +20,35 @@
   "warnings": [
     { "code": "W_GROUP_SUPPRESSED", "detail": "Metric (g) for the category Engineering is withheld: the category holds exactly one woman and minGroupSize is 2, so publishing the figure would disclose an identifiable worker's pay." },
     { "code": "W_GROUP_UNRELIABLE", "detail": "Metric (g) for the category Engineering rests on a female group of one and is too small to be statistically reliable. This is a separate claim from the suppression above and is carried separately, per MetricValue." }
+  ],
+  "resolutions": [
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 100 here.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "Every other metric position in this report is a female-versus-male comparison expressed against the male figure; a bare overall proportion would be the only figure in the report that is not one.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 100 here.",
+      "firstPassChose": "The highest band's female share — 0 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL bands, including the single-sex tie straddling Q3/Q4; only the band reported differed.",
+      "positionsRedone": ["f"]
+    },
+    {
+      "conventionKey": "minGroupSize",
+      "whatWasAmbiguous": "What suppression actually does to the rest of the report — whether the value is nulled, and whether a suppressed category may still appear in art10Flags.",
+      "secondPassOriginallyChose": "Null the value; omit the category from art10Flags; fire unreliable on the same small-group condition.",
+      "firstPassChose": "The same on all three points — the two passes AGREED here and no number changed.",
+      "nowReads": "CONVENTIONS.md, minGroupSize: a suppressed metric reports value null; a suppressed category does not appear in art10Flags, because Art10Flag.gapPct would republish the withheld figure; and unreliable currently shares suppression's condition because no separate statistical threshold is recorded anywhere.",
+      "why": "Recorded despite the agreement, because both passes independently flagged that the wording did not settle it. An agreement reached by two people making the same unstated assumption is not a specification, and Engineering here is the only place in the whole vector set where suppression is reachable at all.",
+      "positionsRedone": []
+    }
   ],
   "working": {
     "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Pay level = BASE + BONUS for (a), (c), (f), (g). minGroupSize is 2 in this vector and null in most others, which is what makes the two flags reachable here at all.",
@@ -38,7 +67,7 @@
     "step4_metricB": "Female BONUS 300+200+400 = 900, mean 300. Male BONUS 500+500+400+300+300 = 2000, mean 400. (400-300)/400 = 0.25 -> 25. The equality with metric (a) is a coincidence of these rows, not a rule.",
     "step5_metricC": "Both headcounts are ODD, so lower_of_two is not reached. Female ascending 2200, 2600, 4200 -> middle 2600. Male ascending 2800, 3200, 4500, 4500, 5000 -> middle 4500. (4500-2600)/4500 = 1900/4500 = 0.4222222... -> 42.2222. The median gap is far wider than the mean gap here because the one highly paid woman sits at the top of the female list rather than in its middle.",
     "step6_metricD": "Female BONUS ascending 200, 300, 400 -> middle 300. Male BONUS ascending 300, 300, 400, 500, 500 -> middle 400. (400-300)/400 = 0.25 -> 25.",
-    "step7_metricE": "All eight BONUS figures are strictly positive: 3 of 3 women, 5 of 5 men. Scalar 100. Note that the org-level groups are 3 and 5, both at or above minGroupSize 2, so no org-level metric is suppressed.",
+    "step7_metricE": "All eight BONUS figures are strictly positive: 3 of 3 women, 5 of 5 men. Under the settled rule the scalar is 100 - 100 = 0 percentage points. (Originally reported as the overall proportion, 100; see resolutions.) Note that the org-level groups are 3 and 5, both at or above minGroupSize 2, so no org-level metric is suppressed.",
     "step8_quartiles": {
       "sortedAscendingByTotalPay": ["2200 w05 F", "2600 w06 F", "2800 w07 M", "3200 w08 M", "4200 w01 F", "4500 w03 M", "4500 w04 M", "5000 w02 M"],
       "sizes": "n = 8, 8/4 = 2 exactly, no remainder. Groups of two at positions 1-2, 3-4, 5-6, 7-8.",
@@ -49,7 +78,7 @@
         "Q3": "w01 F, one tied man -> 50 percent female",
         "Q4": "the other tied man, w02 M -> 0 percent female"
       },
-      "scalarChosen": "100, the female share of the lowest quartile pay band.",
+      "scalarChosen": "0, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 100; see resolutions.)",
       "suppressionNote": "Q1 holds two workers and both are women. It was considered whether minGroupSize 2 should suppress metric (f) as well. It does not: the quartile metric reports a proportion of headcounts, not a pay figure, so publishing it does not disclose an identifiable worker's PAY, which is the harm MetricValue.suppressed names. Recorded as an ambiguity because no convention states the scope of suppression."
     },
     "step9_metricG": {
@@ -99,7 +128,8 @@
       "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue; and separately, whether suppression applies to a quartile proportion at all.",
       "readings": ["A named quartile's female share, unsuppressed.", "null, or suppressed when a band holds fewer workers than minGroupSize."],
       "chosen": "The female share of the lowest quartile pay band, unsuppressed",
-      "why": "A quartile proportion is a headcount ratio, not a pay figure, so it does not disclose an identifiable worker's pay. The scope of suppression is nonetheless unstated in the convention document."
+      "why": "A quartile proportion is a headcount ratio, not a pay figure, so it does not disclose an identifiable worker's pay. The scope of suppression is nonetheless unstated in the convention document.",
+      "supersededBy": "resolutions[1] as to WHICH band — the HIGHEST now governs. The unsuppressed half of this entry was agreed by both passes and stands."
     },
     {
       "conventionKey": "quartileRemainder",

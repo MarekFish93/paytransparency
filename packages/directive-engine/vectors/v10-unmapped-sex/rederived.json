@@ -9,8 +9,8 @@
     "b": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
     "c": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
     "d": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
-    "e": { "value": 100, "definitionCite": "32023L0970#009.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
-    "f": { "value": 100, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "e": { "value": 0, "definitionCite": "32023L0970#009.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "f": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
     "g": {
       "Sales": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false }
     }
@@ -18,6 +18,35 @@
   "art10Flags": [{ "category": "Sales", "gapPct": 20, "threshold": 5 }],
   "warnings": [
     { "code": "W_SEX_UNMAPPED", "detail": "Row w06 carries the sex value X, which this vector's declared sexMapping of {F:F, M:M} does not cover. The row is counted in excludedN on every metric and is never silently dropped." }
+  ],
+  "resolutions": [
+    {
+      "conventionKey": "componentMap",
+      "whatWasAmbiguous": "What metric (e)'s single scalar denotes, given that Art. 9(1)(e) names two figures and MetricValue carries one.",
+      "secondPassOriginallyChose": "The overall proportion of workers receiving a component — 100 here.",
+      "firstPassChose": "The difference between the two per-sex proportions, in percentage points — 0 here.",
+      "nowReads": "CONVENTIONS.md, componentMap: the scalar is the MALE proportion minus the FEMALE proportion, in percentage points, positive meaning men are the more likely to receive components.",
+      "why": "Every other metric position in this report is a female-versus-male comparison expressed against the male figure; a bare overall proportion would be the only figure in the report that is not one. The settled reading also disposes of a question the proportion reading could not answer here — whether the unmapped w06, who does receive a component, belongs in the numerator: under a per-sex difference the question does not arise, because w06 is in neither group.",
+      "positionsRedone": ["e"]
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "whatWasAmbiguous": "Which of the four quartile bands metric (f)'s single scalar reports, given that Art. 9(1)(f) names eight figures.",
+      "secondPassOriginallyChose": "The lowest band's female share — 100 here.",
+      "firstPassChose": "The highest band's female share — 0 here.",
+      "nowReads": "CONVENTIONS.md, quartileTieRule: the female share of the HIGHEST (fourth) quartile pay band, as a percentage.",
+      "why": "Attributable to the same national guidance document this key already borrows its tie rule from. Both passes had already built IDENTICAL bands from the SAME six-worker ranking; only the band reported differed.",
+      "positionsRedone": ["f"]
+    },
+    {
+      "conventionKey": "sexMapping",
+      "whatWasAmbiguous": "Whether a row whose sex value the map does not cover still takes part in the quartile RANKING, and what populationN counts once the ranked and sexed populations differ.",
+      "secondPassOriginallyChose": "Ranked but not counted; populationN 5, excludedN 1.",
+      "firstPassChose": "The same on both points — the two passes AGREED and no number changed. The first pass recorded the reason in its W_SEX_UNMAPPED detail: a quartile pay band is a division of the whole workforce by pay level.",
+      "nowReads": "CONVENTIONS.md, sexMapping: an unmapped row keeps its place in the pay ranking because Art. 3(1)(f) divides workers by pay level and an unmapped worker is still a worker; it is excluded only from the female and male counts. populationN is the SEXED population, with the unmapped rows in excludedN. An unmapped value is not `other` or `undisclosed`.",
+      "why": "Recorded despite the agreement, because the exclusion rule settled the sex breakdown and said nothing about the ranking, and the two are different questions. Striking the row from the ranking would move other workers between bands with nothing in the report to show why.",
+      "positionsRedone": []
+    }
   ],
   "working": {
     "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Every worker has the same BONUS of 300, which is deliberate: it makes metrics (b) and (d) exactly zero and so isolates the unmapped-sex question from any component arithmetic.",
@@ -34,7 +63,7 @@
     "step4_metricB": "Female BONUS 300 and 300, mean 300. Male BONUS 300, 300, 300, mean 300. (300-300)/300 = 0/300 = 0 -> 0. This zero is NOT W_COMPONENTS_ALL_ZERO: both figures are 300, not zero, and the denominator is well defined. It is an ordinary zero difference.",
     "step5_metricC": "Female headcount is EVEN at two, so lower_of_two applies: ascending 3000, 3400 -> both are middle values -> 3000. Male headcount is odd at three -> middle 4000. (4000-3000)/4000 = 1000/4000 = 0.25 -> 25. The median gap is wider than the mean gap because lower_of_two takes the lower of the two women.",
     "step6_metricD": "Female BONUS ascending 300, 300 -> lower_of_two takes 300, the two candidates being equal. Male BONUS median 300. (300-300)/300 = 0 -> 0.",
-    "step7_metricE": "All five sexed workers have a BONUS of 300, strictly positive: 2 of 2 women and 3 of 3 men receive a component. Scalar 100, over populationN 5 with excludedN 1. w06 also receives one, but it cannot be attributed to a sex and so does not enter the metric.",
+    "step7_metricE": "All five sexed workers have a BONUS of 300, strictly positive: 2 of 2 women and 3 of 3 men receive a component. Under the settled rule the scalar is 100 - 100 = 0 percentage points, over populationN 5 with excludedN 1. (Originally reported as the overall proportion, 100; see resolutions.) w06 also receives a component, but it cannot be attributed to a sex, and under a per-sex difference the question of which side to count it on does not arise at all.",
     "step8_quartiles": {
       "rankingPopulation": "Six workers are RANKED, including w06. Only five are COUNTED in the female and male shares. See the ambiguity below — this is the fork this vector exposes.",
       "sortedAscendingByTotalPay": ["3000 w01 F", "3400 w02 F", "3600 w03 M", "3800 w06 X (ranked, not counted)", "4000 w04 M", "4400 w05 M"],
@@ -46,8 +75,8 @@
         "Q3": "w04 M -> 0 percent female",
         "Q4": "w05 M -> 0 percent female"
       },
-      "scalarChosen": "100, the female share of the lowest quartile pay band.",
-      "counterfactual": "Had w06 been struck from the ranking as well, n would be 5 with sizes 2, 1, 1, 1, and Q2 would hold w03 alone while Q3 held w04 and Q4 held w05. The Q1 share happens to be 100 either way in this vector, so the fork does not change the reported scalar here — but it does change the band membership of three of the five sexed workers, which any future vector with a differently placed unmapped row would expose."
+      "scalarChosen": "0, the female share of the HIGHEST quartile pay band, per the settled rule. (Originally the lowest band, 100; see resolutions.)",
+      "counterfactual": "Had w06 been struck from the ranking as well, n would be 5 with sizes 2, 1, 1, 1, and Q2 would hold w03 alone while Q3 held w04 and Q4 held w05. Under the settled rule the reported scalar is the Q4 female share, which is 0 either way, so the fork changes nothing visible here — as it also changed nothing under the lowest-band reading, where both give 100. The fork does change the band membership of three of the five sexed workers, and any future vector with a differently placed unmapped row would expose it. That this vector cannot distinguish the two readings at ALL is itself worth recording: the ranking question is settled in the convention document rather than by evidence from these rows."
     },
     "step9_metricG": "One category, Sales, holding all six rows, five of them sexed. The category gap equals metric (a) at 20, over populationN 5 with excludedN 1.",
     "step10_suppression": "minGroupSize null: no suppression, no unreliability. The female group of two is small but no threshold is set.",
@@ -83,14 +112,16 @@
       "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
       "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
       "chosen": "The overall proportion receiving a component",
-      "why": "The difference reading reads zero everywhere and erases v09's intended contrast. Here it raises a second question the difference reading cannot answer either: whether w06, who does receive a component, belongs in the numerator."
+      "why": "The difference reading reads zero everywhere and erases v09's intended contrast. Here it raises a second question the difference reading cannot answer either: whether w06, who does receive a component, belongs in the numerator.",
+      "supersededBy": "resolutions[0] — the difference reading now governs, and it in fact ANSWERS the w06 question this entry raised against it: under a per-sex difference w06 is in neither group and never enters the numerator. The coverage objection is carried forward under componentMap in CONVENTIONS.md."
     },
     {
       "conventionKey": "quartileRemainder",
       "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue.",
       "readings": ["A named quartile's female share.", "null."],
       "chosen": "The female share of the lowest quartile pay band",
-      "why": "Consistent with v01 to v09."
+      "why": "Consistent with v01 to v09.",
+      "supersededBy": "resolutions[1] — the HIGHEST band now governs."
     }
   ]
 }
