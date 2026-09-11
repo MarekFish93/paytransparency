@@ -61,9 +61,11 @@ const PROBE_TABLE_HOSTS = new Set([
 const stripWww = (host: string): string => host.replace(/^www\./, '');
 
 /**
- * `data/` also holds the shared Directive corpus, `_directive.json`, which plan 01-01
- * created and plan 01-03 fills. Underscore-prefixed files are shared records, not country
- * records, and are excluded here by that convention.
+ * `data/` also holds shared, non-country records: the Directive corpus `_directive.json`,
+ * which plan 01-01 created and plan 01-03 fills, and the pre-fetch allowlist
+ * `_allowlist.json`, which plan 01-02 authors. Underscore-prefixed files are shared
+ * records, not country records, and are excluded here by that convention — which is what
+ * lets a future shared file be added without changing the count below.
  */
 const countryFileNames = (): string[] =>
   readdirSync(DATA_DIR)
@@ -98,9 +100,14 @@ describe('coverage: exactly 27 member states', () => {
     expect(stems).not.toContain('EL');
   });
 
-  test('the only non-country file in data/ is the shared Directive corpus', () => {
-    const others = readdirSync(DATA_DIR).filter((n) => n.endsWith('.json') && n.startsWith('_'));
-    expect(others).toEqual(['_directive.json']);
+  test('the only non-country files in data/ are the Directive corpus and the allowlist', () => {
+    // EXACT set, deliberately not a `toContain`. Its job is to stop a country record
+    // being hidden behind an underscore and silently dropped from the 27 above, so a
+    // new shared file must be added here by a human who has read this comment.
+    const others = readdirSync(DATA_DIR)
+      .filter((n) => n.endsWith('.json') && n.startsWith('_'))
+      .sort();
+    expect(others).toEqual(['_allowlist.json', '_directive.json']);
   });
 
   test('every file parses against the record schema and its stem matches its own code', () => {

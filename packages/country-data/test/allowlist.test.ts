@@ -32,7 +32,7 @@ const pkgRoot = resolve(here, '..');
  * code; an assertion against the parsed file cannot.
  */
 const ALLOWLIST = JSON.parse(
-  readFileSync(resolve(pkgRoot, 'data', 'allowlist.json'), 'utf8'),
+  readFileSync(resolve(pkgRoot, 'data', '_allowlist.json'), 'utf8'),
 ) as { all: string[]; byCountry: Record<string, string[]> };
 
 /** The 27 EU member states, ISO-3166-1 alpha-2. Greece is `GR`, not the EU's `EL`. */

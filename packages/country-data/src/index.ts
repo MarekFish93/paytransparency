@@ -54,7 +54,7 @@ export { STRATEGY_TABLE, strategyFor, byteFloorFor } from './source-strategy.ts'
 export type { ScopeRule, StrategyAssertion, StrategyEntry } from './source-strategy.ts';
 
 /**
- * The pre-fetch allowlist guard. Build-time only — it reads `data/allowlist.json` with
+ * The pre-fetch allowlist guard. Build-time only — it reads `data/_allowlist.json` with
  * `node:fs`, which is why this barrel is not browser-bundler-safe. The first client
  * bundle that needs `@jafn/country-data` should get a data-only subpath export rather
  * than a weaker guard.

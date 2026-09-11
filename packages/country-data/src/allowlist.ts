@@ -65,15 +65,19 @@ export type AllowlistData = {
 };
 
 /**
- * The data is read from `data/allowlist.json` at module load rather than embedded here,
- * so the file a maintainer edits is the file the guard enforces — no second copy to
- * drift. The path resolves identically from `src/` (vitest, `node --experimental-strip-
- * types`) and from `dist/` (the published package, which ships `data/` alongside).
+ * The data is read from `data/_allowlist.json` at module load rather than embedded
+ * here, so the file a maintainer edits is the file the guard enforces — no second copy
+ * to drift. The path resolves identically from `src/` (vitest, `node --experimental-
+ * strip-types`) and from `dist/` (the published package, which ships `data/` alongside).
+ *
+ * The leading underscore is `data/`'s own convention for a SHARED, non-country record:
+ * every `*.json` in that directory without it is one of the 27 member-state files, and
+ * `coverage.test.ts` counts them by exactly that rule. `_directive.json` is the other.
  *
  * This module is BUILD-TIME only and is deliberately NOT re-exported from the package
  * barrel: `node:fs` has no business in a browser bundle.
  */
-const DATA_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'allowlist.json');
+const DATA_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'data', '_allowlist.json');
 
 export const ALLOWLIST: AllowlistData = JSON.parse(
   readFileSync(DATA_PATH, 'utf8'),
@@ -166,7 +170,7 @@ export function assertFetchable(url: string, countryCode: string): void {
       'unknown_country',
       host,
       country,
-      `${host} — "${country}" is not one of the 27 member-state codes in allowlist.json`,
+      `${host} — "${country}" is not one of the 27 member-state codes in _allowlist.json`,
     );
   }
 
