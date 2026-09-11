@@ -36,5 +36,14 @@ export {
 } from './verifier.ts';
 export type { Disposition, VerifierResponse, VerifyResult } from './verifier.ts';
 
+export {
+  CELEX,
+  citationKey,
+  extractArticle,
+  extractParagraph,
+  listParagraphIds,
+} from './extract.ts';
+export type { ExtractedArticle, ExtractedParagraph, ExtractedSubPoint } from './extract.ts';
+
 export { TTL_DAYS, AGEING_AT, elapsedDays, freshnessOf } from './freshness.ts';
 export type { Freshness } from './freshness.ts';

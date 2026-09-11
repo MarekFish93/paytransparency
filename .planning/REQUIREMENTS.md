@@ -16,7 +16,7 @@
 - [ ] **LEGAL-04**: Each country record states the response deadline as *"within a reasonable period of time but in any event within two months"* unless national law verifiably sets a different period **[corrects brief]**
 - [ ] **LEGAL-05**: Each country record states whether that state took the Art. 12(3) option of routing requests only via workers' representatives, the labour inspectorate or the equality body **[research]**
 - [ ] **LEGAL-06**: Each country record names the national equality body and the applicable anti-retaliation provision
-- [ ] **LEGAL-07**: Directive Articles 3, 6, 7, 9, 10 and 12 are re-verified against EUR-Lex primary text, with quotations stored alongside the data **[research]**
+- [x] **LEGAL-07**: Directive Articles 3, 6, 7, 9, 10 and 12 are re-verified against EUR-Lex primary text, with quotations stored alongside the data **[research]**
 - [ ] **LEGAL-08**: A build fails when any fact's `verified_at` is older than the agreed freshness window
 - [ ] **LEGAL-09**: The fact verifier asserts a non-empty response body and an expected anchor string, not merely HTTP 200 **[research]**
 - [ ] **LEGAL-10**: A contributor can correct or add a country fact by pull request, gated by CI schema validation and source checking
@@ -183,7 +183,7 @@ success criteria.
 | LEGAL-04 | Phase 1 | Pending |
 | LEGAL-05 | Phase 1 | Pending |
 | LEGAL-06 | Phase 1 | Pending |
-| LEGAL-07 | Phase 1 | Pending |
+| LEGAL-07 | Phase 1 | Complete |
 | LEGAL-08 | Phase 1 | Pending |
 | LEGAL-09 | Phase 1 | Pending |
 | LEGAL-10 | Phase 1 | Pending |

@@ -13,13 +13,8 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  MAX_BODY_BYTES,
-  SourceDefect,
-  normaliseForMatch,
-  scopeToSubdivision,
-  textOf,
-} from '../src/verifier.ts';
+import { MAX_BODY_BYTES, SourceDefect, normaliseForMatch, textOf } from '../src/verifier.ts';
+import { CELEX, citationKey, extractArticle, extractParagraph, listParagraphIds } from '../src/extract.ts';
 
 // Re-exported so a caller can reach the retrieval helpers and the verifier primitives
 // they depend on from one module. `MAX_BODY_BYTES` is IMPORTED, never redeclared: two
@@ -27,7 +22,12 @@ import {
 // as a weakened byte floor.
 export { SourceDefect, normaliseForMatch, MAX_BODY_BYTES };
 
-export const CELEX = '32023L0970';
+// `extractParagraph` moved to `src/extract.ts` in plan 01-03, where it became a thin
+// wrapper over `extractArticle` so the package holds exactly ONE scoping implementation.
+// It is re-exported from its original module path so plan 01-01's spine test — which
+// imports it from here — keeps passing unchanged.
+export { CELEX, citationKey, extractArticle, extractParagraph, listParagraphIds };
+
 export const BASE = `http://publications.europa.eu/resource/celex/${CELEX}`;
 
 export type FetchUnchanged = { unchanged: true; etag: string };
@@ -106,141 +106,328 @@ export async function fetchExpression(
   };
 }
 
-export type ExtractedParagraph = {
-  /** `32023L0970#007.004`. The publisher's own id — language-invariant. */
-  citationKey: string;
-  /** The paragraph's raw XHTML. */
-  html: string;
-  /** The paragraph's text, RAW: U+00A0 and U+2019 preserved exactly as published. */
-  text: string;
-  article: number;
-  paragraph: number;
+/**
+ * The articles this product cites (LEGAL-07).
+ *
+ * Fixed, and deliberately not "every article": each entry is a provision the
+ * worker-facing or employer-facing surface quotes, and every one must be re-pullable
+ * from primary text. Art. 3 definitions and Art. 9 metrics are the ENG-06 substrate;
+ * Art. 6 and Art. 7 are the pair the original brief conflated; Art. 10 is the joint pay
+ * assessment; Art. 12 carries the identifiability provision that the same brief replaced
+ * with a six-person threshold that does not exist anywhere in the Directive.
+ */
+export const CITED_ARTICLES = [3, 6, 7, 9, 10, 12] as const;
+
+/**
+ * The authentic language versions held (D-03).
+ *
+ * ISO-639-3, which is what the Cellar API's `Accept-Language` speaks. An authentic-text
+ * language is NOT the same thing as a shipped interface locale: the interface is English
+ * and Polish at launch, but all twenty-four language versions of the Directive are
+ * equally authentic in law, and D-03 chose to hold every served locale so that a Polish
+ * letter quotes authentic Polish wording rather than a translation of the English.
+ *
+ * Every code below was retrieved successfully during research. An invalid code returns
+ * 400 with no silent fallback to a default language, so a typo here fails loudly rather
+ * than quietly storing English text under another language's key.
+ */
+export const SERVED_LANGUAGES = [
+  'eng',
+  'pol',
+  'slk',
+  'ita',
+  'lit',
+  'mlt',
+  'deu',
+  'nld',
+  'ces',
+  'swe',
+  'dan',
+] as const;
+
+export type ServedLanguage = (typeof SERVED_LANGUAGES)[number];
+
+/**
+ * ISO-639-3 (what Cellar speaks) → BCP-47 (what `Source.language` and a browser speak).
+ *
+ * A table, not a derivation: `slk`→`sk` and `ces`→`cs` do not follow the same rule as
+ * `eng`→`en`, and a truncation that happens to work for nine of eleven codes is a bug
+ * waiting for the tenth.
+ */
+export const BCP47: Record<ServedLanguage, string> = {
+  eng: 'en',
+  pol: 'pl',
+  slk: 'sk',
+  ita: 'it',
+  lit: 'lt',
+  mlt: 'mt',
+  deu: 'de',
+  nld: 'nl',
+  ces: 'cs',
+  swe: 'sv',
+  dan: 'da',
+};
+
+/** The date the Directive was published in the Official Journal. */
+const PUBLISHED_AT = '2023-05-17';
+
+/** Structural shape of what `extractArticle` returns. */
+type ExtractedArticleShape = ReturnType<typeof extractArticle>;
+
+/** `32023L0970#007@eng` — one article in one authentic language version. */
+export const corpusKey = (article: number, lang3: string): string =>
+  `${CELEX}#${String(article).padStart(3, '0')}@${lang3}`;
+
+/**
+ * Choose the anchor the verifier will assert for one article, in one language.
+ *
+ * The anchor is NOT hand-authored. Eleven languages times six articles is sixty-six
+ * anchors, and a hand-typed "verbatim" phrase in a language the author does not read is
+ * exactly the failure this corpus exists to prevent — it would certify itself. So the
+ * anchor is cut from the retrieved bytes and then PROVED distinctive by a negative
+ * search over the whole document: a candidate that also occurs outside the `art_N`
+ * subtree is rejected, because an anchor that matches a recital verifies text that is
+ * not the cited provision (threat T-1-11, and the reproduced "Article 10 TFEU"
+ * collision in recital 25).
+ *
+ * Deterministic by construction — same document in, same anchor out — so a re-run is
+ * idempotent rather than churning the committed file.
+ */
+function chooseAnchor(
+  wholeDocument: string,
+  article: ExtractedArticleShape,
+  lang3: string,
+): string {
+  // The haystack must be measured on the SAME instrument the verifier uses —
+  // `normaliseForMatch(textOf(...))`, tags stripped. Searching the tagged markup instead
+  // silently misses every phrase that spans a tag boundary, which in this document means
+  // every lettered definition in Article 3: the uniqueness claim would then be a claim
+  // about the markup rather than about the text, and an anchor is asserted against text.
+  const haystack = normaliseForMatch(textOf(wholeDocument));
+  const scoped = normaliseForMatch(textOf(article.rawHtml));
+
+  const candidates: string[] = [];
+  for (const paragraph of Object.values(article.paragraphs)) {
+    // Drop the leading paragraph marker ("4.   ") so the anchor reads as a phrase of the
+    // provision rather than as its numbering, which repeats across every article.
+    const body = normaliseForMatch(textOf(paragraph.rawHtml)).replace(/^\d+\.\s*/, '');
+    if (body.length <= 40) continue;
+    // Widening windows: the shortest distinctive phrase first, falling back to more of
+    // the sentence when a short one also occurs elsewhere in the document.
+    for (const width of [80, 120, 200, 400]) {
+      const cut = body.slice(0, Math.min(width, body.length));
+      // Trim to a word boundary so the anchor never ends mid-word.
+      const boundary = cut.length < body.length ? cut.lastIndexOf(' ') : cut.length;
+      const candidate = cut.slice(0, boundary > 40 ? boundary : cut.length).trim();
+      if (candidate.length >= 40) candidates.push(candidate);
+    }
+  }
+
+  for (const candidate of candidates) {
+    if (!scoped.includes(candidate)) continue;
+    // Exactly once in the WHOLE document: the occurrence inside the cited article, and
+    // nowhere else. Two `indexOf` calls rather than a regex — the candidate is arbitrary
+    // retrieved text and would have to be escaped to be safe in a pattern.
+    const first = haystack.indexOf(candidate);
+    if (first < 0) continue;
+    if (haystack.indexOf(candidate, first + 1) >= 0) continue;
+    return candidate;
+  }
+
+  throw new SourceDefect(
+    `no candidate anchor for Article ${article.article} (${lang3}) occurs exactly once in the document — ` +
+      `refusing to store a fact whose anchor cannot distinguish the provision from a recital`,
+  );
+}
+
+export type LanguagePull = {
+  lang3: ServedLanguage;
+  body: string;
+  /** Discovered by content negotiation, never computed from the language code. */
+  pinnedUri: string;
+  etag: string | null;
+  lastModified: string | null;
+  articles: Map<number, ExtractedArticleShape>;
+  anchors: Map<number, string>;
 };
 
 /**
- * Locate one paragraph by the publisher's own structural ids.
+ * Pull every cited article in every served language.
  *
- * Scope FIRST, always. "within a reasonable period of time" also occurs in a recital
- * about joint pay assessments, at a byte offset far below Art. 7(4); an unscoped search
- * would extract the recital and every downstream layer would agree with it.
- *
- * Do not locate an article by searching for its title text: "Article 7" with an ASCII
- * space occurs ZERO times in the authentic document.
+ * ONE request per language, not one per article: the whole expression comes back in a
+ * single body, and six requests per language would be six chances for a rate limiter to
+ * hand back a partial corpus that still looked complete.
  */
-export function extractParagraph(xhtml: string, article: number, para: number): ExtractedParagraph {
-  const artId = `art_${article}`;
-  const paraId = `${String(article).padStart(3, '0')}.${String(para).padStart(3, '0')}`;
+export async function fetchCorpus(): Promise<LanguagePull[]> {
+  const pulls: LanguagePull[] = [];
 
-  const scope = scopeToSubdivision(xhtml, artId);
-  if (scope === null) {
-    throw new SourceDefect(`article container id="${artId}" absent from the document`);
-  }
+  for (const lang3 of SERVED_LANGUAGES) {
+    const res = await fetchExpression(lang3);
+    if (res.unchanged) {
+      throw new SourceDefect(`unexpected 304 on an unconditional GET for ${lang3}`);
+    }
 
-  const pAttr = scope.indexOf(`id="${paraId}"`);
-  if (pAttr < 0) {
-    throw new SourceDefect(
-      `paragraph id="${paraId}" absent from inside id="${artId}" — the article is present but the cited paragraph is not`,
+    const articles = new Map<number, ExtractedArticleShape>();
+    const anchors = new Map<number, string>();
+    for (const article of CITED_ARTICLES) {
+      // Throws SourceDefect naming the id when the article or its title is absent —
+      // it never returns an empty result that would be stored as an empty quotation.
+      const extracted = extractArticle(res.body, article);
+      if (listParagraphIds(extracted.rawHtml).length === 0) {
+        throw new SourceDefect(
+          `Article ${article} (${lang3}) extracted with zero tagged paragraphs — refusing to store it`,
+        );
+      }
+      articles.set(article, extracted);
+      anchors.set(article, chooseAnchor(res.body, extracted, lang3));
+    }
+
+    pulls.push({
+      lang3,
+      body: res.body,
+      pinnedUri: res.pinnedUri,
+      etag: res.etag,
+      lastModified: res.lastModified,
+      articles,
+      anchors,
+    });
+
+    process.stdout.write(
+      `  ${lang3}: ${res.body.length} bytes, ETag ${res.etag ?? '(none)'}, pinned ${res.pinnedUri}\n`,
     );
   }
-  // Back up to the '<' opening the div that carries the id. Slicing from the attribute
-  // leaves an `id="007.004">` fragment that the tag stripper cannot remove, and it would
-  // be stored as though it were part of the quotation.
-  const pOpen = scope.lastIndexOf('<', pAttr);
-  const pStart = pOpen < 0 ? pAttr : pOpen;
 
-  // A paragraph runs from its own id to the start of the next sibling paragraph div,
-  // or to the end of the article scope for the last paragraph.
-  const rest = scope.slice(pStart);
-  const nextIdx = rest.slice(1).search(/<div id="\d{3}\.\d{3}"/);
-  const html = nextIdx < 0 ? rest : rest.slice(0, nextIdx + 1);
+  return pulls;
+}
+
+/** Serialise one (article, language) pair into its `Fact` record. */
+function toFact(pull: LanguagePull, article: number, today: string): Record<string, unknown> {
+  const extracted = pull.articles.get(article);
+  if (extracted === undefined) {
+    throw new SourceDefect(`Article ${article} missing from the ${pull.lang3} pull`);
+  }
+  const anchor = pull.anchors.get(article);
+  if (anchor === undefined) {
+    throw new SourceDefect(`no anchor for Article ${article} (${pull.lang3})`);
+  }
+
+  const paragraphs: Record<string, unknown> = {};
+  for (const [id, paragraph] of Object.entries(extracted.paragraphs)) {
+    const subPoints: Record<string, unknown> = {};
+    for (const [label, sub] of Object.entries(paragraph.subPoints)) {
+      subPoints[label] = { citation_key: sub.citationKey, raw_text: sub.rawText };
+    }
+    paragraphs[id] = {
+      citation_key: paragraph.citationKey,
+      raw_text: paragraph.rawText,
+      sub_points: subPoints,
+    };
+  }
 
   return {
-    citationKey: `${CELEX}#${paraId}`,
-    html,
-    // RAW. Normalisation is for matching only — normalising into storage would silently
-    // rewrite the Official Journal. Only ASCII whitespace is collapsed and trimmed:
-    // JavaScript's `\s` matches U+00A0, so the obvious `.replace(/\s+/g,' ').trim()`
-    // would destroy the authentic no-break spaces this fact exists to preserve.
-    text: textOf(html)
-      .replace(/[ \t\r]*\n[ \t\r]*/g, ' ')
-      .replace(/^[ \t\r\n]+|[ \t\r\n]+$/g, ''),
-    article,
-    paragraph: para,
+    value: {
+      article,
+      language: pull.lang3,
+      title: extracted.titleText,
+      raw_text: extracted.rawText,
+      paragraphs,
+    },
+    status: 'verified',
+    volatility: 'stable',
+    // D-06: an agent proposes, a human confirms. Machine retrieval from the publisher's
+    // own API is not a human eyeballing the source, so this stays null rather than
+    // recording a confirmation that did not happen.
+    verified_by: null,
+    verified_at: today,
+    sources: [
+      {
+        url: pull.pinnedUri,
+        title: `Directive (EU) 2023/970 — Article ${article}, ${extracted.titleText}`,
+        publisher: 'Publications Office of the European Union',
+        kind: 'eu_institution',
+        verification: 'cellar',
+        anchor,
+        language: BCP47[pull.lang3],
+        published_at: PUBLISHED_AT,
+        accessed_at: today,
+        etag: pull.etag ?? undefined,
+        last_modified: pull.lastModified ?? undefined,
+        scope: { id: `art_${article}`, expected_subtitle: extracted.titleText },
+      },
+    ],
   };
 }
 
 /**
- * Seed `data/_directive.json` with Art. 7(4) EN.
+ * Write the corpus, and capture the fixtures the offline suite compares against.
  *
- * This writes ONE fact. The remaining articles and locales are plan 01-03.
+ * `data/_directive.json` is a GENERATED file that is COMMITTED, so a change to the
+ * authentic text arrives as a reviewable diff rather than as a silent build-time
+ * substitution. It is NOT a source snapshot (D-02): there is no content hash, no
+ * `data/snapshots/` directory, and the build re-fetches and re-verifies against the live
+ * source rather than trusting the committed copy.
  */
 async function main(): Promise<void> {
   const here = dirname(fileURLToPath(import.meta.url));
   const pkgRoot = resolve(here, '..');
-
-  const res = await fetchExpression('eng');
-  if (res.unchanged) throw new SourceDefect('unexpected 304 on an unconditional GET');
-
-  const extracted = extractParagraph(res.body, 7, 4);
   const today = new Date().toISOString().slice(0, 10);
-  const anchor = 'within a reasonable period of time but in any event within two months';
 
-  // Fail loudly rather than write an unverifiable fact: the anchor must be present in
-  // the paragraph we are about to store, or the extraction found the wrong thing.
-  if (!normaliseForMatch(extracted.text).includes(normaliseForMatch(anchor))) {
+  process.stdout.write(
+    `fetching ${CITED_ARTICLES.length} articles across ${SERVED_LANGUAGES.length} languages\n`,
+  );
+  const pulls = await fetchCorpus();
+
+  // Every pinned URI must be distinct. They are DISCOVERED per language, never derived:
+  // the manifestation sequence segment (.0006. for EN, .0018. for PL, .0013. for IT) is
+  // not alphabetically related to the language code, so computing one would silently
+  // fetch a different language's document under the right key.
+  const uris = new Set(pulls.map((p) => p.pinnedUri));
+  if (uris.size !== pulls.length) {
     throw new SourceDefect(
-      `the Art. 7(4) anchor is absent from the extracted paragraph. Extracted: ${extracted.text}`,
+      `expected ${pulls.length} distinct pinned expression URIs, got ${uris.size} — two languages resolved to one manifestation`,
     );
   }
 
-  const fact = {
-    [extracted.citationKey]: {
-      value: {
-        text: extracted.text,
-        citation_key: extracted.citationKey,
-        article: extracted.article,
-        paragraph: extracted.paragraph,
-      },
-      status: 'verified',
-      volatility: 'stable',
-      verified_at: today,
-      verified_by: null,
-      sources: [
-        {
-          url: res.pinnedUri,
-          title: 'Directive (EU) 2023/970 — Article 7, Right to information',
-          publisher: 'Publications Office of the European Union',
-          kind: 'eu_institution',
-          verification: 'cellar',
-          anchor,
-          language: 'en',
-          published_at: '2023-05-17',
-          accessed_at: today,
-          etag: res.etag ?? undefined,
-          last_modified: res.lastModified ?? undefined,
-          scope: { id: 'art_7', expected_subtitle: 'Right to information' },
-        },
-      ],
-    },
-  };
+  const corpus: Record<string, unknown> = {};
+  for (const pull of pulls) {
+    for (const article of CITED_ARTICLES) {
+      corpus[corpusKey(article, pull.lang3)] = toFact(pull, article, today);
+    }
+  }
+
+  const expected = CITED_ARTICLES.length * SERVED_LANGUAGES.length;
+  if (Object.keys(corpus).length !== expected) {
+    throw new SourceDefect(
+      `expected ${expected} corpus entries, built ${Object.keys(corpus).length}`,
+    );
+  }
 
   const outPath = resolve(pkgRoot, 'data', '_directive.json');
   mkdirSync(dirname(outPath), { recursive: true });
-  writeFileSync(outPath, `${JSON.stringify(fact, null, 2)}\n`, 'utf8');
+  writeFileSync(outPath, `${JSON.stringify(corpus, null, 2)}\n`, 'utf8');
 
-  const fixturePath = resolve(pkgRoot, 'test', 'fixtures', 'cellar-art7-en.xhtml');
-  mkdirSync(dirname(fixturePath), { recursive: true });
-  writeFileSync(fixturePath, res.body, 'utf8');
+  // Fixtures: the English expression the offline suite already uses, and the Polish one
+  // the language-invariance assertions need. Written from the SAME bodies the corpus was
+  // built from, so a fixture can never disagree with the data it is asserted against.
+  for (const [lang3, name] of [
+    ['eng', 'cellar-art7-en.xhtml'],
+    ['pol', 'cellar-art7-pl.xhtml'],
+  ] as const) {
+    const pull = pulls.find((p) => p.lang3 === lang3);
+    if (pull === undefined) continue;
+    const fixturePath = resolve(pkgRoot, 'test', 'fixtures', name);
+    mkdirSync(dirname(fixturePath), { recursive: true });
+    writeFileSync(fixturePath, pull.body, 'utf8');
+    process.stdout.write(`wrote fixture:         ${fixturePath}\n`);
+  }
 
   process.stdout.write(
     [
-      `pinned expression URI: ${res.pinnedUri}`,
-      `ETag:                  ${res.etag}`,
-      `Last-Modified:         ${res.lastModified}`,
-      `body bytes:            ${res.body.length}`,
-      `citation key:          ${extracted.citationKey}`,
+      `articles:              ${CITED_ARTICLES.length}`,
+      `languages:             ${SERVED_LANGUAGES.length}`,
+      `entries:               ${Object.keys(corpus).length}`,
+      `distinct pinned URIs:  ${uris.size}`,
       `wrote:                 ${outPath}`,
-      `wrote fixture:         ${fixturePath}`,
       '',
     ].join('\n'),
   );
@@ -252,3 +439,4 @@ const entry = process.argv[1];
 if (entry !== undefined && fileURLToPath(import.meta.url) === resolve(entry)) {
   await main();
 }
+
