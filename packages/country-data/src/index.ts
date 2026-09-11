@@ -36,8 +36,22 @@ export {
 } from './verifier.ts';
 export type { Disposition, VerifierResponse, VerifyResult } from './verifier.ts';
 
-export { TTL_DAYS, AGEING_AT, elapsedDays, freshnessOf } from './freshness.ts';
-export type { Freshness } from './freshness.ts';
+export {
+  TTL_DAYS,
+  AGEING_AT,
+  elapsedDays,
+  freshnessOf,
+  degradationFor,
+  freshnessGate,
+  unchangedBumps,
+  assertNoUnchangedBump,
+} from './freshness.ts';
+export type {
+  Freshness,
+  DegradationDescriptor,
+  FreshnessFailure,
+  UnchangedBump,
+} from './freshness.ts';
 
 export {
   EU_COUNTRY_CODES,

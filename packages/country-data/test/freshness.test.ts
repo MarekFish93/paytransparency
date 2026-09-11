@@ -100,8 +100,9 @@ describe('freshness: staleness degrades rather than darkening the site', () => {
   });
 
   test('an ageing fact still renders normally — only stale degrades', () => {
-    const descriptor = degradationFor('2026-07-20', 'volatile', TODAY);
-    expect(freshnessOf('2026-07-20', 'volatile', TODAY)).toBe('ageing');
+    // 83 days: at or past 75% of the 90-day volatile TTL, still inside it.
+    const descriptor = degradationFor('2026-06-20', 'volatile', TODAY);
+    expect(freshnessOf('2026-06-20', 'volatile', TODAY)).toBe('ageing');
     expect(descriptor.render).toBe('normal');
     expect(descriptor.suppressFromShareCard).toBe(false);
   });
@@ -154,8 +155,10 @@ describe('freshness: the build fails only for the launch five', () => {
   });
 
   test('a launch-country fact one day inside its window does not fail the gate', () => {
-    const failures = freshnessGate([withStaleLegalBasis('PL', '2026-06-13')], TODAY);
-    expect(failures).toHaveLength(0);
+    // 89 days. The TTL boundary is inclusive on the stale side, so 90 would fail: the
+    // window that expires "some time after" its stated length is not a window.
+    expect(freshnessGate([withStaleLegalBasis('PL', '2026-06-14')], TODAY)).toHaveLength(0);
+    expect(freshnessGate([withStaleLegalBasis('PL', '2026-06-13')], TODAY)).toHaveLength(1);
   });
 });
 
