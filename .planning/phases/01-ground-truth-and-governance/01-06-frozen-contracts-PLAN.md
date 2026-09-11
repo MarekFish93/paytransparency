@@ -59,6 +59,7 @@ must_haves:
   truths:
     - "Every key of the Conventions block has a recorded decision in the convention document stating whether the Directive fixes it, is silent on it, or sets no value at all; conventions-documented.test.ts fails when a key exists in the type with no corresponding recorded decision, and when a decision exists for a key the type does not have"
     - "A pay value sitting exactly on a quartile boundary is assigned by the recorded quartile tie rule, and the remainder when the headcount does not divide by four goes to the recorded remainder side; both are labelled in the document as project conventions and not as Directive rules"
+    - "Every recorded decision names its default's ORIGIN on its own line, separately from the Directive's position: the Directive's own text, a named and linked external guidance document, explicitly project-invented with no external source, or no default at all. A borrowed convention and a planner-invented one are therefore distinguishable by an auditor rather than reading alike. conventions-documented.test.ts fails on a missing or unrecognised origin, on an external_guidance origin naming no document or no URL, and on any decision whose Directive position is silent claiming the Directive text as its own default's source"
     - "An empty Conventions block, or any single missing key, fails vectors-wellformed.test.ts; there is no default fill and no partial acceptance, because the Directive is genuinely silent on several of these and vendors disagree"
     - "The Conventions keys are enumerated in one fixed order in the type and in the same order in the document, and conventions-documented.test.ts asserts the two orders are equal so a future key cannot be appended to one without the other"
     - "A lifetime total sitting exactly on a bucket boundary falls into the lower bucket — boundaries are inclusive on the lower side and exclusive on the upper — and a value below the first boundary or above the last falls into the named end buckets rather than out of range"
@@ -77,7 +78,8 @@ must_haves:
       provides: "The single shared implementation of the transmitted parameter set, the bucket table and the rounding rule"
       exports: ["SHARE_CONTRACT_VERSION", "TRANSMITTED_KEYS", "SHARE_BUCKETS", "roundGapPct", "bucketLifetime"]
     - path: "packages/directive-engine/docs/CONVENTIONS.md"
-      provides: "One recorded decision per Conventions key, each stating the Directive's position and the project's default"
+      provides: "One recorded decision per Conventions key, each stating the Directive's position, the project's default, and — on its own line, separately — that default's origin: Directive text, a named and linked external guidance document, explicitly project-invented, or no default"
+      contains: "Default origin:"
     - path: "packages/directive-engine/docs/ENGINE-REPORT.md"
       provides: "The frozen contract narrative plus the recorded amendment path"
       contains: "amendment"
@@ -102,7 +104,7 @@ must_haves:
       pattern: "SHARE_BUCKETS|roundGapPct"
   prohibitions:
     - "MUST NOT silently default a calculation convention the Directive does not settle — part-time and full-time-equivalent normalisation in particular has no default and must throw with a named code, because vendors assert it as if it were law and an HR user has to be able to defend the figure to their own auditor"
-    - "MUST NOT present a project convention as a Directive rule; every recorded decision states plainly whether the Directive fixes the point, is silent on it, or sets no value at all, and a silence recorded as a rule is the failure this document exists to prevent"
+    - "MUST NOT present a project convention as a Directive rule, and MUST NOT record a default without naming where it came from; every recorded decision states plainly whether the Directive fixes the point, is silent on it, or sets no value at all, AND names its default's origin as the Directive's own text, a named and linked external guidance document, or explicitly project-invented with no external source. A silence recorded as a rule is the failure this document exists to prevent; an unattributed default is that same failure one level down, because it lets an invented convention borrow the credibility of a sourced one"
     - "MUST NOT place any country, sector, seniority, age, employer, salary figure or date in the transmitted part of a share URL — an edge function is a server with request logs, social platforms fetch the shared URL server-side so the recipient's platform sees the parameters too, and the analytics beacon reports the page URL"
     - "MUST NOT infer a worker category from a job title, and MUST NOT write a default small-group suppression threshold — categories are employer-defined by the Directive's own definition, and no EU-level numeric threshold exists"
     - "MUST NOT write Article 9 metric arithmetic in this phase; the vectors and the report type are the executable specification the engine must later satisfy, and an implementation written now would be written against itself"
@@ -201,6 +203,9 @@ recorded decisions. Do not pre-emptively split — the shared-document drift ris
     - Test: every key in `CONVENTION_KEYS` has a matching recorded decision heading in the convention document, asserted by set equality so a missing decision and an orphan decision both fail with the offending key named
     - Test: the ordered list of `CONVENTION_KEYS` equals the ordered list of decision headings in the document, so a key appended to one but not the other fails
     - Test: every recorded decision states one of exactly three Directive positions — fixed, silent, or no EU value exists — and a decision stating none of them fails
+    - Test: every recorded decision ALSO carries a `Default origin:` line in one of exactly four forms — directive_text, external_guidance naming both a document and a URL, project_invented, or no_default — and a decision whose origin line is absent, unrecognised, or an external_guidance form naming no document or no URL fails with the offending key named
+    - Test: no decision whose Directive position is silent declares directive_text as its default origin — a project default may not cite the Directive's silence as its own source, which is presenting a project convention as a Directive rule one level down
+    - Test: the joinerLeaverPolicy decision's origin is project_invented stated in those words, so an invented default is distinguishable from the borrowed one under quartileTieRule
     - Test: the decision for part-time and full-time-equivalent normalisation records no default and records that a missing value throws
     - Test: the decision for small-group suppression records a null default and records that no EU-level numeric threshold exists
     - Test: every `MetricValue` position in the report type declares a `definitionCite`, and every one of those keys matches the citation-key SHAPE plan 01 fixed — the CELEX id, a hash separator, then the publisher's three-digit article id, a dot, and the three-digit paragraph id — and names an article from the phase's cited set. Resolution against the stored corpus is deliberately NOT asserted here: the corpus is filled by plan 03 in this plan's own wave and holds a single entry when this plan starts, so an assertion made here would either fail or be quietly weakened. Plan 07 owns the resolve assertion and runs in a later wave against a complete corpus
@@ -245,9 +250,32 @@ an implementation written now would be written against itself.
 decisions, no more and no fewer — in `CONVENTION_KEYS` order. Each decision is a level-2 heading whose
 text is EXACTLY the convention key name, so `conventions-documented.test.ts` extracts the headings with
 one pattern over the level-2 headings and the ordered comparison against `CONVENTION_KEYS` is mechanical
-rather than fuzzy. Under each heading: the Directive's position in one of exactly three words —
-**fixed**, **silent**, or **none** — the quoted text that fixes it where it is fixed, the project's
-recorded default, and whether an override is accepted.
+rather than fuzzy. Under each heading, FOUR required elements: the Directive's position in one of
+exactly three words — **fixed**, **silent**, or **none**; the quoted text that fixes it where it is
+fixed; the project's recorded default and whether an override is accepted; and a line beginning
+`Default origin:` naming where that default came from.
+
+The position word and the origin are ORTHOGONAL and must never be conflated. The position describes what
+the DIRECTIVE says. The origin describes where the PROJECT'S OWN DEFAULT came from. Without the second,
+a convention borrowed from a real national guidance document and a convention the project invented read
+identically to an auditor — which is threat T-1-22 one level down, and the reason `quartileTieRule`
+being attributed while `joinerLeaverPolicy` is not would otherwise be a real gap. An invented default is
+LEGITIMATE under D-14 as long as it is documented and overridable; what is not legitimate is an invented
+default that cannot be told apart from a sourced one.
+
+The `Default origin:` line takes one of exactly four forms, and nothing else parses:
+ - **`directive_text`** — the default is what the Directive's own wording dictates, including a null
+   default that encodes the Directive's explicit absence of a value. No project judgement was added.
+ - **`external_guidance: <document name> — <url>`** — the default is borrowed from a named, citable
+   external guidance document. The name and the URL are BOTH required; an `external_guidance` line
+   naming no document or carrying no URL fails the test rather than passing as an attribution.
+ - **`project_invented`** — the project chose it and NO external source supplies it. The decision must
+   say exactly that, in those words, so a reader is never left to assume a source exists.
+ - **`no_default`** — no default value is recorded at all; the caller supplies the value, or a missing
+   value throws.
+A decision whose position word is **silent** may NOT declare `directive_text` — a project default
+cannot cite the Directive's silence as its own source. That single cross-check is what makes the whole
+rule mechanical rather than a matter of drafting care.
 
 The substance, one bullet per key, in `CONVENTION_KEYS` order, from the authentic text:
  1. `denominator` — **fixed** by the gender-pay-gap and median-gender-pay-gap definitions, which both
@@ -293,6 +321,21 @@ The substance, one bullet per key, in `CONVENTION_KEYS` order, from the authenti
  11. `referencePeriod` — **fixed** as the previous calendar year; reject any non-calendar-year range.
     No override.
 
+The `Default origin:` line each of the eleven decisions carries, stated here so no decision is left to
+invent its own attribution: `denominator` **directive_text**; `medianRule` **external_guidance** if a
+guidance document stating the lower-of-two rule can actually be named and linked, otherwise
+**project_invented**; `quartileTieRule` **external_guidance**, naming the national guidance the
+proportional allocation is borrowed from together with its URL; `quartileRemainder`
+**external_guidance** if that same named document also settles the remainder side, otherwise
+**project_invented**; `payBasis` **no_default**; `partialPeriodPolicy` **no_default**;
+`joinerLeaverPolicy` **project_invented** — the default is reasonable and it is overridable, which is
+what D-14 asks for, but no external document supplies it and the decision must say so in those words
+rather than let a reader assume one does; `sexMapping` **no_default**; `componentMap` **no_default**;
+`minGroupSize` **directive_text**, because the null default encodes the Directive's own absence of a
+numeric threshold and adds no project judgement; `referencePeriod` **directive_text**. Where a bullet
+above says the executor must find the source, finding none means **`project_invented`** — never an
+unattributed default, and never a borrowed-sounding phrase with no document behind it.
+
 Two points that were drafted as convention bullets are NOT convention keys and get no heading in this
 document — they are a Directive-fixed definition and a v1 scope statement respectively, and they move to
 `ENGINE-REPORT.md` where the metric positions are narrated. Leaving them here would put thirteen
@@ -321,17 +364,20 @@ alternative to a recorded path is silent drift or an ugly workaround.
     - `conventions-documented.test.ts` passes with the Directive corpus holding only the single Art. 7(4) entry plan 01 wrote — the shape check is the whole of this plan's citation assertion, and a test that needed a filled corpus would be asserting plan 03's output from inside plan 03's own wave
     - `EngineReport` declares `draft` as the literal `true`, not as a boolean
     - `packages/directive-engine/docs/CONVENTIONS.md` contains exactly eleven level-2 headings, their texts equal `CONVENTION_KEYS` as an ordered list, and each carries exactly one of the three position words
+    - Each of the eleven decisions carries exactly one `Default origin:` line in one of the four recognised forms; a decision with none, with two, or with an unrecognised form fails
+    - Every `external_guidance` origin names both a document and a URL; the `quartileTieRule` decision carries one, and the `joinerLeaverPolicy` decision carries `project_invented` in those exact words
+    - No decision whose position word is `silent` declares `directive_text` as its default origin, asserted mechanically across all eleven decisions rather than by reading
     - The eleven heading texts in `CONVENTIONS.md` are exactly the eleven `CONVENTION_KEYS` strings and nothing else, so the ordered comparison is an equality rather than a subset check; `ENGINE-REPORT.md` is asserted to carry the category-of-workers definition and the per-country currency scope statement, which is where the two non-key points went
     - The part-time decision records no default value and records a throwing behaviour; the suppression decision records a null default
     - `packages/directive-engine/docs/ENGINE-REPORT.md` contains an amendment-path section naming all three artefacts that must change together
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts</automated>
-    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 6 cases are reported (one of the six behaviours was not registered)</fails_when>
+    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 9 cases are reported (one of the nine behaviours was not registered)</fails_when>
     <automated>pnpm typecheck</automated>
     <fails_when>non-zero exit, or stderr contains `error TS`</fails_when>
   </verify>
-  <done>The report contract is frozen with a written amendment path, and every convention key carries a recorded decision that states plainly whether the Directive fixes it, is silent on it, or sets no value at all.</done>
+  <done>The report contract is frozen with a written amendment path, and every convention key carries a recorded decision that states plainly whether the Directive fixes it, is silent on it, or sets no value at all — and, separately, where the project's own default came from, so a borrowed convention and an invented one can be told apart.</done>
 </task>
 
 <task type="checkpoint:decision" gate="blocking-human">
@@ -569,6 +615,7 @@ of these exists before this phase.
 | T-1-20 | Information disclosure | Bucket width chosen without modelling what a log line reveals | high | mitigate | A k-anonymity floor is a required element of the contract, every bucket declares a population estimate asserted at or above it, and a worked adversarial read of an actual log line is a required section whose absence fails a verify command. The boundaries themselves are chosen at a blocking-human checkpoint rather than by an agent. |
 | T-1-21 | Tampering | The result page and the card renderer rounding differently | medium | mitigate | One rounding function and one bucketing function exist, in one file, imported by both consumers; the tie direction is stated in the document and asserted at a tie value rather than inherited from a language default. |
 | T-1-22 | Repudiation | A project convention presented to an auditor as a Directive rule | high | mitigate | Every recorded decision states the Directive's position in one of exactly three words and a decision stating none of them fails the documented-conventions test; the report type echoes `conventionSource` per key so every figure carries which convention produced it and where that convention came from. |
+| T-1-22b | Repudiation | A planner-invented default presented to an auditor as a borrowed or sourced convention | medium | mitigate | Each decision carries a separate `Default origin:` line in one of four recognised forms; an invented default must read `project_invented` in those words, an `external_guidance` origin must name both a document and a URL, and a decision whose Directive position is `silent` may not claim `directive_text`. All three are asserted by `conventions-documented.test.ts`, so the distinction survives a rewrite rather than depending on drafting care. |
 | T-1-23 | Tampering | A golden vector that is wrong becoming the engine's specification | high | mitigate | Each answer is hand-computed with its working shown, then independently re-derived in plan 07 by a different agent that never reads `expected.json`; a disagreement is treated as an ambiguous convention and fixed in the document rather than in either number. |
 | T-1-SC | Tampering | npm installs | high | mitigate | No package is installed by this plan and `packages/directive-engine` declares an empty dependencies object; the audited, pinned dev toolchain from plan 01 is unchanged. |
 </threat_model>

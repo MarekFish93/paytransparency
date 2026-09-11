@@ -21,7 +21,7 @@ files_modified:
   - docs/POLISH-UPL-GATE.md
   - docs/BAD-PR-DRILL.md
 autonomous: false
-requirements: [LEGAL-08, LEGAL-10]
+requirements: [LEGAL-03, LEGAL-08, LEGAL-10]
 
 estimate:
   tokens: 68000
@@ -37,13 +37,17 @@ must_haves:
     - "The repository is public only after all five drill pull requests have been shown to be rejected, and only after the placeholder name has been replaced by a decided one"
     - "A statute or journal-reference pattern appearing anywhere in a country record must sit inside a fact with status verified carrying at least one source, so an unsourced statute string cannot be expressed at all"
     - "A pull request that advances a fact's verified_at without changing its value fails the lint, so a date cannot move without a value moving"
+    - "Every citation key in resolve()'s DIRECTIVE_FALLBACK_KEYS table, and every directive_fallback citation key held by any file under data/ or proposed/, names an entry that actually EXISTS in packages/country-data/data/_directive.json; a key that resolves to nothing fails naming both the key and the record that carries it. Plan 04 could assert only the key SHAPE, because plan 03 was filling that corpus in plan 04's own wave and a legal-basis fallback key did not exist yet; this plan is the first point at which the full 66-entry corpus and all 27 records exist together, and it runs before the irreversible go-public step (LEGAL-03)"
     - "Every country record path and every letter path carries a code owner with required review, and no path in the legal dataset can be merged by automation alone"
     - "The launch-country freshness hard gate runs as its own named CI job so a stale launch-country legally-operative fact blocks the build, while a stale fact anywhere else produces a warning annotation and the build continues"
     - "The Polish unauthorised-practice question is written down as a named, dated gate stating precisely what needs a Polish-qualified answer, what the current low-confidence position is, and what ships only once it is cleared"
   artifacts:
     - path: "packages/country-data/src/lint.ts"
-      provides: "The policy-lint layer L1 through L8 on top of schema parse"
+      provides: "The policy-lint layer L1 through L9 on top of schema parse"
       exports: ["lintAll", "L1_fileCoverage", "L2_verifiedHasSource", "L3_pendingIsNull", "L4_noUnsourcedStatute", "L5_urlHygiene", "L6_linkLiveness", "L7_letterCoverage", "L8_freshness", "L9_proposedCannotVerify"]
+    - path: "packages/country-data/scripts/validate.ts"
+      provides: "The validate:country-data entry point — schema parse, then lintAll over data/ and proposed/, then the cross-artefact referential pass that resolves every directive_fallback citation key against the stored Directive corpus"
+      exports: ["assertFallbackKeysResolve"]
     - path: ".github/workflows/legal-data.yml"
       provides: "The pull-request profile with named jobs for schema and lint, the offline suite, and the launch-country freshness gate"
       contains: "freshness-gate"
@@ -65,6 +69,10 @@ must_haves:
       to: "packages/country-data/scripts/validate.ts"
       via: "the schema-and-lint job runs the validate script, which runs lintAll over the data and proposed directories"
       pattern: "validate:country-data|lintAll"
+    - from: "packages/country-data/scripts/validate.ts"
+      to: "packages/country-data/data/_directive.json"
+      via: "assertFallbackKeysResolve looks up every directive_fallback citation key — from DIRECTIVE_FALLBACK_KEYS and from every record under data/ and proposed/ — in the stored corpus and fails naming the key and the carrying record. This is the resolve half of the link plan 04 could only assert as a shape, deferred here because plan 03 fills the corpus in plan 04's own wave"
+      pattern: "assertFallbackKeysResolve|DIRECTIVE_FALLBACK_KEYS"
     - from: "packages/country-data/src/lint.ts"
       to: "packages/country-data/src/allowlist.ts"
       via: "L5 url hygiene delegates host checking to assertFetchable so there is one allowlist implementation"
@@ -96,7 +104,8 @@ was never enacted. There is no reputational recovery path as cheap as prevention
 — a letter to an employer — has already been sent. The drill is a deliverable rather than a check:
 until each gate has been shown to reject, "the gates work" is an assertion.
 
-Output: the nine-rule policy lint on top of schema parse, the pull-request profile wired end to end,
+Output: the nine-rule policy lint plus the fallback-key referential pass on top of schema parse, the
+pull-request profile wired end to end,
 the full governance document set including the legal-error channel and the public correction log, the
 written Polish gate, five rejected drill pull requests with their links, and a public repository.
 </objective>
@@ -163,6 +172,8 @@ The shape is being kept.
   <read_first>
     - packages/country-data/src/country.ts — `EU_COUNTRY_CODES`, `LAUNCH_COUNTRIES` and the record schema the lint runs on top of
     - packages/country-data/src/allowlist.ts — `assertFetchable`, which L5 must delegate to rather than re-implement
+    - packages/country-data/src/resolve.ts — `DIRECTIVE_FALLBACK_KEYS`, the per-field fallback citation-key table plan 04 authored but could only assert the SHAPE of, because plan 03 was filling the Directive corpus in plan 04's own wave
+    - packages/country-data/data/_directive.json — the COMPLETE 66-entry corpus by the time this plan runs, which is what makes the referential pass possible here and not earlier
     - packages/country-data/src/freshness.ts — `freshnessGate` and `assertNoUnchangedBump`, which L8 and the bump rule delegate to
     - packages/country-data/src/verifier.ts — `verifySource` and the `Disposition` union the source-verification script consumes
     - .planning/research/ARCHITECTURE.md § 2 "The CI gate is two layers" — the L1 through L8 table with its on-pull-request and nightly columns and its severities
@@ -180,6 +191,7 @@ The shape is being kept.
     - Test L9: a file in the proposed directory carrying any fact with status verified fails, with the message stating that promotion is a maintainer action
     - Test: `assertNoUnchangedBump` is invoked by the lint, and a record pair differing only in verified_at fails
     - Test: running the lint twice over an unchanged tree produces identical output, and the lint never writes to the data directory — asserted by comparing a directory listing and modification times before and after
+    - Test "fallback keys resolve": `assertFallbackKeysResolve` fails, naming both the key and the carrying record, when a key in `DIRECTIVE_FALLBACK_KEYS` or a `directive_fallback` value in any file under data/ or proposed/ names an entry absent from `_directive.json`; it passes over the real tree, where the corpus is complete and every fallback key resolves. Name the case exactly `fallback keys resolve` — VALIDATION.md's LEGAL-03 wave-4 row selects it by that string
   </behavior>
   <action>
 `packages/country-data/src/lint.ts` implements the policy layer above schema parse. Export each rule
@@ -211,10 +223,21 @@ Also invoke `assertNoUnchangedBump` across the changed-file set so a date cannot
 advancing.
 
 `packages/country-data/scripts/validate.ts` is the entry point for `validate:country-data`: parse every
-file in the data and proposed directories against the schema, then run `lintAll`, then print a per-rule
-summary and exit non-zero on any error-severity failure. It is READ-ONLY — it must never write to the
-data directory, which is what lets a nightly full-set run and a pull-request run execute at the same
-time against the same files without racing.
+file in the data and proposed directories against the schema, run `lintAll`, run
+`assertFallbackKeysResolve`, then print a per-rule summary and exit non-zero on any error-severity
+failure. It is READ-ONLY — it must never write to the data directory, which is what lets a nightly
+full-set run and a pull-request run execute at the same time against the same files without racing.
+
+`assertFallbackKeysResolve` is a CROSS-ARTEFACT referential pass, not a numbered policy rule — L1 to L9
+each judge one record in isolation, while this one needs two artefacts to exist at once. It loads
+`packages/country-data/data/_directive.json`, collects every citation key in
+`DIRECTIVE_FALLBACK_KEYS` together with every `directive_fallback` value in every file under data/ and
+proposed/, and fails naming both the key and the record that carries it when a key is absent from the
+corpus. It lives HERE rather than in plan 04 because plan 04 runs in the same wave as plan 03, the
+corpus's only writer, where a legal-basis fallback key genuinely does not exist yet; plan 04 therefore
+asserts the key SHAPE and this plan asserts that the keys resolve. This plan is the first point at which
+the 66-entry corpus and all 27 records exist together, and it is upstream of the irreversible go-public
+step — which is the whole reason the deferral is safe.
 
 `packages/country-data/scripts/verify-sources.ts` is the entry point for `verify:sources`: for each
 changed source, dispatch through `verifySource` on its declared strategy and report the disposition.
@@ -237,18 +260,21 @@ L9 enforces.
     - L7 records a skip with a stated reason when the letters package is absent, and the skip is reported rather than counted as a pass
     - L9 fails for a proposed file with a verified fact and passes for the five proposal files as authored in plan 04
     - `validate:country-data` exits non-zero when any error-severity rule fails, and zero when only warnings fire
+    - `assertFallbackKeysResolve` passes over the real tree — every key in `DIRECTIVE_FALLBACK_KEYS` and every `directive_fallback` value under data/ and proposed/ is found in `_directive.json` — and fails on a crafted record whose fallback key is absent, with the message naming the key and the record
     - Running `validate:country-data` leaves every file in the data directory with an unchanged modification time
     - `.github/workflows/legal-data.yml` defines jobs named exactly `schema-and-lint`, `offline-suite` and `freshness-gate`, and still performs no external fetch
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/country-data/test/lint.test.ts</automated>
-    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 9 cases are reported (one of the nine lint behaviours was not registered)</fails_when>
+    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 10 cases are reported (one of the ten behaviours above — nine lint behaviours plus the fallback-key referential pass — was not registered)</fails_when>
+    <automated>pnpm vitest run packages/country-data/test/lint.test.ts -t "fallback keys resolve"</automated>
+    <fails_when>reports `0 passed` or `no tests found` — the VALIDATION.md filter for the LEGAL-03 wave-4 row no longer selects a case, so the resolve half plan 04 deferred is unasserted anywhere</fails_when>
     <automated>pnpm validate:country-data</automated>
     <fails_when>non-zero exit on the current clean tree, or the printed per-rule summary omits any of the rule identifiers L1 through L9</fails_when>
     <automated>gh run list --workflow=legal-data.yml --limit 1 --json conclusion,jobs --jq '.[0].conclusion'</automated>
     <fails_when>prints anything other than `success`, or prints nothing (the workflow has not run since the jobs were added)</fails_when>
   </verify>
-  <done>Schema parse plus nine named policy rules run on every pull request, the promotion boundary is enforced by a rule rather than by review discipline, and the launch-country freshness gate is its own visible job.</done>
+  <done>Schema parse plus nine named policy rules and the fallback-key referential pass run on every pull request, the promotion boundary is enforced by a rule rather than by review discipline, and the launch-country freshness gate is its own visible job.</done>
 </task>
 
 <task type="auto">
@@ -469,7 +495,8 @@ auto-merge is disabled. Then set the repository visibility to public.
 See `01-01-cellar-spine-PLAN.md` → "Artifacts this phase produces" for the phase-wide list. This plan
 specifically creates: `lintAll` and the nine named rules `L1_fileCoverage`, `L2_verifiedHasSource`,
 `L3_pendingIsNull`, `L4_noUnsourcedStatute`, `L5_urlHygiene`, `L6_linkLiveness`, `L7_letterCoverage`,
-`L8_freshness`, `L9_proposedCannotVerify`; the scripts `packages/country-data/scripts/validate.ts` and
+`L8_freshness`, `L9_proposedCannotVerify`; the cross-artefact referential pass
+`assertFallbackKeysResolve`; the scripts `packages/country-data/scripts/validate.ts` and
 `packages/country-data/scripts/verify-sources.ts`; the workflow jobs `schema-and-lint`, `offline-suite`
 and `freshness-gate` in `.github/workflows/legal-data.yml`; and the documents `.github/CODEOWNERS`,
 `.github/PULL_REQUEST_TEMPLATE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `REPORTING-LEGAL-ERRORS.md`,

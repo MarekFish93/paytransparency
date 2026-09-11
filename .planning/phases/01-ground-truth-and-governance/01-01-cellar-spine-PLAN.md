@@ -384,7 +384,7 @@ plus `packages/country-data/country.schema.json` (emitted, committed),
 
 **Governance documents (plan 05)**
 `.github/CODEOWNERS`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/legal-data.yml`
-lint steps `L1`–`L8`, `CONTRIBUTING.md`, `REPORTING-LEGAL-ERRORS.md`, `CHANGELOG-legal.md`,
+lint steps `L1`–`L9`, `CONTRIBUTING.md`, `REPORTING-LEGAL-ERRORS.md`, `CHANGELOG-legal.md`,
 `SECURITY.md`, `proposed/README.md`, `docs/POLISH-UPL-GATE.md`, `docs/BAD-PR-DRILL.md`.
 </artifacts_this_phase_produces>
 

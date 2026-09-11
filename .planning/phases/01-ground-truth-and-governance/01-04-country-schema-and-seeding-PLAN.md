@@ -52,6 +52,7 @@ autonomous: true
 requirements: [LEGAL-01, LEGAL-02, LEGAL-03, LEGAL-04, LEGAL-05, LEGAL-06, LEGAL-08]
 coupling_justified:
   - "01-02-verifier-strategies: both plans derive their source-host set from the same eleven-domain probe table in 01-RESEARCH.md § 'Governance Gates' point 1 — plan 02 writes it into allowlist.json, this plan writes hosts drawn from it into the seeded and proposed files. Neither reads the other's output and either order produces the same result; plan 05's url-hygiene rule is where the two are checked against each other, and it runs in a later wave."
+  - "01-03-directive-corpus: plan 03 is the sole WRITER of packages/country-data/data/_directive.json and this plan's resolve.ts is a READER of it, in the same wave with no dependency edge between them. No files_modified entry overlaps — this plan never writes the corpus. The read is made order-independent by SCOPE rather than by ordering: every corpus assertion this plan makes uses only the citation key 32023L0970#007.004, which plan 01 wrote in wave 1 and which plan 03's own must_haves require it to preserve, so the assertion holds whether plan 03 runs before, during or after this plan. The assertion that EVERY directive_fallback key resolves against the filled corpus is deliberately NOT made here; plan 05 owns it in wave 4, when the 66-entry corpus and all 27 records exist together, and it runs before the go-public gate."
 
 estimate:
   tokens: 88000
@@ -65,7 +66,7 @@ must_haves:
     - "A member state that has notified no implementing measure stores discovery_hints as an empty array and a transposition status value meaning that no implementing measure was notified to the Commission as at the query date — never null, and never a claim that the state has not transposed"
     - "discovery_hints are sorted by notification date ascending then by CELEX id ascending, so re-running the seed produces a byte-identical file and a real change is the only thing that shows up in a diff"
     - "When a national legal basis is verified and is identical in substance to the Directive default, the fact stays status verified with deviates false; it is never collapsed into directive_default, because 'national law independently says this' and 'the Directive applies here' are different claims"
-    - "A country with no verified national basis resolves to directive_fallback with the Directive article as the citation and an explicit label, never to null and never to a national citation"
+    - "A country with no verified national basis resolves to directive_fallback with the Directive article as the citation and an explicit label, never to null and never to a national citation. THIS PLAN asserts that against the response-deadline fallback and the citation key 32023L0970#007.004 only — the single corpus entry plan 01 wrote in wave 1 and plan 03 preserves — because plan 03 is filling the corpus in this plan's own wave and a legal-basis fallback key does not exist until it has. That EVERY fallback key resolves against the complete corpus is asserted by plan 05's referential pass in wave 4"
     - "resolve() precedence is fixed and total: a verified national value wins, then directive_fallback, then pending_verification; a record carrying both a national value and a fallback marker resolves to the national value"
     - "A national response deadline of exactly two months resolves with deviates false; one month or ten weeks resolves with deviates true"
     - "A country whose response-deadline fact is pending_verification resolves to the Directive's own two-month backstop wording under directive_fallback — never to an empty value, never to null rendered as a blank, and never to a national deadline string"
@@ -90,7 +91,7 @@ must_haves:
       contains: "EU_COUNTRY_CODES"
     - path: "packages/country-data/src/resolve.ts"
       provides: "The single place 'two months unless national law verifiably says otherwise' is decided"
-      exports: ["resolve", "Provenance", "ResolvedFact"]
+      exports: ["resolve", "Provenance", "ResolvedFact", "DIRECTIVE_FALLBACK_KEYS"]
     - path: "packages/country-data/scripts/seed-from-nim.ts"
       provides: "One SPARQL pull over the Commission National Implementing Measures register, deduplicated, sentinel-cleaned, written as discovery hints"
       exports: ["seedFromNim", "dedupeNimRows", "nullSentinel"]
@@ -109,7 +110,7 @@ must_haves:
       pattern: "discovery_hints"
     - from: "packages/country-data/src/resolve.ts"
       to: "packages/country-data/data/_directive.json"
-      via: "a directive_fallback resolution reads the Directive citation from the corpus by citation key rather than repeating a string 27 times"
+      via: "a directive_fallback resolution reads the Directive citation from the corpus by citation key rather than repeating a string 27 times. This plan asserts the link against the single key 32023L0970#007.004, present from wave 1 and preserved by plan 03; the SCHEMA itself reads no corpus file and checks the citation-key SHAPE only, so parse never depends on how far plan 03 has got. Plan 05 owns the referential assertion that every fallback key resolves, in wave 4 against the complete corpus"
       pattern: "32023L0970#"
     - from: "packages/country-data/src/freshness.ts"
       to: "packages/country-data/src/country.ts"
@@ -219,13 +220,14 @@ The wider `CountryRecord` field layout is a SEPARATE decision and is rated **cos
     - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Art. 12(3) — verbatim, and a scope correction the roadmap needs" — the authentic text, the identifiability condition, the three bodies, and the distinction from Art. 7(2)
     - .planning/phases/01-ground-truth-and-governance/01-CONTEXT.md D-06 and D-07 — who may set verified, and the explicit suppressed-national-citation state
     - .planning/research/PITFALLS.md § "Pitfall 2" — the per-field volatility model and the warning signs of provenance theatre
+    - packages/country-data/data/_directive.json — the Directive corpus AS IT EXISTS WHEN THIS PLAN RUNS: exactly one entry, `32023L0970#007.004`, the authentic Art. 7(4) two-month wording plan 01 wrote in wave 1. Plan 03 grows it to 66 entries in THIS PLAN'S OWN WAVE, concurrently and with no ordering guarantee, so every corpus assertion in this task must use that one key and must stay true after plan 03 lands. Nothing in this task may assert the corpus's SIZE or the absence of a key
   </read_first>
   <behavior>
     - Test "verified requires source": a fact with status verified and an empty sources array fails parse with a message naming the missing citation; a verified fact with no verified_at fails parse
     - Test "pending must be null": a fact with status pending_verification and a non-null value fails parse
     - Test "human confirm": a launch-country legally-operative field with status verified and a null verified_by fails parse; the same field in a non-launch country passes
     - Test "art_12_3": a record whose art_12_3 value is a bare boolean fails parse; a record whose art_12_3 value is a condition object with the three bodies passes; art_12_3 and art_7_2 are independent and a record may carry both
-    - Test "fallback": resolve() on a record with no verified national basis returns provenance directive_fallback, a citation drawn from the Directive corpus by citation key, and never a national citation string
+    - Test "fallback": resolve() on a record whose response-deadline fact is pending_verification returns provenance directive_fallback, the citation drawn from the Directive corpus by the key `32023L0970#007.004`, and never a national citation string. Use THAT key and no other — it is the one entry present from wave 1 and preserved by plan 03, so the case passes whether or not plan 03 has finished filling the corpus alongside this plan. A legal-basis fallback would need an Art. 7(1)-shaped key that does not exist until plan 03 runs and is deliberately NOT asserted here; plan 05's wave-4 referential pass covers every fallback key against the complete corpus
     - Test: resolve() returns provenance national with deviates false when the verified national deadline is exactly two months, and deviates true when it is one month
     - Test: resolve() precedence is total — a record holding both a verified national value and a fallback marker returns the national value
     - Test: a country code outside the 27-member set fails parse
@@ -268,8 +270,16 @@ Record shape, following ARCHITECTURE.md §2 and amended by this phase's decision
  - `transposition.status.value` of `draft` requires at least one source whose own `says_draft` flag is
    true — where the underlying source says draft, the data must say draft, and a contributor ticks that
    box rather than a reviewer hoping
- - a fact with status `directive_fallback` must have a `value` that resolves to a citation key present
-   in the Directive corpus, and must NOT carry a national citation string
+ - a fact with status `directive_fallback` must have a `value` whose citation key matches the fixed
+   citation-key SHAPE — the CELEX id, a hash separator, the publisher's three-digit article id, a dot,
+   the three-digit paragraph id — naming an article from the phase's cited set, and must NOT carry a
+   national citation string. Assert the SHAPE and the article set, and nothing more. Do NOT make schema
+   parse read `data/_directive.json`: plan 03 fills that corpus in this plan's own wave and it holds the
+   single entry `32023L0970#007.004` at this plan's start, so a parse-time assertion that a key RESOLVES
+   would fail for any key plan 03 has not yet written, and weakening it to make it pass would hide the
+   check. Plan 05 owns the resolve half — a cross-artefact referential pass in `scripts/validate.ts`,
+   running in wave 4 when the 66-entry corpus and all 27 records exist together, and running before the
+   go-public gate
 
 `packages/country-data/src/resolve.ts` exports `resolve(fact, fallback)` returning
 `{ value, provenance, deviates, sources, verifiedAt, ageDays, freshness, label }`. `Provenance` is
@@ -279,6 +289,15 @@ Record shape, following ARCHITECTURE.md §2 and amended by this phase's decision
 total and ordered: a verified national value, then `directive_fallback`, then `pending_verification`
 as unknown. `deviates` is computed, never authored. Every renderer calls `resolve`; nothing reads
 `fact.value` directly.
+
+Export the per-field fallback citation keys from `resolve.ts` as one named constant —
+`DIRECTIVE_FALLBACK_KEYS` — so plan 05's referential pass has a single place to enumerate rather than
+having to scrape the module. Author the whole table, including the keys for articles plan 03 has not yet
+written; the table is a declaration of intent, not a claim that each key exists yet. Only the
+response-deadline entry, `32023L0970#007.004`, is exercised in this plan's tests, because it is the one
+key present in the corpus from wave 1. `resolve()` must fail loudly with the missing key named when a
+lookup misses — never silently fall through to null — so plan 05's pass has something to report and a
+Phase 3 renderer can never render a blank where a Directive citation belongs.
 
 `packages/country-data/scripts/emit-json-schema.ts` converts the Zod record schema to JSON Schema and
 writes `packages/country-data/country.schema.json`, which is COMMITTED. Every data file carries a
@@ -299,6 +318,8 @@ stripping — no enums, no namespaces, no parameter properties — and add no sc
     - `resolve()` returns four distinct `provenance` values across four crafted records
     - `packages/country-data/country.schema.json` exists, parses as JSON, and declares `country.code` as an enum of 27 values
     - `pnpm vitest run packages/country-data/test/schema.test.ts -t "verified requires source"` selects and passes; the same for `-t "pending must be null"`, `-t "human confirm"` and `-t "art_12_3"`
+    - `packages/country-data/src/country.ts` contains no read of `data/_directive.json` — the schema asserts the citation-key shape, never corpus membership, so schema parse is satisfiable against the corpus as it exists in this plan's wave
+    - The only Directive citation key appearing in `resolve.test.ts` is `32023L0970#007.004`, and no case in this plan asserts a corpus entry count or the absence of a key — every corpus assertion here stays true after plan 03 fills the corpus in the same wave
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/country-data/test/schema.test.ts</automated>
