@@ -52,3 +52,20 @@ export type {
   EngineCode,
   EngineReport,
 } from './types.ts';
+
+export {
+  SHARE_CONTRACT_VERSION,
+  K_ANONYMITY_FLOOR,
+  GAP_VALUES_PER_BAND,
+  MODELLED_ELIGIBLE_BASE,
+  SHARE_ERROR_NOT_FINITE,
+  TRANSMITTED_KEYS,
+  SHARE_BUCKETS,
+  cellEstimate,
+  roundGapPct,
+  bucketLifetime,
+  buildShareUrl,
+  transmittedKeysOf,
+} from './share-url-contract.ts';
+
+export type { TransmittedKey, ShareBucket, ShareInput } from './share-url-contract.ts';

@@ -1,15 +1,21 @@
 /**
- * RED-PHASE SKELETON — the shapes are here, the recorded decision is not.
+ * The share-URL contract, implemented ONCE.
  *
- * `roundGapPct` deliberately delegates to the language's default rounding and
- * `SHARE_BUCKETS` holds a single placeholder band, so that
- * `test/share-url-contract.test.ts` fails on the two things that actually matter:
- * a rounding rule that is whatever the platform happens to do is not a recorded
- * decision, and a bucket table that has not been checked against a k-anonymity floor
- * is an aesthetic judgement rather than a checkable property.
+ * The result page and the card renderer both import from here, so the card can never
+ * contradict the page the worker just read. Without this file, "the engine and the card
+ * round identically" would be a sentence in a document rather than a property, and the
+ * first time they disagreed the worker would be the one to notice.
  *
- * Both are replaced in the GREEN commit with the values chosen at the plan's
- * blocking-human checkpoint.
+ * The three numbers below — the band edges, the rounding rule, and the k-anonymity floor
+ * — were chosen by a human at a blocking checkpoint, not by an agent, because they are
+ * one-way: a transmitted URL persists in social-media caches, in the edge worker's
+ * request log and in the analytics beacon, so narrowing a band later cannot retract what
+ * was already sent and widening one breaks links already shared.
+ *
+ * Everything here is pure, takes no dependency, and computes no Article 9 metric.
+ *
+ * The full specification, including the worked adversarial read, is `docs/share-url-contract.md`
+ * at the repository root.
  */
 
 /** Bumped whenever the bucket table or the rounding rule changes, so a change is additive. */
@@ -51,9 +57,41 @@ export interface ShareBucket {
   populationEstimate: number;
 }
 
-/** RED placeholder — one band covering nothing in particular, with no population behind it. */
+/**
+ * The conservative eligible base the population estimates are modelled from: EU workers
+ * employed by organisations inside the Directive's Article 9 reporting scope.
+ *
+ * Deliberately far below any plausible real figure. A k-anonymity floor is only worth
+ * having if the number underneath it errs downwards — an optimistic base would let a
+ * band pass the floor on arithmetic that reality does not support.
+ *
+ * MODELLED, NOT VERIFIED. See `docs/share-url-contract.md` §6 for the derivation and the
+ * pending-verification note: a sourced figure must replace this before the card ships.
+ */
+export const MODELLED_ELIGIBLE_BASE = 20_000_000;
+
+/**
+ * Eight bands on a roughly logarithmic scale, chosen at the checkpoint (option
+ * `medium-8`) with the top band OPEN-ENDED as the explicit condition of that choice.
+ *
+ * A closed top band is more identifying precisely where the population thins, which was
+ * the stated weakness of this option; `over-300k` therefore has no upper edge and never
+ * acquires one. Each band is half-open as `(minExclusive, maxInclusive]`, so a total
+ * sitting exactly on a boundary is claimed by the band BELOW it.
+ *
+ * The floor band is labelled "up to €10k" rather than "under €10k" because it also
+ * claims a zero and a negative lifetime total — a negative gap is a real result, and the
+ * card has to be able to carry it without the band label lying about it.
+ */
 export const SHARE_BUCKETS: readonly ShareBucket[] = [
-  { id: 'upto-10k', minExclusive: null, maxInclusive: 10_000, label: 'up to €10k', populationEstimate: 0 },
+  { id: 'upto-10k', minExclusive: null, maxInclusive: 10_000, label: 'up to €10k', populationEstimate: 4_800_000 },
+  { id: '10k-20k', minExclusive: 10_000, maxInclusive: 20_000, label: '€10k–€20k', populationEstimate: 3_200_000 },
+  { id: '20k-40k', minExclusive: 20_000, maxInclusive: 40_000, label: '€20k–€40k', populationEstimate: 3_800_000 },
+  { id: '40k-75k', minExclusive: 40_000, maxInclusive: 75_000, label: '€40k–€75k', populationEstimate: 3_400_000 },
+  { id: '75k-125k', minExclusive: 75_000, maxInclusive: 125_000, label: '€75k–€125k', populationEstimate: 2_200_000 },
+  { id: '125k-200k', minExclusive: 125_000, maxInclusive: 200_000, label: '€125k–€200k', populationEstimate: 1_400_000 },
+  { id: '200k-300k', minExclusive: 200_000, maxInclusive: 300_000, label: '€200k–€300k', populationEstimate: 600_000 },
+  { id: 'over-300k', minExclusive: 300_000, maxInclusive: null, label: 'over €300k', populationEstimate: 600_000 },
 ];
 
 /** The narrowest transmitted cell: one band crossed with one rounded gap value. */
@@ -67,10 +105,25 @@ function assertFinite(value: number, what: string): void {
   }
 }
 
-/** RED placeholder — the language's default rounding, which is exactly what must NOT ship. */
+/**
+ * Round a gap percentage to whole percentage points, ties AWAY FROM ZERO.
+ *
+ * Numerically: `roundGapPct(14.5) === 15`, `roundGapPct(-14.5) === -15`,
+ * `roundGapPct(13.5) === 14`.
+ *
+ * This is deliberately NOT `Math.round`, which is half-up toward +Infinity and would
+ * return -14 for -14.5. A gender pay gap carries a sign — a negative gap means women are
+ * paid more on average, which is a real result the card must be able to state plainly —
+ * and an asymmetric rule would systematically understate the gap in one direction only.
+ * Away-from-zero treats +x.5 and -x.5 identically in magnitude.
+ *
+ * `-0` is normalised to `0`, so a small negative gap never reaches a URL as `gap=-0`.
+ */
 export function roundGapPct(gapPct: number): number {
   assertFinite(gapPct, 'gapPct');
-  return Math.round(gapPct);
+  const magnitude = Math.round(Math.abs(gapPct));
+  if (magnitude === 0) return 0;
+  return gapPct < 0 ? -magnitude : magnitude;
 }
 
 /** The band a lifetime total falls in. Never `undefined`, never out of range. */
