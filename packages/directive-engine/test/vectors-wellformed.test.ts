@@ -37,7 +37,17 @@ const REQUIRED_VECTORS = [
 /** An input small enough to recompute by hand on paper — which is what makes plan 07 possible. */
 const MAX_ROWS = 12;
 
-const VECTOR_FILES = ['input.json', 'conventions.json', 'expected.json'] as const;
+/**
+ * `rederived.json` is the independent second pass plan 07 adds, and it is required
+ * rather than optional: a vector carrying only one set of answers has not been through
+ * D-13's re-derivation and must fail here rather than pass quietly.
+ */
+const VECTOR_FILES = [
+  'input.json',
+  'conventions.json',
+  'expected.json',
+  'rederived.json',
+] as const;
 
 function vectorDirs(): string[] {
   if (!existsSync(VECTORS_DIR)) return [];
@@ -110,7 +120,7 @@ describe('the ten pathological cases are all present, each as its own directory'
 });
 
 describe('every vector is complete and parses', () => {
-  it('contains exactly the three required files, each valid JSON', () => {
+  it('contains exactly the four required files, each valid JSON', () => {
     const offenders = dirs
       .map((dir) => {
         const present = readdirSync(join(VECTORS_DIR, dir)).sort();

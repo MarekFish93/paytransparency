@@ -1,0 +1,102 @@
+{
+  "vector": "v01-quartile-boundary-ties",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places. Values whose decimal expansion terminates within four places are left exact. No convention key governs rounding — recorded under ambiguities.",
+  "metrics": {
+    "a": { "value": 15, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 40, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 12.5, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 50, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 100, "definitionCite": "32023L0970#009.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 66.6667, "definitionCite": "32023L0970#003.001", "populationN": 8, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Support": { "value": 6.6667, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": false, "unreliable": false },
+      "Analyst": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 4, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Support", "gapPct": 6.6667, "threshold": 5 },
+    { "category": "Analyst", "gapPct": 20, "threshold": 5 }
+  ],
+  "warnings": [],
+  "working": {
+    "step0_payDefinition": "componentMap classifies BASE as basic and BONUS as complementary_variable, and classifies nothing as excluded. Art. 3(1)(a) defines pay as the ordinary basic wage or salary AND any other consideration, so a worker's pay level for metrics (a), (c), (f) and (g) is BASE+BONUS. Metrics (b) and (d) run over the BONUS column alone. payBasis is as_paid, so no normalisation is applied; partialPeriodPolicy include and joinerLeaverPolicy any_pay_in_period keep all eight rows.",
+    "step1_perWorkerTotals": [
+      "w01 F Support BASE 2600 + BONUS 200 = 2800",
+      "w02 M Support 2600 + 200 = 2800",
+      "w03 F Support 2600 + 200 = 2800",
+      "w04 M Support 2800 + 400 = 3200",
+      "w05 F Analyst 3100 + 300 = 3400",
+      "w06 M Analyst 3400 + 600 = 4000",
+      "w07 F Analyst 4100 + 500 = 4600",
+      "w08 M Analyst 5200 + 800 = 6000"
+    ],
+    "step2_sexSplit": "sexMapping is {F:F, M:M}; every row's sex value is covered, so excludedN is 0 everywhere. Four women (w01, w03, w05, w07) and four men (w02, w04, w06, w08).",
+    "step3_metricA": "Female totals 2800+2800+3400+4600 = 13600, mean 3400. Male totals 2800+3200+4000+6000 = 16000, mean 4000. denominator is male_mean, so (4000-3400)/4000 = 600/4000 = 0.15 -> 15.",
+    "step4_metricB": "Female BONUS 200+200+300+500 = 1200, mean 300. Male BONUS 200+400+600+800 = 2000, mean 500. (500-300)/500 = 0.40 -> 40.",
+    "step5_metricC": "medianRule is lower_of_two and both sexes have an even headcount of four. Female totals ascending 2800, 2800, 3400, 4600 -> the two middle values are 2800 and 3400 -> 2800. Male ascending 2800, 3200, 4000, 6000 -> middles 3200 and 4000 -> 3200. denominator male_median: (3200-2800)/3200 = 400/3200 = 0.125 -> 12.5.",
+    "step6_metricD": "Female BONUS ascending 200, 200, 300, 500 -> middles 200 and 300 -> 200. Male BONUS ascending 200, 400, 600, 800 -> middles 400 and 600 -> 400. (400-200)/400 = 0.50 -> 50.",
+    "step7_metricE": "Every one of the eight workers has a BONUS strictly greater than zero, so 4 of 4 women and 4 of 4 men receive a complementary or variable component. Both per-sex proportions are 100 and the single scalar the type allows is 100.",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["2800 w01 F", "2800 w02 M", "2800 w03 F", "3200 w04 M", "3400 w05 F", "4000 w06 M", "4600 w07 F", "6000 w08 M"],
+      "sizes": "n = 8 and 8/4 = 2 with no remainder, so quartileRemainder never fires. Four groups of two: positions 1-2, 3-4, 5-6, 7-8.",
+      "tie": "Three workers share the pay level 2800 and occupy positions 1, 2 and 3, so the tied block straddles the Q1/Q2 boundary. The tied block is 2F:1M.",
+      "tieResolution": "quartileTieRule is ukgov_proportional: the tied workers are spread so that the female and male shares of that pay value are the same in each quarter they touch. The block is two thirds female, and two of its three slots fall in Q1 and one in Q2. Q1 therefore takes 2 x 2/3 = 1.3333 women and 2 x 1/3 = 0.6667 men; Q2 takes 1 x 2/3 = 0.6667 women and 1 x 1/3 = 0.3333 men.",
+      "composition": {
+        "Q1": "1.3333 F + 0.6667 M -> 66.6667 percent female",
+        "Q2": "0.6667 F (tie) + 0.3333 M (tie) + w04 M -> 0.6667 F and 1.3333 M -> 33.3333 percent female",
+        "Q3": "w05 F + w06 M -> 50 percent female",
+        "Q4": "w07 F + w08 M -> 50 percent female"
+      },
+      "checksum": "Female fractions 1.3333 + 0.6667 + 1 + 1 = 4 and male 0.6667 + 1.3333 + 1 + 1 = 4, matching the headcounts.",
+      "scalarChosen": "66.6667, the female share of the lowest quartile pay band. See ambiguities: one MetricValue cannot carry eight numbers."
+    },
+    "step9_metricG": {
+      "Support": "Women w01 2800 and w03 2800, mean 2800. Men w02 2800 and w04 3200, mean 3000. (3000-2800)/3000 = 200/3000 = 0.066666... -> 6.6667.",
+      "Analyst": "Women w05 3400 and w07 4600, mean 4000. Men w06 4000 and w08 6000, mean 5000. (5000-4000)/5000 = 0.20 -> 20."
+    },
+    "step10_suppression": "minGroupSize is null, so no group is suppressed and no group is marked unreliable anywhere in this vector.",
+    "step11_art10": "Art. 10(1) flags a category whose gap is at least five percentage points. Support at 6.6667 and Analyst at 20 both clear it. The flag is one of three cumulative Art. 10(1) conditions only; the other two are employer judgements and are not asserted here."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): whether the headline gap runs over total pay or over the ordinary basic wage or salary alone.",
+      "readings": [
+        "Total pay. Art. 3(1)(a) defines pay as the basic wage AND the complementary or variable components, and METRIC_DEFINITIONS gives (b) and (d) an explicit component restriction while giving (a) and (c) none — the absence is meaningful.",
+        "Basic only. The payBasis heading in docs/CONVENTIONS.md states that Art. 9(1)(a)-(d) report the ordinary basic wage or salary and the complementary or variable components SEPARATELY, which reads (a)/(b) and (c)/(d) as a partition."
+      ],
+      "chosen": "Total pay",
+      "why": "The frozen type is the contract and it restricts (b) and (d) only. The separately wording sits in the payBasis narration rather than in a recorded decision, and Art. 3(1)(c) takes its meaning of pay from Art. 3(1)(a), which is inclusive. The fork is material: under the other reading metric (a) here is 11.4286 rather than 15."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is defined as the proportion of FEMALE AND MALE workers receiving complementary or variable components, but Metrics.e is a single MetricValue carrying one scalar, which cannot hold a two-sided proportion.",
+      "readings": [
+        "The overall proportion of workers receiving a component, losing the per-sex split.",
+        "The difference in percentage points between the female and the male proportion."
+      ],
+      "chosen": "The overall proportion of workers receiving a component",
+      "why": "The v09 case text calls the zero there a legitimate proportion rather than a missing value, which only distinguishes v09 from the other nine vectors if the scalar is a proportion and not a difference — under the difference reading every vector would read zero. The per-sex split is preserved in working rather than in the scalar."
+    },
+    {
+      "conventionKey": "quartileTieRule",
+      "issue": "Metric (f) is the proportion of female and male workers in EACH quartile pay band — eight numbers — but Metrics.f is a single MetricValue carrying one scalar.",
+      "readings": [
+        "One scalar standing for a named quartile's female share.",
+        "null, on the ground that no single defensible scalar exists."
+      ],
+      "chosen": "The female share of the LOWEST quartile pay band",
+      "why": "MetricValue documents null as meaning the metric has no defensible value, and there plainly is one here. The lowest band is the band every quartile vector in this set actually exercises: v01's tie straddles Q1/Q2, v04's leftovers land on the Q1/Q2 boundary, and the to_lower remainder always enlarges Q1 first. A scalar taken from the top band would leave all of that invisible."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "No convention key governs rounding or the reported precision of a percentage, yet 200/3000 does not terminate.",
+      "readings": ["Two decimal places, the usual reporting precision.", "Four decimal places, which leaves every terminating value exact."],
+      "chosen": "Four decimal places, half-up",
+      "why": "Two decimal places would turn exact values such as 15.625 in v02 into rounded ones for no reason. Recorded against this key only because the convention document has no rounding heading at all; the honest fix is a rounding decision of its own."
+    }
+  ]
+}

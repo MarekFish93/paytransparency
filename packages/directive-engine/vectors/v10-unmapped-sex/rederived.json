@@ -1,0 +1,96 @@
+{
+  "vector": "v10-unmapped-sex",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact.",
+  "metrics": {
+    "a": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "b": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "c": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "d": { "value": 0, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "e": { "value": 100, "definitionCite": "32023L0970#009.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "f": { "value": 100, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false },
+    "g": {
+      "Sales": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 5, "excludedN": 1, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [{ "category": "Sales", "gapPct": 20, "threshold": 5 }],
+  "warnings": [
+    { "code": "W_SEX_UNMAPPED", "detail": "Row w06 carries the sex value X, which this vector's declared sexMapping of {F:F, M:M} does not cover. The row is counted in excludedN on every metric and is never silently dropped." }
+  ],
+  "working": {
+    "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Every worker has the same BONUS of 300, which is deliberate: it makes metrics (b) and (d) exactly zero and so isolates the unmapped-sex question from any component arithmetic.",
+    "step1_perWorkerTotals": [
+      "w01 F Sales 2700 + 300 = 3000",
+      "w02 F Sales 3100 + 300 = 3400",
+      "w03 M Sales 3300 + 300 = 3600",
+      "w04 M Sales 3700 + 300 = 4000",
+      "w05 M Sales 4100 + 300 = 4400",
+      "w06 X Sales 3500 + 300 = 3800  <-- sex value not covered by sexMapping"
+    ],
+    "step2_sexSplit": "sexMapping is {F:F, M:M}. w06's value X is not a key in it. The sexMapping convention states that such a row goes to excludedN with W_SEX_UNMAPPED and is never silently dropped. So the sexed population is two women (w01, w02) and three men (w03, w04, w05): populationN 5, excludedN 1 on every metric. Note that the mapping does NOT route X to the SexCode other or undisclosed — those codes exist for values an employer's map assigns to them, and this map assigns nothing to X at all.",
+    "step3_metricA": "Female totals 3000+3400 = 6400 over two, mean 3200. Male totals 3600+4000+4400 = 12000 over three, mean 4000. (4000-3200)/4000 = 800/4000 = 0.20 -> 20. w06's 3800 enters neither mean. Had it been silently folded into one of them, the gap would have moved and nothing in the report would have shown why — which is the failure this vector exists to catch.",
+    "step4_metricB": "Female BONUS 300 and 300, mean 300. Male BONUS 300, 300, 300, mean 300. (300-300)/300 = 0/300 = 0 -> 0. This zero is NOT W_COMPONENTS_ALL_ZERO: both figures are 300, not zero, and the denominator is well defined. It is an ordinary zero difference.",
+    "step5_metricC": "Female headcount is EVEN at two, so lower_of_two applies: ascending 3000, 3400 -> both are middle values -> 3000. Male headcount is odd at three -> middle 4000. (4000-3000)/4000 = 1000/4000 = 0.25 -> 25. The median gap is wider than the mean gap because lower_of_two takes the lower of the two women.",
+    "step6_metricD": "Female BONUS ascending 300, 300 -> lower_of_two takes 300, the two candidates being equal. Male BONUS median 300. (300-300)/300 = 0 -> 0.",
+    "step7_metricE": "All five sexed workers have a BONUS of 300, strictly positive: 2 of 2 women and 3 of 3 men receive a component. Scalar 100, over populationN 5 with excludedN 1. w06 also receives one, but it cannot be attributed to a sex and so does not enter the metric.",
+    "step8_quartiles": {
+      "rankingPopulation": "Six workers are RANKED, including w06. Only five are COUNTED in the female and male shares. See the ambiguity below — this is the fork this vector exposes.",
+      "sortedAscendingByTotalPay": ["3000 w01 F", "3400 w02 F", "3600 w03 M", "3800 w06 X (ranked, not counted)", "4000 w04 M", "4400 w05 M"],
+      "sizes": "n = 6 ranked gives 6 = 4 x 1 + 2. Under to_lower: sizes 2, 2, 1, 1. Boundaries after positions 2, 4 and 5.",
+      "tie": "No two workers share a total pay level; quartileTieRule is not exercised.",
+      "composition": {
+        "Q1": "w01 F, w02 F -> 2 women, 0 men -> 100 percent female",
+        "Q2": "w03 M, w06 X -> 0 women, 1 man, 1 unmapped -> 0 percent female",
+        "Q3": "w04 M -> 0 percent female",
+        "Q4": "w05 M -> 0 percent female"
+      },
+      "scalarChosen": "100, the female share of the lowest quartile pay band.",
+      "counterfactual": "Had w06 been struck from the ranking as well, n would be 5 with sizes 2, 1, 1, 1, and Q2 would hold w03 alone while Q3 held w04 and Q4 held w05. The Q1 share happens to be 100 either way in this vector, so the fork does not change the reported scalar here — but it does change the band membership of three of the five sexed workers, which any future vector with a differently placed unmapped row would expose."
+    },
+    "step9_metricG": "One category, Sales, holding all six rows, five of them sexed. The category gap equals metric (a) at 20, over populationN 5 with excludedN 1.",
+    "step10_suppression": "minGroupSize null: no suppression, no unreliability. The female group of two is small but no threshold is set.",
+    "step11_art10": "Sales at 20 clears the five-point trigger and is flagged."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "sexMapping",
+      "issue": "Whether a row whose sex value the map does not cover still takes part in the QUARTILE RANKING, or is struck from the population entirely. The convention says it goes to excludedN and is never silently dropped, which settles the sex breakdown but not the ranking.",
+      "readings": [
+        "Ranked but not counted — the worker is still a worker whose pay level sits in the distribution, so the quartile boundaries reflect the real workforce and only the female and male shares omit them.",
+        "Struck entirely — the worker is outside every metric, so the quartiles are built from the five sexed workers alone."
+      ],
+      "chosen": "Ranked but not counted",
+      "why": "Art. 3(1)(f) divides WORKERS into four equal groups by pay level, and w06 is a worker. Removing them from the ranking moves other workers between bands without any trace in the report, which is the same silent-distortion failure the sexMapping convention was written to prevent one metric along. But the wording genuinely does not decide it, and the choice changes band membership."
+    },
+    {
+      "conventionKey": "sexMapping",
+      "issue": "Whether populationN for metric (f) counts the ranked population or the sexed population, given the two now differ.",
+      "readings": ["6, the number of workers ranked.", "5, the number of workers whose sex the metric could report."],
+      "chosen": "5, with excludedN 1",
+      "why": "MetricValue documents populationN as the workers counted IN THIS FIGURE, and the figure is a female share, which w06 cannot enter. Reporting 6 would imply the share has a denominator of six. The consequence is that populationN + excludedN happens to equal the ranked headcount here, which is tidy but coincidental."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): total pay, or ordinary basic wage or salary alone.",
+      "readings": ["Total pay.", "Basic only, per the payBasis heading's SEPARATELY wording."],
+      "chosen": "Total pay",
+      "why": "Under the other reading metric (a) runs over BASE alone: female mean 2900, male mean 3700, giving 21.6216 rather than 20."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
+      "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
+      "chosen": "The overall proportion receiving a component",
+      "why": "The difference reading reads zero everywhere and erases v09's intended contrast. Here it raises a second question the difference reading cannot answer either: whether w06, who does receive a component, belongs in the numerator."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue.",
+      "readings": ["A named quartile's female share.", "null."],
+      "chosen": "The female share of the lowest quartile pay band",
+      "why": "Consistent with v01 to v09."
+    }
+  ]
+}

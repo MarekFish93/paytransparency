@@ -1,0 +1,98 @@
+{
+  "vector": "v07-all-male-category",
+  "pass": "second-independent",
+  "method": "Hand computation from this vector's input.json and conventions.json together with docs/CONVENTIONS.md and the METRIC_DEFINITIONS in src/types.ts. No metric-computing code was written, imported or run, and no expected.json was opened while this file was produced.",
+  "unit": "percent",
+  "rounding": "Half-up to four decimal places; terminating values left exact.",
+  "metrics": {
+    "a": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 12.5, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 21.0526, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 100, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 100, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Warehouse": { "value": null, "definitionCite": "32023L0970#003.001", "populationN": 3, "excludedN": 0, "suppressed": false, "unreliable": false },
+      "Office": { "value": 20, "definitionCite": "32023L0970#003.001", "populationN": 3, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [{ "category": "Office", "gapPct": 20, "threshold": 5 }],
+  "warnings": [
+    { "code": "W_CATEGORY_ALL_ONE_SEX", "detail": "Metric (g) for the category Warehouse has no value: the category holds three men and no women, so there is no female pay level to compare and no denominator problem to paper over. The value is null, never zero." }
+  ],
+  "working": {
+    "step0_payDefinition": "BASE basic, BONUS complementary_variable, nothing excluded. Pay level = BASE + BONUS for (a), (c), (f), (g). minGroupSize is null here, so the null in metric (g) Warehouse is NOT a suppression — it is the absence of a comparison. The two must not be confused, which is why suppressed stays false on that entry.",
+    "step1_perWorkerTotals": [
+      "w01 M Warehouse 3300 + 300 = 3600",
+      "w02 M Warehouse 3400 + 400 = 3800",
+      "w03 M Warehouse 4100 + 500 = 4600",
+      "w04 F Office 2700 + 300 = 3000",
+      "w05 F Office 3000 + 400 = 3400",
+      "w06 M Office 3600 + 400 = 4000"
+    ],
+    "step2_sexSplit": "Two women (w04, w05) and four men (w01, w02, w03, w06). n = 6, all sex values mapped, excludedN 0.",
+    "step3_metricA": "Female totals 3000+3400 = 6400 over two, mean 3200. Male totals 3600+3800+4600+4000 = 16000 over four, mean 4000. (4000-3200)/4000 = 800/4000 = 0.20 -> 20. The org level has both sexes, so the org metrics are all computable even though one CATEGORY is not.",
+    "step4_metricB": "Female BONUS 300+400 = 700, mean 350. Male BONUS 300+400+500+400 = 1600, mean 400. (400-350)/400 = 50/400 = 0.125 -> 12.5.",
+    "step5_metricC": "Both headcounts are EVEN, so lower_of_two applies twice. Female ascending 3000, 3400 -> with only two values BOTH are middle values -> lower_of_two takes 3000. Male ascending 3600, 3800, 4000, 4600 -> middles 3800 and 4000 -> 3800. (3800-3000)/3800 = 800/3800 = 0.2105263... -> 21.0526.",
+    "step6_metricD": "Female BONUS ascending 300, 400 -> lower_of_two takes 300. Male BONUS ascending 300, 400, 400, 500 -> middles 400 and 400, which are equal, so lower_of_two is unambiguous at 400. (400-300)/400 = 0.25 -> 25.",
+    "step7_metricE": "All six BONUS figures are strictly positive: 2 of 2 women, 4 of 4 men. Scalar 100.",
+    "step8_quartiles": {
+      "sortedAscendingByTotalPay": ["3000 w04 F", "3400 w05 F", "3600 w01 M", "3800 w02 M", "4000 w06 M", "4600 w03 M"],
+      "sizes": "n = 6 gives 6 = 4 x 1 + 2. Under to_lower the two leftovers go one per quarter from the lowest upward: sizes 2, 2, 1, 1. Boundaries fall after positions 2, 4 and 5.",
+      "tie": "No two workers share a total pay level, so quartileTieRule is not exercised.",
+      "composition": {
+        "Q1": "w04 F, w05 F -> 100 percent female",
+        "Q2": "w01 M, w02 M -> 0 percent female",
+        "Q3": "w06 M -> 0 percent female",
+        "Q4": "w03 M -> 0 percent female"
+      },
+      "scalarChosen": "100, the female share of the lowest quartile pay band. Both women in this workforce sit in the bottom quarter, so the quartile metric is where the segregation shows even though it does not change metric (a)."
+    },
+    "step9_metricG": {
+      "Warehouse": "Three men (w01 3600, w02 3800, w03 4600) and no women. Art. 3(1)(c) expresses the gap as the difference between the female and male pay levels over the male pay level. There is no female pay level, so the difference does not exist. The value is null with W_CATEGORY_ALL_ONE_SEX. It is emphatically NOT zero: zero would assert that women in Warehouse are paid the same as men, which is a claim about a group that does not exist. Nor is it a division by zero — the denominator, the male mean of 4000, is perfectly well defined; it is the numerator that has no meaning.",
+      "Office": "Women w04 3000 and w05 3400, mean 3200. Man w06 4000 alone, mean 4000. (4000-3200)/4000 = 800/4000 = 0.20 -> 20. A single-man comparison group is thin, but minGroupSize is null in this vector so nothing is suppressed and nothing is marked unreliable — the absence of a threshold is itself the recorded decision."
+    },
+    "step10_suppression": "minGroupSize null: no suppression and no unreliability anywhere, including on the Office category whose male group is a single worker. Contrast v06, where minGroupSize 2 makes exactly that situation suppressible.",
+    "step11_art10": "Office at 20 clears the five-point trigger and is flagged. Warehouse cannot be flagged because it has no gap figure at all — an absent value is not a value below the threshold, and the empty entry for it in art10Flags would be a claim of compliance this data cannot support."
+  },
+  "ambiguities": [
+    {
+      "conventionKey": "sexMapping",
+      "issue": "Whether a category with no women should also be marked unreliable, or carry a suppression flag, in addition to the W_CATEGORY_ALL_ONE_SEX warning.",
+      "readings": [
+        "Only the warning — the metric is undefined rather than noisy or private.",
+        "Also unreliable, on the ground that a one-sided category supports no statistical statement."
+      ],
+      "chosen": "Only the warning",
+      "why": "unreliable is documented as meaning the figure is COMPUTABLE but too noisy to rely on. Here it is not computable at all, so the flag would be a category error. Recorded because the convention document does not say so explicitly."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Scope of metrics (a) and (c): total pay, or ordinary basic wage or salary alone.",
+      "readings": ["Total pay.", "Basic only, per the payBasis heading's SEPARATELY wording."],
+      "chosen": "Total pay",
+      "why": "Under the other reading metric (a) runs over BASE alone: female mean 2850, male mean 3600, giving 20.8333 rather than 20."
+    },
+    {
+      "conventionKey": "componentMap",
+      "issue": "Metric (e) is a two-sided proportion carried in a one-scalar MetricValue.",
+      "readings": ["The overall proportion receiving a component.", "The percentage-point difference between the two proportions."],
+      "chosen": "The overall proportion receiving a component",
+      "why": "The difference reading reads zero everywhere and erases v09's intended contrast."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "Metric (f) is eight numbers carried in a one-scalar MetricValue.",
+      "readings": ["A named quartile's female share.", "null."],
+      "chosen": "The female share of the lowest quartile pay band",
+      "why": "Consistent with v01 to v06. Here the choice is fortunate — both women sit in Q1 — but that is luck, not design: a scalar from any other band would read 0 and say nothing about this workforce's shape."
+    },
+    {
+      "conventionKey": "quartileRemainder",
+      "issue": "No convention key governs rounding; 800/3800 does not terminate.",
+      "readings": ["Two decimal places.", "Four decimal places."],
+      "chosen": "Four decimal places, half-up",
+      "why": "Four places leave 20, 12.5 and 25 exact while still fixing 21.0526."
+    }
+  ]
+}
