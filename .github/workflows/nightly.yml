@@ -1,0 +1,210 @@
+# The nightly live-source profile.
+#
+# This is the ONLY place in the repository that verifies a legal source over the network.
+# The pull-request profile (`legal-data.yml`) is offline by design and stays that way: a
+# gate that goes red because a third party had an outage gets disabled within a month,
+# and a disabled gate is worse than no gate at all.
+#
+# Two rules govern what this job does with what it finds, and both exist because the
+# alternative is worse than being blind:
+#
+#   OUTAGE  -> restore the last successful body from an ETag-keyed cache, emit a WARNING
+#              annotation naming the cache hit, and do not fail. The build must not go
+#              dark because the Publications Office is down (D-02's recorded risk).
+#   DRIFT   -> a CHANGED ETag opens a review task by failing this job with an annotation
+#              naming the old and new ETag and the affected citation keys. It NEVER
+#              updates a stored quotation. Auto-updating legal text from a diff nobody
+#              read is precisely the failure this rule exists to prevent.
+#
+# Neither job writes to `packages/country-data/data/`. The only thing that changes a
+# stored legal fact is a human-authored commit.
+#
+# There is deliberately no discovery query on this path. The public RDF query endpoint
+# returned zero triples for the CELEX URI and timed out at 60 s on a realistic query; it
+# is a one-off discovery tool whose result is committed (plan 01-04 owns it), never a
+# retrieval layer on a recurring path.
+name: nightly
+
+on:
+  schedule:
+    # 03:17 UTC — off the hour, because every scheduler in the world fires on the hour.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CELLAR_CACHE_DIR: .cache/cellar
+  CELEX_URI: http://publications.europa.eu/resource/celex/32023L0970
+
+jobs:
+  live-sources:
+    name: live-sources
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.stored.outputs.cache_key }}
+      outcome: ${{ steps.probe.outputs.outcome }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          # MUST stay false. setup-node's package-manager cache probes for the pnpm
+          # executable during its own step, which runs before corepack has provisioned
+          # one — leaving the step to fail with "Unable to locate executable file: pnpm".
+          package-manager-cache: false
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The cache key carries the STORED ETag, so "the cached body" and "the body the
+      # committed citations were verified against" are the same thing by construction.
+      - name: Read the stored ETag and citation keys
+        id: stored
+        run: |
+          set -euo pipefail
+          node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            const file = JSON.parse(readFileSync('packages/country-data/data/_directive.json', 'utf8'));
+            const keys = Object.keys(file);
+            const etags = new Set();
+            for (const key of keys) for (const s of file[key].sources) if (s.etag) etags.add(s.etag);
+            const etag = [...etags][0] ?? '(none)';
+            const slug = etag.replace(/[^A-Za-z0-9]/g, '');
+            process.stdout.write('etag=' + etag + '\n');
+            process.stdout.write('citation_keys=' + keys.join(',') + '\n');
+            process.stdout.write('cache_key=cellar-body-' + slug + '\n');
+          " >> "$GITHUB_OUTPUT"
+
+      - name: Restore the last successful Cellar body
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CELLAR_CACHE_DIR }}
+          key: ${{ steps.stored.outputs.cache_key }}
+
+      # The classifier. Every branch below is a disposition the verifier already models:
+      # transport failure is an outage, a changed ETag is drift, an unchanged ETag is a
+      # revalidation. Nothing here decides what a legal fact says.
+      - name: Probe Cellar, classify the outcome
+        id: probe
+        env:
+          STORED_ETAG: ${{ steps.stored.outputs.etag }}
+          CITATION_KEYS: ${{ steps.stored.outputs.citation_keys }}
+          CACHE_HIT: ${{ steps.restore.outputs.cache-hit }}
+        run: |
+          set -uo pipefail
+          mkdir -p "${CELLAR_CACHE_DIR}"
+
+          HTTP_CODE=$(curl -sS -L --max-time 90 \
+            -H 'Accept: application/xhtml+xml' \
+            -H 'Accept-Language: eng' \
+            -D "${CELLAR_CACHE_DIR}/headers.txt" \
+            -o "${CELLAR_CACHE_DIR}/fresh.xhtml" \
+            -w '%{http_code}' \
+            "${CELEX_URI}") || HTTP_CODE=000
+
+          # --- OUTAGE: transport failure or a server-side error -------------------
+          if [ "${HTTP_CODE}" = "000" ] || [ "${HTTP_CODE}" -ge 500 ]; then
+            if [ "${CACHE_HIT}" = "true" ] && [ -s "${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml" ]; then
+              echo "::warning title=Cellar unreachable, served from cache::HTTP ${HTTP_CODE} from the Publications Office. Restored the last successful body from the cache keyed on ETag ${STORED_ETAG}. This is an outage, not a data defect — the build is NOT failed."
+            else
+              echo "::warning title=Cellar unreachable, no cached body::HTTP ${HTTP_CODE} from the Publications Office and no cached body under ETag ${STORED_ETAG}. Live verification did not run tonight. This is an outage, not a data defect — the build is NOT failed."
+            fi
+            echo "outcome=cached" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # --- DEFECT: anything that is not exactly 200 --------------------------
+          if [ "${HTTP_CODE}" != "200" ]; then
+            echo "::error title=Cellar answered ${HTTP_CODE}::Expected exactly 200 for ${CELEX_URI}. Note that res.ok is true for 202, which the EUR-Lex web front end serves with a zero-length body — this is a data defect, not an outage."
+            echo "outcome=defect" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          LIVE_ETAG=$(grep -i '^etag:' "${CELLAR_CACHE_DIR}/headers.txt" | tail -1 | sed 's/^[^:]*:[[:space:]]*//' | tr -d '\r')
+          echo "live ETag:   ${LIVE_ETAG}"
+          echo "stored ETag: ${STORED_ETAG}"
+
+          # --- DRIFT: a changed ETag opens a review task, never an auto-update ----
+          if [ "${LIVE_ETAG}" != "${STORED_ETAG}" ]; then
+            echo "::error title=Directive expression drifted — review required::The Cellar ETag changed from ${STORED_ETAG} to ${LIVE_ETAG}. Affected citation keys: ${CITATION_KEYS}. A human must read the diff and author the update; nothing is changed automatically, because a legal quotation updated from a diff nobody read is exactly the failure this rule prevents."
+            echo "outcome=drift" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          cp "${CELLAR_CACHE_DIR}/fresh.xhtml" "${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml"
+          printf '%s' "${LIVE_ETAG}" > "${CELLAR_CACHE_DIR}/etag.txt"
+          echo "outcome=fresh" >> "$GITHUB_OUTPUT"
+
+      # Skipped during an outage: re-running an assertion against a source that is down
+      # would turn somebody else's downtime into our red build.
+      - name: Live source suite
+        if: steps.probe.outputs.outcome == 'fresh'
+        run: pnpm vitest run --config vitest.live.config.ts
+
+      # Saved only after a clean, unchanged fetch, so the cache is always "the last
+      # SUCCESSFUL body" rather than "the last body of any kind".
+      - name: Save the successful Cellar body
+        if: steps.probe.outputs.outcome == 'fresh' && steps.restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.CELLAR_CACHE_DIR }}
+          key: ${{ steps.stored.outputs.cache_key }}
+
+  # Re-run the OFFLINE suite against the freshly fetched body. A content change then
+  # surfaces as a failing assertion naming the provision, rather than as a silent data
+  # change nobody reviewed. Nothing is committed: the substitution below happens in the
+  # runner's ephemeral checkout and is thrown away with it.
+  directive-drift:
+    name: directive-drift
+    needs: live-sources
+    if: always() && needs.live-sources.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore the body live-sources fetched
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.CELLAR_CACHE_DIR }}
+          key: ${{ needs.live-sources.outputs.cache-key }}
+
+      - name: Substitute the fresh body for the committed fixture
+        if: steps.restore.outputs.cache-hit == 'true'
+        run: |
+          set -euo pipefail
+          FRESH="${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml"
+          FIXTURE=packages/country-data/test/fixtures/cellar-art7-en.xhtml
+          if [ ! -s "${FRESH}" ]; then
+            echo "::warning title=No fresh body cached::Falling back to the committed fixture; this run proves the suite, not the source."
+            exit 0
+          fi
+          COMMITTED_BYTES=$(wc -c < "${FIXTURE}")
+          FRESH_BYTES=$(wc -c < "${FRESH}")
+          echo "committed fixture: ${COMMITTED_BYTES} bytes"
+          echo "freshly fetched:   ${FRESH_BYTES} bytes"
+          if [ "${COMMITTED_BYTES}" != "${FRESH_BYTES}" ]; then
+            echo "::warning title=Fixture byte count differs from the live body::${COMMITTED_BYTES} committed vs ${FRESH_BYTES} live. The assertions below decide whether that matters."
+          fi
+          cp "${FRESH}" "${FIXTURE}"
+
+      - name: Offline legal-data suite, run against the fresh body
+        run: pnpm vitest run --dir packages/country-data
