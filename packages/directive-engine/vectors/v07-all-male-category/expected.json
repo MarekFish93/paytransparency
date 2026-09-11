@@ -1,0 +1,68 @@
+{
+  "vector": "v07-all-male-category",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": 20.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 12.5, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 21.0526, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Warehouse": { "value": null, "definitionCite": "32023L0970#003.001", "populationN": 3, "excludedN": 0, "suppressed": false, "unreliable": false },
+      "Office": { "value": 20.0, "definitionCite": "32023L0970#003.001", "populationN": 3, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Office", "gapPct": 20.0, "threshold": 5 }
+  ],
+  "warnings": [
+    { "code": "W_CATEGORY_ALL_ONE_SEX", "detail": "Warehouse contains 3 male workers and 0 female workers. A gender pay gap is a comparison between two populations and one of them is empty, so no value exists to report." }
+  ],
+  "working": {
+    "totalPayPerRow": {
+      "w04_F": 3000, "w05_F": 3400,
+      "w01_M": 3600, "w02_M": 3800, "w03_M": 4600, "w06_M": 4000
+    },
+    "meanTotalPay": {
+      "F": "3000 + 3400 = 6400 over 2 = 3200",
+      "M": "3600 + 3800 + 4600 + 4000 = 16000 over 4 = 4000",
+      "a": "(4000 - 3200) / 4000 = 800 / 4000 = 0.20 = 20.0%"
+    },
+    "meanComponents": {
+      "F": "300 + 400 = 700 over 2 = 350",
+      "M": "300 + 400 + 500 + 400 = 1600 over 4 = 400",
+      "b": "(400 - 350) / 400 = 50 / 400 = 0.125 = 12.5%"
+    },
+    "medianTotalPay": {
+      "F": "sorted 3000, 3400 -> middle pair is the whole set -> lower_of_two -> 3000",
+      "M": "sorted 3600, 3800, 4000, 4600 -> middle pair (3800, 4000) -> 3800",
+      "c": "(3800 - 3000) / 3800 = 800 / 3800 = 4/19 = 0.2105263157... = 21.0526% to 4 dp"
+    },
+    "medianComponents": {
+      "F": "sorted 300, 400 -> lower_of_two -> 300",
+      "M": "sorted 300, 400, 400, 500 -> middle pair (400, 400) -> 400",
+      "d": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "2 of 2 = 100%",
+      "M": "4 of 4 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["3000 w04 F", "3400 w05 F", "3600 w01 M", "3800 w02 M", "4000 w06 M", "4600 w03 M"],
+      "sizes": "n = 6, 6 / 4 = 1 remainder 2. Under to_lower the two leftovers go one per quarter from the lowest upward: Q1 = 2, Q2 = 2, Q3 = 1, Q4 = 1.",
+      "tiedGroup": "none",
+      "Q1": "w04 F, w05 F -> F 100.0%",
+      "Q2": "w01 M, w02 M -> F 0.0%",
+      "Q3": "w06 M -> F 0.0%",
+      "Q4": "w03 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female"
+    },
+    "categories": {
+      "Warehouse": "3 M, 0 F. NULL, with W_CATEGORY_ALL_ONE_SEX. Not suppressed (no threshold is set here) and not unreliable (the figure is not noisy — it does not exist). Reporting 0 would assert that men and women are paid equally in a category employing no women, which is a false statement rather than a cautious one.",
+      "Office": "F mean (3000 + 3400) / 2 = 3200; M mean 4000 (w06 alone); (4000 - 3200) / 4000 = 800 / 4000 = 0.20 = 20.0%"
+    },
+    "art10": "Office flags at 20.0%. Warehouse emits no flag: a null is not a difference of at least five percentage points, and it is not a difference of less than five either."
+  }
+}

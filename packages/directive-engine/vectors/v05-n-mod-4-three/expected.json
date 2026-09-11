@@ -1,0 +1,63 @@
+{
+  "vector": "v05-n-mod-4-three",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": 3.3333, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 20.4545, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 14.2857, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 50.0, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Ops": { "value": 3.3333, "definitionCite": "32023L0970#003.001", "populationN": 11, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [],
+  "warnings": [],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 2000, "w02_F": 2400, "w03_F": 3000, "w04_F": 3400, "w09_F": 1800, "w11_F": 4800,
+      "w05_M": 2200, "w06_M": 2800, "w07_M": 3600, "w08_M": 4200, "w10_M": 2200
+    },
+    "meanTotalPay": {
+      "F": "1800 + 2000 + 2400 + 3000 + 3400 + 4800 = 17400 over 6 = 2900",
+      "M": "2200 + 2200 + 2800 + 3600 + 4200 = 15000 over 5 = 3000",
+      "a": "(3000 - 2900) / 3000 = 100 / 3000 = 1/30 = 0.0333333... = 3.3333% to 4 dp"
+    },
+    "meanComponents": {
+      "F": "150 + 200 + 300 + 400 + 500 + 550 = 2100 over 6 = 350",
+      "M": "200 + 200 + 400 + 600 + 800 = 2200 over 5 = 440",
+      "b": "(440 - 350) / 440 = 90 / 440 = 9/44 = 0.2045454545... = 20.4545% to 4 dp"
+    },
+    "medianTotalPay": {
+      "F": "sorted 1800, 2000, 2400, 3000, 3400, 4800 -> middle pair (2400, 3000) -> lower_of_two -> 2400",
+      "M": "sorted 2200, 2200, 2800, 3600, 4200 -> single middle value -> 2800",
+      "c": "(2800 - 2400) / 2800 = 400 / 2800 = 1/7 = 0.1428571428... = 14.2857% to 4 dp",
+      "note": "One high-paid woman moves the female MEAN enough to take (a) under the Art. 10 trigger while leaving the female MEDIAN untouched. That divergence is the whole reason the Directive asks for both."
+    },
+    "medianComponents": {
+      "F": "sorted 150, 200, 300, 400, 500, 550 -> middle pair (300, 400) -> 300",
+      "M": "sorted 200, 200, 400, 600, 800 -> 400",
+      "d": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "6 of 6 = 100%",
+      "M": "5 of 5 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["1800 w09 F", "2000 w01 F", "2200 w05 M", "2200 w10 M", "2400 w02 F", "2800 w06 M", "3000 w03 F", "3400 w04 F", "3600 w07 M", "4200 w08 M", "4800 w11 F"],
+      "sizes": "n = 11, 11 / 4 = 2 remainder 3. Under to_lower the three leftovers go one per quarter from the lowest upward: Q1 = 3, Q2 = 3, Q3 = 3, Q4 = 2.",
+      "tiedGroup": "w05 M and w10 M on 2200 occupy ranks 3 and 4 and span the Q1/Q2 boundary. Single-sex, so no fractional allocation is needed.",
+      "Q1": "w09 F, w01 F, w05 M -> F 66.6667%",
+      "Q2": "w10 M, w02 F, w06 M -> F 33.3333%",
+      "Q3": "w03 F, w04 F, w07 M -> F 66.6667%",
+      "Q4": "w08 M, w11 F -> F 50.0%",
+      "f": "the upper quartile is 50.0% female"
+    },
+    "categories": {
+      "Ops": "One category, so (g) equals (a): 3.3333%"
+    },
+    "art10": "NO flag. 3.3333% is below the 5 percentage-point trigger, and this is the one vector that exercises the threshold in the negative direction — a report with no flags is a valid report, not an empty one."
+  }
+}

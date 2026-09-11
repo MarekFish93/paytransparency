@@ -1,0 +1,65 @@
+{
+  "vector": "v08-negative-gap",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": -25.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": -25.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": -19.4444, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": -25.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 100.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Research": { "value": -25.0, "definitionCite": "32023L0970#003.001", "populationN": 6, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Research", "gapPct": -25.0, "threshold": 5 }
+  ],
+  "warnings": [],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 5000, "w02_F": 4300, "w03_F": 4200,
+      "w04_M": 4000, "w05_M": 3600, "w06_M": 3200
+    },
+    "meanTotalPay": {
+      "F": "5000 + 4300 + 4200 = 13500 over 3 = 4500",
+      "M": "4000 + 3600 + 3200 = 10800 over 3 = 3600",
+      "a": "(3600 - 4500) / 3600 = -900 / 3600 = -0.25 = -25.0%",
+      "note": "The denominator stays the MALE figure even when the male figure is the smaller one. Art. 3(1)(c) fixes it as a percentage of the average pay level of male workers and says nothing about which is larger, so switching denominators to keep the sign positive would produce a different number under the same name."
+    },
+    "meanComponents": {
+      "F": "600 + 500 + 400 = 1500 over 3 = 500",
+      "M": "500 + 400 + 300 = 1200 over 3 = 400",
+      "b": "(400 - 500) / 400 = -100 / 400 = -0.25 = -25.0%"
+    },
+    "medianTotalPay": {
+      "F": "sorted 4200, 4300, 5000 -> single middle value -> 4300",
+      "M": "sorted 3200, 3600, 4000 -> single middle value -> 3600",
+      "c": "(3600 - 4300) / 3600 = -700 / 3600 = -7/36 = -0.1944444... = -19.4444% to 4 dp"
+    },
+    "medianComponents": {
+      "F": "sorted 400, 500, 600 -> 500",
+      "M": "sorted 300, 400, 500 -> 400",
+      "d": "(400 - 500) / 400 = -100 / 400 = -0.25 = -25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "3 of 3 = 100%",
+      "M": "3 of 3 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["3200 w06 M", "3600 w05 M", "4000 w04 M", "4200 w03 F", "4300 w02 F", "5000 w01 F"],
+      "sizes": "n = 6, 6 / 4 = 1 remainder 2. Under to_lower: Q1 = 2, Q2 = 2, Q3 = 1, Q4 = 1.",
+      "tiedGroup": "none",
+      "Q1": "w06 M, w05 M -> F 0.0%",
+      "Q2": "w04 M, w03 F -> F 50.0%",
+      "Q3": "w02 F -> F 100.0%",
+      "Q4": "w01 F -> F 100.0%",
+      "f": "the upper quartile is 100.0% female"
+    },
+    "categories": {
+      "Research": "One category, so (g) equals (a): -25.0%"
+    },
+    "art10": "FLAGGED at -25.0%, and the sign is kept in the recorded gapPct. Art. 10(1) speaks of a difference in average pay level of at least five per cent and does not say which sex it must favour, so the trigger is on the magnitude. Flagging only positive gaps would read the Article as protecting one sex, which it does not say."
+  }
+}

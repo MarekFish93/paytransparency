@@ -1,0 +1,14 @@
+{
+  "vector": "v08-negative-gap",
+  "case": "Women are paid more on average than men. A negative gap is a real result the report must be able to state plainly, and the sign must survive rounding, the Art. 10 trigger and the share card.",
+  "rowCount": 6,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Research", "pay": { "BASE": 4400, "BONUS": 600 } },
+    { "id": "w02", "sex": "F", "category": "Research", "pay": { "BASE": 3800, "BONUS": 500 } },
+    { "id": "w03", "sex": "F", "category": "Research", "pay": { "BASE": 3800, "BONUS": 400 } },
+    { "id": "w04", "sex": "M", "category": "Research", "pay": { "BASE": 3500, "BONUS": 500 } },
+    { "id": "w05", "sex": "M", "category": "Research", "pay": { "BASE": 3200, "BONUS": 400 } },
+    { "id": "w06", "sex": "M", "category": "Research", "pay": { "BASE": 2900, "BONUS": 300 } }
+  ]
+}

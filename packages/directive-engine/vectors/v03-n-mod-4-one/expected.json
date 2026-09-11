@@ -1,0 +1,65 @@
+{
+  "vector": "v03-n-mod-4-one",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": 21.25, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 38.0, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 14.2857, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Ops": { "value": 21.25, "definitionCite": "32023L0970#003.001", "populationN": 9, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Ops", "gapPct": 21.25, "threshold": 5 }
+  ],
+  "warnings": [],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 2000, "w02_F": 2400, "w03_F": 3000, "w04_F": 3400, "w09_F": 1800,
+      "w05_M": 2200, "w06_M": 2800, "w07_M": 3600, "w08_M": 4200
+    },
+    "meanTotalPay": {
+      "F": "1800 + 2000 + 2400 + 3000 + 3400 = 12600 over 5 = 2520",
+      "M": "2200 + 2800 + 3600 + 4200 = 12800 over 4 = 3200",
+      "a": "(3200 - 2520) / 3200 = 680 / 3200 = 0.2125 = 21.25%"
+    },
+    "meanComponents": {
+      "F": "150 + 200 + 300 + 400 + 500 = 1550 over 5 = 310",
+      "M": "200 + 400 + 600 + 800 = 2000 over 4 = 500",
+      "b": "(500 - 310) / 500 = 190 / 500 = 0.38 = 38.0%"
+    },
+    "medianTotalPay": {
+      "F": "sorted 1800, 2000, 2400, 3000, 3400 -> odd headcount, single middle value -> 2400",
+      "M": "sorted 2200, 2800, 3600, 4200 -> middle pair (2800, 3600) -> 2800",
+      "c": "(2800 - 2400) / 2800 = 400 / 2800 = 1/7 = 0.1428571428... = 14.2857% to 4 dp",
+      "note": "The two sexes take different median branches in the same report — F is odd and needs no rule, M is even and uses lower_of_two. That is normal and is why the rule has to be recorded rather than assumed."
+    },
+    "medianComponents": {
+      "F": "sorted 150, 200, 300, 400, 500 -> single middle value -> 300",
+      "M": "sorted 200, 400, 600, 800 -> middle pair (400, 600) -> 400",
+      "d": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "5 of 5 = 100%",
+      "M": "4 of 4 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["1800 w09 F", "2000 w01 F", "2200 w05 M", "2400 w02 F", "2800 w06 M", "3000 w03 F", "3400 w04 F", "3600 w07 M", "4200 w08 M"],
+      "sizes": "n = 9, 9 / 4 = 2 remainder 1. Under to_lower the single leftover goes to the lowest quarter: Q1 = 3, Q2 = 2, Q3 = 2, Q4 = 2.",
+      "tiedGroup": "none — every total pay value is distinct",
+      "Q1": "w09 F, w01 F, w05 M -> F 66.6667%",
+      "Q2": "w02 F, w06 M -> F 50.0%",
+      "Q3": "w03 F, w04 F -> F 100.0%",
+      "Q4": "w07 M, w08 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female"
+    },
+    "categories": {
+      "Ops": "One category, so (g) equals (a): 21.25%"
+    },
+    "art10": "Ops is above the 5 percentage-point trigger."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  // Tests are typechecked but never shipped. They are a separate project so the shipped
+  // project's `rootDir` stays `src`, which is what makes the `exports` entry
+  // `./dist/index.js` honest rather than `./dist/src/index.js` — the bug plan 01-01 hit
+  // in country-data and fixed the same way.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": ".tsbuild",
+    "tsBuildInfoFile": ".tsbuild/.tsbuildinfo",
+    "types": ["node"],
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

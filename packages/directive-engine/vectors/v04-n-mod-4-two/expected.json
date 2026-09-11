@@ -1,0 +1,64 @@
+{
+  "vector": "v04-n-mod-4-two",
+  "valuePrecision": "Exact where the division terminates; otherwise rounded to 4 decimal places, with the exact fraction given in `working`.",
+  "metrics": {
+    "a": { "value": 16.0, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "b": { "value": 29.5455, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "c": { "value": 14.2857, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "d": { "value": 25.0, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "e": { "value": 0.0, "definitionCite": "32023L0970#009.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "f": { "value": 0.0, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false },
+    "g": {
+      "Ops": { "value": 16.0, "definitionCite": "32023L0970#003.001", "populationN": 10, "excludedN": 0, "suppressed": false, "unreliable": false }
+    }
+  },
+  "art10Flags": [
+    { "category": "Ops", "gapPct": 16.0, "threshold": 5 }
+  ],
+  "warnings": [],
+  "working": {
+    "totalPayPerRow": {
+      "w01_F": 2000, "w02_F": 2400, "w03_F": 3000, "w04_F": 3400, "w09_F": 1800,
+      "w05_M": 2200, "w06_M": 2800, "w07_M": 3600, "w08_M": 4200, "w10_M": 2200
+    },
+    "meanTotalPay": {
+      "F": "1800 + 2000 + 2400 + 3000 + 3400 = 12600 over 5 = 2520",
+      "M": "2200 + 2200 + 2800 + 3600 + 4200 = 15000 over 5 = 3000",
+      "a": "(3000 - 2520) / 3000 = 480 / 3000 = 0.16 = 16.0%"
+    },
+    "meanComponents": {
+      "F": "150 + 200 + 300 + 400 + 500 = 1550 over 5 = 310",
+      "M": "200 + 200 + 400 + 600 + 800 = 2200 over 5 = 440",
+      "b": "(440 - 310) / 440 = 130 / 440 = 13/44 = 0.2954545454... = 29.5455% to 4 dp"
+    },
+    "medianTotalPay": {
+      "F": "sorted 1800, 2000, 2400, 3000, 3400 -> single middle value -> 2400",
+      "M": "sorted 2200, 2200, 2800, 3600, 4200 -> single middle value -> 2800",
+      "c": "(2800 - 2400) / 2800 = 400 / 2800 = 1/7 = 0.1428571428... = 14.2857% to 4 dp"
+    },
+    "medianComponents": {
+      "F": "sorted 150, 200, 300, 400, 500 -> 300",
+      "M": "sorted 200, 200, 400, 600, 800 -> 400",
+      "d": "(400 - 300) / 400 = 100 / 400 = 0.25 = 25.0%"
+    },
+    "proportionsReceivingComponents": {
+      "F": "5 of 5 = 100%",
+      "M": "5 of 5 = 100%",
+      "e": "100 - 100 = 0.0 percentage points"
+    },
+    "quartiles": {
+      "rankedAscendingByTotalPay": ["1800 w09 F", "2000 w01 F", "2200 w05 M", "2200 w10 M", "2400 w02 F", "2800 w06 M", "3000 w03 F", "3400 w04 F", "3600 w07 M", "4200 w08 M"],
+      "sizes": "n = 10, 10 / 4 = 2 remainder 2. Under to_lower the two leftovers go one per quarter starting from the lowest, NOT both into the first: Q1 = 3, Q2 = 3, Q3 = 2, Q4 = 2. Both into Q1 would give 4, 2, 2, 2, which is not four equal groups in any sense Art. 3(1)(f) would recognise.",
+      "tiedGroup": "w05 M and w10 M are both on 2200 and occupy ranks 3 and 4, spanning the Q1/Q2 boundary. The tied group is single-sex (0F : 2M), so the proportional rule is satisfied by any split and no fractional allocation is needed.",
+      "Q1": "w09 F, w01 F, w05 M -> F 66.6667%",
+      "Q2": "w10 M, w02 F, w06 M -> F 33.3333%",
+      "Q3": "w03 F, w04 F -> F 100.0%",
+      "Q4": "w07 M, w08 M -> F 0.0%",
+      "f": "the upper quartile is 0.0% female"
+    },
+    "categories": {
+      "Ops": "One category, so (g) equals (a): 16.0%"
+    },
+    "art10": "Ops is above the 5 percentage-point trigger."
+  }
+}

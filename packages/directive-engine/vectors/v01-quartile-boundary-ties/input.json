@@ -1,0 +1,16 @@
+{
+  "vector": "v01-quartile-boundary-ties",
+  "case": "Three workers on exactly the same total pay, spanning the Q1/Q2 boundary, with the tied group split 2F:1M — the only place the tie rule and the remainder side both become visible.",
+  "rowCount": 8,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Support", "pay": { "BASE": 2600, "BONUS": 200 } },
+    { "id": "w02", "sex": "M", "category": "Support", "pay": { "BASE": 2600, "BONUS": 200 } },
+    { "id": "w03", "sex": "F", "category": "Support", "pay": { "BASE": 2600, "BONUS": 200 } },
+    { "id": "w04", "sex": "M", "category": "Support", "pay": { "BASE": 2800, "BONUS": 400 } },
+    { "id": "w05", "sex": "F", "category": "Analyst", "pay": { "BASE": 3100, "BONUS": 300 } },
+    { "id": "w06", "sex": "M", "category": "Analyst", "pay": { "BASE": 3400, "BONUS": 600 } },
+    { "id": "w07", "sex": "F", "category": "Analyst", "pay": { "BASE": 4100, "BONUS": 500 } },
+    { "id": "w08", "sex": "M", "category": "Analyst", "pay": { "BASE": 5200, "BONUS": 800 } }
+  ]
+}

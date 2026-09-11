@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 1
+open_count: 3
 waived_count: 0
 fixed_count: 0
-total_count: 1
-last_updated: 2026-09-11T11:16:20.879Z
+total_count: 3
+last_updated: 2026-09-11T12:11:23.044Z
 ---
 
 # Broken Windows Ledger
@@ -16,6 +16,8 @@ last_updated: 2026-09-11T11:16:20.879Z
 | id | phase | kind | file | line | description | status | reason | recorded_at | resolved_at |
 |----|-------|------|------|------|-------------|--------|--------|-------------|-------------|
 | 1 | 01 | stub | packages/country-data/src/verifier.ts |  | verifySource implements the cellar strategy only; html-anchor, jsonld and metadata-only throw not-implemented against a frozen signature (plan 01-02 fills them) | open |  | 2026-09-11T11:16:20.879Z |  |
+| 2 | 01 | unmet-truth | docs/share-url-contract.md |  | Share-URL bucket population estimates are MODELLED, not sourced; a Eurostat-grounded figure must replace them before the card ships in Phase 4, widening any band that falls under the 25,000 k-anonymity floor | open |  | 2026-09-11T12:11:18.365Z |  |
+| 3 | 01 | unmet-truth | packages/directive-engine/docs/ENGINE-REPORT.md |  | The single-number reduction on metrics (e), (f) and (g) is an authoring decision forced by the frozen MetricValue carrying one nullable number; Phase 6 must confirm it or amend the contract through the recorded amendment path | open |  | 2026-09-11T12:11:23.044Z |  |
 
 ````json
 [
@@ -29,6 +31,30 @@ last_updated: 2026-09-11T11:16:20.879Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-09-11T11:16:20.879Z",
+    "resolved_at": null
+  },
+  {
+    "id": 2,
+    "kind": "unmet-truth",
+    "phase": "01",
+    "file": "docs/share-url-contract.md",
+    "line": null,
+    "description": "Share-URL bucket population estimates are MODELLED, not sourced; a Eurostat-grounded figure must replace them before the card ships in Phase 4, widening any band that falls under the 25,000 k-anonymity floor",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-11T12:11:18.365Z",
+    "resolved_at": null
+  },
+  {
+    "id": 3,
+    "kind": "unmet-truth",
+    "phase": "01",
+    "file": "packages/directive-engine/docs/ENGINE-REPORT.md",
+    "line": null,
+    "description": "The single-number reduction on metrics (e), (f) and (g) is an authoring decision forced by the frozen MetricValue carrying one nullable number; Phase 6 must confirm it or amend the contract through the recorded amendment path",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-11T12:11:23.044Z",
     "resolved_at": null
   }
 ]

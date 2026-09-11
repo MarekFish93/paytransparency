@@ -1,0 +1,14 @@
+{
+  "vector": "v09-zero-variable-components",
+  "case": "Nobody receives any complementary or variable component. The proportion receiving them is a legitimate ZERO rather than a missing value, and the component gap is a zero difference rather than a null — the two are different claims and the report must not swap them.",
+  "rowCount": 6,
+  "payColumns": ["BASE", "BONUS"],
+  "rows": [
+    { "id": "w01", "sex": "F", "category": "Retail", "pay": { "BASE": 2400, "BONUS": 0 } },
+    { "id": "w02", "sex": "F", "category": "Retail", "pay": { "BASE": 2600, "BONUS": 0 } },
+    { "id": "w03", "sex": "F", "category": "Retail", "pay": { "BASE": 2800, "BONUS": 0 } },
+    { "id": "w04", "sex": "M", "category": "Retail", "pay": { "BASE": 2800, "BONUS": 0 } },
+    { "id": "w05", "sex": "M", "category": "Retail", "pay": { "BASE": 3200, "BONUS": 0 } },
+    { "id": "w06", "sex": "M", "category": "Retail", "pay": { "BASE": 3600, "BONUS": 0 } }
+  ]
+}

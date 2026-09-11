@@ -50,7 +50,7 @@
 - [ ] **GAP-03**: Worker sees a projection to retirement, with its assumptions stated on the page
 - [ ] **GAP-04**: Worker is told plainly that the unadjusted gap is not the same as discrimination, and what the Directive actually targets
 - [ ] **GAP-05**: Worker can share a result card, served from a build-time family of bucketed static cards **[corrects brief]**
-- [ ] **GAP-06**: Any transmitted URL carries only derived, rounded, non-identifying values; real inputs stay in the fragment, which is never transmitted **[corrects brief]**
+- [x] **GAP-06**: Any transmitted URL carries only derived, rounded, non-identifying values; real inputs stay in the fragment, which is never transmitted **[corrects brief]**
 - [ ] **GAP-07**: Worker on mobile can share a locally-rendered card image through the native share sheet
 - [ ] **GAP-08**: The card is legible at social-thumbnail size in every locale
 - [ ] **GAP-09**: A methodology page documents the calculation, its data vintage and its limits
@@ -211,7 +211,7 @@ success criteria.
 | GAP-03 | Phase 4 | Pending |
 | GAP-04 | Phase 4 | Pending |
 | GAP-05 | Phase 4 | Pending |
-| GAP-06 | Phase 1 | Pending |
+| GAP-06 | Phase 1 | Complete |
 | GAP-07 | Phase 4 | Pending |
 | GAP-08 | Phase 4 | Pending |
 | GAP-09 | Phase 4 | Pending |
@@ -276,6 +276,7 @@ success criteria.
 | 7 | Article 9 Calculator and Launch | 16 |
 
 **Coverage:**
+
 - v1 requirements: 85 total
 - Mapped to phases: 85
 - Unmapped: 0
