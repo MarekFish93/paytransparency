@@ -1,0 +1,404 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "AT",
+    "name_en": "Austria",
+    "official_languages": [
+      "de"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970AUT_202604620",
+      "title": "Gesetz vom 16. März 1999 über die Personalvertretung der Bediensteten des Landes Steiermark (Stmk. Landespersonalvertretungsgesetz 1999 – LPVG 1999) idgF (LGBl. Nr. 64/1999 idF 19/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 64/1999",
+      "oj_date": "1999-06-30",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000444",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604621",
+      "title": "Gesetz über das Dienst- und Besoldungsrecht der Bediensteten des Landes Steiermark (Stmk. L-DBR) idgF (LGBl. Nr. 29/2003 idF LGBl. Nr. 19/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 29/2003",
+      "oj_date": "2003-04-25",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000534",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604622",
+      "title": "Gesetz vom 14. Dezember 1999 über den Schutz des Lebens und der Gesundheit der Bediensteten des Landes, der Gemeinden und der Gemeindeverbände (Steiermärkisches Bedienstetenschutzgesetz 2000 – St.-BSG) idgF (LGBl. Nr. 24/2000 idF 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 24/2000",
+      "oj_date": "2000-04-12",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000224",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604624",
+      "title": "Gesetz vom 16. Mai 2023, mit dem das Gesetz über die Gleichbehandlung, Gleichstellung und das Verbot der Diskriminierung (Steiermärkisches Landes-Gleichbehandlungsgesetz 2023 – StLGBG 2023) erlassen wird idgF (LGBl. Nr. 46/2023 idF LGBl. Nr. 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 46/2023",
+      "oj_date": "2023-05-31",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001756",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604625",
+      "title": "Gesetz vom 19. Mai 2026, mit dem das Gesetz über das Dienst- und Besoldungsrecht der Bediensteten des Landes Steiermark, das Steiermärkische Zuweisungsgesetz, das Steiermärkische Landesverwaltungsgerichtsgesetz, das Steiermärkische Bedienstetenschutzgesetz 2000 und das Stmk. Landespersonalvertretungsgesetz 1999 geändert werden",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 53/2026",
+      "oj_date": "2026-06-12",
+      "notified_at": "2026-06-25",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604626",
+      "title": "Gesetz vom 14. Juni 2019 über den barrierefreien Zugang zu den Websites und mobilen Anwendungen öffentlicher Stellen (Steiermärkisches Web-Zugangs-Gesetz – StWZG) idgF (LGBl. Nr. 50/2019 idF 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 50/2019",
+      "oj_date": "2019-06-26",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001475",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202604627",
+      "title": "Verordnung der Steiermärkischen Landesregierung vom 3. Juli 2025 über die Einreihung der Stellen im Landesdienst in Gehaltsklassen (Steiermärkische Einreihungsverordnung – StEVO) idgF (LGBl. Nr. 46/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 46/2025",
+      "oj_date": "2025-07-09",
+      "notified_at": "2026-06-25",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001890",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202605855",
+      "title": "Gesetz vom 7. Juli 2026, mit dem das Steiermärkische Landes-Gleichbehandlungsgesetz 2023 geändert wird",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 70/2026",
+      "oj_date": "2026-07-21",
+      "notified_at": "2026-07-23",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202606563",
+      "title": "Änderung des NÖ Gleichbehandlungsgesetzes (NÖ GBG)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 35/2026",
+      "oj_date": "2026-08-22",
+      "notified_at": "2026-08-22",
+      "national_link": null,
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607039",
+      "title": "Gesetz vom 4. Februar 1957, betreffend die Dienstordnung der öffentlich-rechtlichen Bediensteten der steirischen Gemeinden mit Ausnahme der Städte mit eigenem Statut (Gemeindebedienstetengesetz 1957 – GBG. 1957) idgF (LGBl. Nr. 34/1957 idF LGBl. Nr. 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 34/1957",
+      "oj_date": "1957-06-13",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001753",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607040",
+      "title": "Steiermärkisches Gemeinde-Vertragsbedienstetengesetz idgF (LGBl. Nr. 160/1962 idF LGBl. Nr. 59/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 160/1962",
+      "oj_date": "1962-10-08",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001642",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607041",
+      "title": "Dienst- und Gehaltsordnung der Beamten der Landeshauptstadt Graz 1956 idgF (LGBl. Nr. 30/1057 idF LGBl. Nr. 59/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 30/1957",
+      "oj_date": "1957-04-30",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001668",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607042",
+      "title": "Gesetz vom 5. März 1974 über das Dienst- und Gehaltsrecht der Vertragsbediensteten der Landeshauptstadt Graz – Grazer Gemeindevertragsbedienstetengesetz idgF (LGBl. Nr. 30/1974 idF LGBl. Nr. 59/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 30/1974",
+      "oj_date": "1974-04-26",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000345",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607043",
+      "title": "Gesetz vom 16. April 1991 über das Dienst- und Besoldungsrecht der von den Gemeinden angestellten Musiklehrer (Steiermärkisches Musiklehrergesetz) idgF (LGBl. Nr. 69/1991 idF LGBl. Nr. 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 69/1991",
+      "oj_date": "1991-08-22",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000210",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607044",
+      "title": "Gesetz vom 3. Juni 2014 über das Dienst- und Besoldungsrecht der von den Gemeinden an Musikschulen beschäftigten Lehrerinnen/Lehrern (Steiermärkisches Musiklehrergesetz 2014 – Stmk. MLG) idgF (LGBl. Nr. 93/2014 idF LGBl. Nr. 68/2025)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 93/2014",
+      "oj_date": "2014-07-28",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001180",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607045",
+      "title": "Verordnung der Steiermärkischen Landesregierung vom 21. Mai 2026 über die Anpassung von Beträgen nach dem Gemeindebedienstetengesetz 1957, dem Steiermärkischen Gemeinde-Vertragsbedienstetengesetz 1962, dem Steiermärkischen Musiklehrergesetz, dem Steiermärkischen Musiklehrergesetz 2014 und dem Dienst- und Besoldungsrecht der Gemeindebediensteten in Kinderbildungs- und betreuungseinrichtungen (Steiermärkische Gemeinde-Betragsanpassungs-Verordnung 2026) idgF (LGBl. Nr. 49/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 49/2026",
+      "oj_date": "2026-06-09",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20001931",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970AUT_202607046",
+      "title": "Gesetz vom 1. März 1994, betreffend die Personalvertretung in den steirischen Gemeinden (Gemeinde-Personalvertretungsgesetz 1994) idgF (LGBl. Nr. 37/1994 idF LGBl. Nr. 53/2026)",
+      "official_journal": "Landesgesetzblatt ( LGBl. )",
+      "oj_number": "LGBl. Nr. 37/1994",
+      "oj_date": "1994-06-17",
+      "notified_at": "2026-09-05",
+      "national_link": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk&Gesetzesnummer=20000442",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

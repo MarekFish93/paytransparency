@@ -1,0 +1,393 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "SI",
+    "name_en": "Slovenia",
+    "official_languages": [
+      "sl"
+    ],
+    "letter_languages": [
+      "en"
+    ],
+    "currency": "EUR"
+  },
+  "transposition": {
+    "status": {
+      "value": "unknown",
+      "status": "verified",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": "2026-09-11",
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "transposition.measures_notified_substance_unconfirmed"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970SVN_23415",
+      "title": "Zakon o sodelovanju delavcev pri upravljanju",
+      "official_journal": "Uradni list RS",
+      "oj_number": "42/1993",
+      "oj_date": "1993-07-22",
+      "notified_at": "2004-04-16",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=1993-01-1696",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_23527",
+      "title": "Zakon o pravdnem postopku",
+      "official_journal": "Uradni list RS",
+      "oj_number": "26/1999",
+      "oj_date": "1999-04-15",
+      "notified_at": "2004-04-16",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=1999-01-1210",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_23832",
+      "title": "Zakon o prekrških",
+      "official_journal": "Uradni list RS",
+      "oj_number": "7/2003",
+      "oj_date": "2003-01-23",
+      "notified_at": "2004-04-16",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2003-01-0238",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_24081",
+      "title": "Obligacijski zakonik",
+      "official_journal": "Uradni list RS",
+      "oj_number": "83/2001",
+      "oj_date": "2001-10-25",
+      "notified_at": "2004-04-16",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2001-01-4287",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_34579",
+      "title": "Zakon o delovnih in socialnih sodiščih",
+      "official_journal": "Uradni list RS",
+      "oj_number": "2/2004",
+      "oj_date": "2004-01-15",
+      "notified_at": "2005-01-21",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2004-01-0070",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_158938",
+      "title": "Kazenski zakonik (KZ-1)",
+      "official_journal": "Uradni list RS",
+      "oj_number": "55/2008",
+      "oj_date": "2008-06-04",
+      "notified_at": "2008-11-05",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2008-01-2296",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_215745",
+      "title": "Zakon o delovnih razmerjih",
+      "official_journal": "Uradni list RS",
+      "oj_number": "21/2013",
+      "oj_date": "2013-03-13",
+      "notified_at": "2014-05-10",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2013-01-0784",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_236885",
+      "title": "Zakon o javnem naročanju",
+      "official_journal": "Uradni list RS",
+      "oj_number": "91/2015",
+      "oj_date": "2015-11-30",
+      "notified_at": "2016-04-21",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2015-01-3570",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_239402",
+      "title": "Zakon o varstvu pred diskriminacijo",
+      "official_journal": "Uradni list RS",
+      "oj_number": "33/2016",
+      "oj_date": "2016-05-09",
+      "notified_at": "2016-07-15",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2016-01-1427",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_268619",
+      "title": "Pravila o delovanju Ekonomsko-socialnega sveta",
+      "official_journal": "Uradni list RS",
+      "oj_number": "1/2017",
+      "oj_date": "2017-01-06",
+      "notified_at": "2019-01-28",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2017-01-0008",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_269678",
+      "title": "Zakon o nekaterih koncesijskih pogodbah",
+      "official_journal": "Uradni list RS",
+      "oj_number": "9/2019",
+      "oj_date": "2019-02-11",
+      "notified_at": "2019-02-20",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2019-01-0287",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_273366",
+      "title": "Zakon o splošnem upravnem postopku",
+      "official_journal": "Uradni list RS",
+      "oj_number": "80/1999",
+      "oj_date": "1999-10-01",
+      "notified_at": "2019-05-30",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=1999-01-3777",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_202404914",
+      "title": "Zakon o inšpekciji dela (ZID-1)",
+      "official_journal": "Uradni list RS",
+      "oj_number": "19/2014",
+      "oj_date": "2014-03-17",
+      "notified_at": "2024-11-13",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2014-01-0663",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_202505966",
+      "title": "Zakon o izenačevanju možnosti invalidov (ZIMI)",
+      "official_journal": "Uradni list RS",
+      "oj_number": "94/2010",
+      "oj_date": "2010-11-26",
+      "notified_at": "2025-10-23",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2010-01-4936",
+      "kind": "pre_existing_act",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_202603913",
+      "title": "Zakon o skupnih temeljih sistema plač v javnem sektorju (ZSTSPJS)",
+      "official_journal": "Uradni list RS",
+      "oj_number": "95/2024",
+      "oj_date": "2024-11-08",
+      "notified_at": "2026-06-05",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2024-01-2864",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970SVN_202603914",
+      "title": "Zakon o objavljanju v Uradnem listu Republike Slovenije (ZOUL)",
+      "official_journal": "Uradni list RS",
+      "oj_number": "83/2025",
+      "oj_date": "2025-10-28",
+      "notified_at": "2026-06-05",
+      "national_link": "http://www.pisrs.si/Pis.web/pregledPredpisa?sop=2025-01-2953",
+      "kind": "unclassified",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  }
+}

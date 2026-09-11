@@ -1,0 +1,376 @@
+{
+  "$schema": "../country.schema.json",
+  "schema_version": "1.0.0",
+  "country": {
+    "code": "PL",
+    "name_en": "Poland",
+    "official_languages": [
+      "pl"
+    ],
+    "letter_languages": [
+      "pl",
+      "en"
+    ],
+    "currency": "PLN"
+  },
+  "transposition": {
+    "status": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/webapi/rdf/sparql",
+          "title": "Commission National Implementing Measures register, queried for Directive (EU) 2023/970",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "32023L0970",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "proposed.transposition_status_is_asserted_in_data_not_here"
+    },
+    "in_force_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "expected_from": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "partial_in_force": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "national_act": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "draft_asserting_sources": []
+  },
+  "article_7": {
+    "legal_basis": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.legal_basis_requires_human_promotion"
+    },
+    "response_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile",
+      "note_key": "pending.deadline_falls_back_to_article_7_4"
+    },
+    "channel": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "employer_reminder_duty": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "language_requirement": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "article_12_3": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile",
+    "note_key": "pending.art_12_3_option_not_checked"
+  },
+  "article_7_2": {
+    "value": null,
+    "status": "pending_verification",
+    "sources": [],
+    "verified_at": null,
+    "verified_by": null,
+    "volatility": "volatile"
+  },
+  "enforcement": {
+    "anti_retaliation": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "burden_of_proof_reversal": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "equality_body": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable",
+      "note_key": "pending.art20_designation_not_traced"
+    },
+    "labour_inspectorate": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "penalties": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    }
+  },
+  "reporting": {
+    "thresholds": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "filing_deadline": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "volatile"
+    },
+    "filing_authority": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "template": {
+      "value": null,
+      "status": "pending_verification",
+      "sources": [],
+      "verified_at": null,
+      "verified_by": null,
+      "volatility": "stable"
+    },
+    "adapter_id": null
+  },
+  "discovery_hints": [
+    {
+      "celex": "72023L0970POL_202603644",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 27 marca 2026 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Kodeks postępowania cywilnego",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2026-04-07",
+      "notified_at": "2026-06-02",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603648",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 7 listopada 2025 r. w sprawie ogłoszenia jednolitego tekstu ustawy o umowie koncesji na roboty budowlane lub usługi",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-12-03",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603670",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 21 maja 2025 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Kodeks wykroczeń",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-06-04",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603671",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 6 marca 2025 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Kodeks karny",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-03-26",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603672",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 13 czerwca 2025 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Kodeks postępowania w sprawach o wykroczenia",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-06-30",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603673",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 19 sierpnia 2024 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Prawo zamówień publicznych",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2024-08-30",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603675",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 14 lutego 2025 r. w sprawie ogłoszenia jednolitego tekstu ustawy - Kodeks pracy",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-03-06",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603677",
+      "title": "Ustawa z dnia 4 czerwca 2025 r. o zmianie ustawy - Kodeks pracy",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2025-06-23",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "transposing_candidate",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603678",
+      "title": "Obwieszczenie Marszałka Sejmu Rzeczypospolitej Polskiej z dnia 7 listopada 2024 r. w sprawie ogłoszenia jednolitego tekstu ustawy o Państwowej Inspekcji Pracy",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2024-11-22",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "consolidated_republication",
+      "source_query_at": "2026-09-11"
+    },
+    {
+      "celex": "72023L0970POL_202603683",
+      "title": "Ustawa z dnia 11 marca 2026 r. o zmianie ustawy o Państwowej Inspekcji Pracy oraz niektórych innych ustaw",
+      "official_journal": "Dziennik Ustaw",
+      "oj_number": null,
+      "oj_date": "2026-04-07",
+      "notified_at": "2026-06-03",
+      "national_link": null,
+      "kind": "transposing_candidate",
+      "source_query_at": "2026-09-11"
+    }
+  ],
+  "meta": {
+    "maintainers": [],
+    "review_interval_days": 90,
+    "last_full_review": null
+  },
+  "proposals": [
+    {
+      "field": "article_7.legal_basis",
+      "proposed_value": null,
+      "candidates": [
+        {
+          "celex": "72023L0970POL_202603677",
+          "title": "Ustawa z dnia 4 czerwca 2025 r. o zmianie ustawy - Kodeks pracy",
+          "note_key": "proposed.candidate_not_settled_by_register"
+        },
+        {
+          "celex": "72023L0970POL_202603683",
+          "title": "Ustawa z dnia 11 marca 2026 r. o zmianie ustawy o Państwowej Inspekcji Pracy oraz niektórych innych ustaw",
+          "note_key": "proposed.candidate_not_settled_by_register"
+        }
+      ],
+      "rationale_key": "proposed.pl.two_candidates_neither_settled",
+      "verification_strategy": "html-anchor",
+      "national_register_host": "dziennikustaw.gov.pl",
+      "sources": [
+        {
+          "url": "http://publications.europa.eu/resource/celex/72023L0970POL_202603677",
+          "title": "Ustawa z dnia 4 czerwca 2025 r. o zmianie ustawy - Kodeks pracy",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "72023L0970POL_202603677",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        },
+        {
+          "url": "http://publications.europa.eu/resource/celex/72023L0970POL_202603683",
+          "title": "Ustawa z dnia 11 marca 2026 r. o zmianie ustawy o Państwowej Inspekcji Pracy oraz niektórych innych ustaw",
+          "publisher": "Publications Office of the European Union",
+          "kind": "eu_institution",
+          "verification": "metadata-only",
+          "anchor": "72023L0970POL_202603683",
+          "language": "en",
+          "accessed_at": "2026-09-11",
+          "scope": null
+        }
+      ],
+      "drafted_by": "agent:gsd-executor/01-04",
+      "drafted_at": "2026-09-11",
+      "status": "awaiting_maintainer_promotion"
+    }
+  ]
+}
