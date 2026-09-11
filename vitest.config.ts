@@ -10,7 +10,18 @@ export default defineConfig({
     // The network-dependent suite never runs on the PR profile. A third party's outage
     // must not be able to turn a contributor's pull request red; live-source
     // verification belongs to the nightly job.
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.tsbuild/**', '**/*.live.test.ts'],
+    // `.claude/worktrees` holds LIVE executor worktrees — full checkouts of other
+    // branches. Without this, a local run collects every test twice (once from the real
+    // tree, once from a sibling agent's in-progress copy) and reports failures belonging
+    // to a branch that was never merged. CI never has them, so only local runs are
+    // misled — which is worse, not better.
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.tsbuild/**',
+      '**/.claude/worktrees/**',
+      '**/*.live.test.ts',
+    ],
     watch: false,
   },
 });

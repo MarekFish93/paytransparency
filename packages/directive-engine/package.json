@@ -25,5 +25,8 @@
   "scripts": {
     "test": "vitest run"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
 }
