@@ -18,6 +18,7 @@ files_modified:
   - packages/country-data/test/fixtures/cellar-304-revalidated.txt
   - packages/country-data/test/fixtures/slov-lex-spa-shell.html
   - packages/country-data/test/fixtures/legislation-mt-jsonld.html
+  - packages/country-data/test/fixtures/e-tar-lt-403-interstitial.html
   - .github/workflows/nightly.yml
 autonomous: true
 requirements: [LEGAL-09, LEGAL-10]
@@ -32,7 +33,8 @@ must_haves:
   truths:
     - "A zero-byte body on a 200 disposes data_defect; a zero-byte body on a 304 disposes revalidated and skips every body check; a body present but below the strategy's byte floor disposes data_defect"
     - "Anchor comparison runs on NFC-normalised text with U+00A0, U+202F and U+2009 folded to U+0020 and whitespace runs collapsed, so an ASCII-spaced anchor matches the authentic non-breaking-space form; the stored body and the stored quotation remain unnormalised"
-    - "Each of the six captured real responses — 202 with an empty body, a Cellar 404, a Cellar 400 on a bad language, a 304, a client-rendered shell, and a JSON-LD landing page — produces its correct disposition with no network access"
+    - "Each of the seven captured real responses — 202 with an empty body, a Cellar 404, a Cellar 400 on a bad language, a 304, a client-rendered shell, a JSON-LD landing page, and a 403 challenge interstitial — produces its correct disposition with no network access"
+    - "A 403 whose body carries a challenge-interstitial signature is classified as an anti-automation gate rather than as a generic client error: it disposes data_defect with a named reason and a message directing the maintainer to manual-attest, because the Lithuanian register behind that interstitial is one of the two launch-country sources the phase has already decided cannot be verified by fetch"
     - "A source whose host is not on that country's allowlist is rejected BEFORE any fetch is attempted, so a hostile source_url in a contributor pull request never becomes an outbound request from a CI runner"
     - "The verifier distinguishes a data defect from a transport failure: DNS failure, timeout and 5xx retry three times with backoff and then dispose source_unreachable; empty-200, missing anchor and 4xx dispose data_defect immediately with no retry"
     - "A source_unreachable disposition blocks the merge under its own distinct status and can be overridden by a named maintainer, with the override recorded in the run output rather than silently applied"
@@ -48,7 +50,9 @@ must_haves:
       provides: "Per-country allowed source hosts plus the all-countries EU institution set"
       contains: "publications.europa.eu"
     - path: "packages/country-data/test/verifier.test.ts"
-      provides: "Fixture-driven, offline disposition tests for all six captured response shapes"
+      provides: "Fixture-driven, offline disposition tests for all seven captured response shapes"
+    - path: "packages/country-data/test/fixtures/e-tar-lt-403-interstitial.html"
+      provides: "The Lithuanian register's challenge-interstitial 403, captured so the anti-automation branch is proved offline rather than assumed"
     - path: "packages/country-data/test/verifier.live.test.ts"
       provides: "Network-dependent Cellar assertions, excluded from the PR profile and run only nightly"
     - path: ".github/workflows/nightly.yml"
@@ -79,13 +83,13 @@ complete failure taxonomy, so the gate is right on every real response shape res
 and cannot be fixed by weakening.
 
 Purpose: the rule stated in LEGAL-09 and `.claude/CLAUDE.md` (200 plus a non-empty body plus an
-expected anchor) fails on good documents and passes on bad ones. Six failure modes were reproduced
+expected anchor) fails on good documents and passes on bad ones. Seven failure modes were reproduced
 against real endpoints. A gate that goes red for the wrong reason gets disabled within a month, which
 is worse than no gate; a gate that goes green for the wrong reason certifies a false legal fact to a
 worker.
 
 Output: a five-strategy verification table with `manual-attest` as a first-class state, a pre-fetch
-allowlist guard, six committed fixtures that make the whole gate deterministic and offline, the
+allowlist guard, seven committed fixtures that make the whole gate deterministic and offline, the
 data-defect versus transport-failure split with a recorded override, and the nightly live profile
 with ETag-keyed caching.
 </objective>
@@ -183,8 +187,8 @@ the punycode-encoded host, so a homograph host does not match by visual similari
 </task>
 
 <task type="auto" tdd="true">
-  <name>Task 2: The five-strategy table and the complete failure taxonomy, proved offline against six real captured responses</name>
-  <files>packages/country-data/src/source-strategy.ts, packages/country-data/src/verifier.ts, packages/country-data/test/verifier.test.ts, packages/country-data/test/fixtures/eurlex-frontend-202-empty.txt, packages/country-data/test/fixtures/cellar-404-unknown-celex.txt, packages/country-data/test/fixtures/cellar-400-bad-language.txt, packages/country-data/test/fixtures/cellar-304-revalidated.txt, packages/country-data/test/fixtures/slov-lex-spa-shell.html, packages/country-data/test/fixtures/legislation-mt-jsonld.html</files>
+  <name>Task 2: The five-strategy table and the complete failure taxonomy, proved offline against seven real captured responses</name>
+  <files>packages/country-data/src/source-strategy.ts, packages/country-data/src/verifier.ts, packages/country-data/test/verifier.test.ts, packages/country-data/test/fixtures/eurlex-frontend-202-empty.txt, packages/country-data/test/fixtures/cellar-404-unknown-celex.txt, packages/country-data/test/fixtures/cellar-400-bad-language.txt, packages/country-data/test/fixtures/cellar-304-revalidated.txt, packages/country-data/test/fixtures/slov-lex-spa-shell.html, packages/country-data/test/fixtures/legislation-mt-jsonld.html, packages/country-data/test/fixtures/e-tar-lt-403-interstitial.html</files>
   <read_first>
     - packages/country-data/src/verifier.ts — the `Disposition` union and the nine-step assertion order authored in plan 01, and the not-implemented stubs for the four remaining strategies
     - packages/country-data/src/allowlist.ts — `assertFetchable`, which this task wires in as step zero
@@ -202,16 +206,22 @@ the punycode-encoded host, so a homograph host does not match by visual similari
     - Test 6: the Malta landing page disposes `verified` under the `jsonld` strategy when its `legislationIdentifier` equals the stored ELI, and `data_defect` when it does not — the operative wording is deliberately NOT asserted, because it is not on that page
     - Test 7: a `manual-attest` source performs no fetch at all, and disposes `attested` only when the parent fact carries a non-null `verified_by` and a `verified_at` inside its freshness window; otherwise `data_defect`
     - Test 8: a simulated DNS failure and a simulated 503 each retry three times with increasing delay and then dispose `source_unreachable`; an empty-200 retries zero times
+    - Test 9: the Lithuanian register's 403 challenge interstitial disposes `data_defect` with reason `anti_automation_gate` and a message naming `manual-attest` as the strategy that source needs — NOT the generic 4xx message, because a maintainer reading the generic message would go looking for a broken URL instead of recording an attestation. A 403 whose body carries no interstitial signature still disposes `data_defect` with the generic reason, so the branch is a recognition and not a blanket reclassification of every 403
   </behavior>
   <action>
-Capture the six fixtures first, from the responses research already characterised, so the suite is
+Capture the seven fixtures first, from the responses research already characterised, so the suite is
 deterministic and has no network dependency. Each `.txt` fixture stores the status line, the response
 headers and the body exactly as observed, so the test constructs a response object from a real record
 rather than from an invented one. Byte sizes to reproduce: the accepted-but-empty response is zero
 bytes; the Cellar 404 body is the quoted not-found sentence; the 400 is 205 bytes; the 304 is zero
 bytes; the client-rendered shell is 1354 bytes and its first tag is a tag-manager script; the Malta
 page is a landing page carrying a schema.org JSON-LD block with `"@type": "Legislation"`,
-`"legislationDate": "2026-06-05"` and `"legislationIdentifier": "eli/ln/2026/173"`.
+`"legislationDate": "2026-06-05"` and `"legislationIdentifier": "eli/ln/2026/173"`. The seventh is the
+Lithuanian register's 403: capture the status line, the headers and the interstitial body exactly as the
+challenge served them, so the recognition test runs against a real record rather than an invented one.
+If the live interstitial cannot be re-captured at execution time, record that in the plan summary and
+capture the closest response the register actually returns — do not hand-write a plausible body, because
+a hand-written signature would make the recognition branch test itself.
 
 `packages/country-data/src/source-strategy.ts` holds `STRATEGY_TABLE` keyed by the five
 `SourceVerification` members. Each entry declares `byteFloor`, `requiresFetch`, `scopeRule` and
@@ -230,7 +240,12 @@ Extend `verifySource` in `packages/country-data/src/verifier.ts` to the full ord
  0. Allowlist and URL-shape guard; a violation disposes `data_defect` with the allowlist reason and no request is issued
  1. Transport error — DNS failure, timeout, connection reset — retry three times with backoff, then dispose `source_unreachable`
  2. `304` — dispose `revalidated`, record the revalidation, skip every body check
- 3. `4xx` — dispose `data_defect`, no retry. `5xx` — treat as transport, go to step 1
+ 3. `4xx` — dispose `data_defect`, no retry. One recognised sub-case: a `403` whose body matches a
+    challenge-interstitial signature carries reason `anti_automation_gate` and a message naming
+    `manual-attest` as the strategy that source needs, so the failure reads as a decision to record an
+    attestation rather than as a URL to go and fix. Keep the signature test in one exported predicate
+    over the captured fixture, matched on the interstitial markers actually present in it, and leave
+    every other `403` on the generic branch. `5xx` — treat as transport, go to step 1
  4. Any status other than 200 after the above — dispose `data_defect`. State explicitly in the message that an accepted-but-empty response is an anti-automation gate and cannot be verified by fetch
  5. Zero content length, or a body below the strategy's byte floor — dispose `data_defect` naming the floor
  6. Normalise for matching only: fold U+00A0, U+202F and U+2009 to a space, normalise curly quotes to ASCII, apply NFC, collapse whitespace runs, trim. Never store the normalised form
@@ -246,7 +261,8 @@ throws if either argument is empty. The override is data on the result object, w
 output; it may never be applied implicitly by a default parameter.
   </action>
   <acceptance_criteria>
-    - All six fixtures exist and the accepted-but-empty fixture's body section is exactly zero bytes
+    - All seven fixtures exist and the accepted-but-empty fixture's body section is exactly zero bytes
+    - The 403 interstitial fixture disposes `data_defect` with reason `anti_automation_gate` and a message containing the string `manual-attest`, while a 403 carrying a plain body disposes `data_defect` with the generic reason — both asserted, so the branch is a recognition rather than a reclassification of every 403
     - `STRATEGY_TABLE` has exactly five keys matching the five `SourceVerification` members, and `manual-attest` has `requiresFetch: false`
     - The test for the client-rendered shell asserts disposition `data_defect` and asserts the message contains the numeric byte floor `20000`
     - The `manual-attest` test asserts that no fetch function was invoked, using an injected fetch spy whose call count is asserted to be zero
@@ -256,11 +272,11 @@ output; it may never be applied implicitly by a default parameter.
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/country-data/test/verifier.test.ts</automated>
-    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 8 test cases are reported (one of the eight captured behaviours was not registered)</fails_when>
+    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 9 test cases are reported (one of the nine captured behaviours was not registered)</fails_when>
     <automated>pnpm vitest run --dir packages/country-data</automated>
     <fails_when>non-zero exit, or the summary line reports `0 passed`, or the reporter output omits `spine.test.ts` (the tracer's end-to-end proof regressed or stopped being collected)</fails_when>
   </verify>
-  <done>Every one of the six real response shapes produces its correct disposition offline, `manual-attest` is a first-class no-fetch state, and a transport failure is distinguishable from a data defect with a recorded override path.</done>
+  <done>Every one of the seven real response shapes produces its correct disposition offline, a challenge interstitial is recognised as an anti-automation gate rather than as a broken URL, `manual-attest` is a first-class no-fetch state, and a transport failure is distinguishable from a data defect with a recorded override path.</done>
 </task>
 
 <task type="auto">
@@ -326,7 +342,7 @@ review-on-drift, and that the decision itself — fetch live, keep no committed 
 See `01-01-cellar-spine-PLAN.md` → "Artifacts this phase produces" for the phase-wide list. This plan
 specifically creates: `strategyFor`, `STRATEGY_TABLE`, `byteFloorFor`, `isAllowlisted`,
 `assertFetchable`, `AllowlistViolation`, `overrideUnreachable`; the data file
-`packages/country-data/data/allowlist.json`; the six response fixtures under
+`packages/country-data/data/allowlist.json`; the seven response fixtures under
 `packages/country-data/test/fixtures/`; the test files `verifier.test.ts`, `verifier.live.test.ts`,
 `allowlist.test.ts`; and the workflow `.github/workflows/nightly.yml` with jobs `live-sources` and
 `directive-drift`. None of these symbols or paths exists before this phase.
@@ -347,7 +363,7 @@ specifically creates: `strategyFor`, `STRATEGY_TABLE`, `byteFloorFor`, `isAllowl
 |-----------|----------|-----------|----------|-------------|-----------------|
 | T-1-07 | Information disclosure | `verifySource` outbound fetch driven by a contributor-supplied `source_url` | high | mitigate | `assertFetchable` runs as step zero, before any request, and again on every redirect hop. Rejects non-allowlisted hosts, non-https schemes (one documented exception), credentials in the URL, non-default ports, IP-literal hosts and tracking parameters. Host matching is exact or single-label subdomain on the punycode host, never a raw suffix match. |
 | T-1-08 | Spoofing | Lookalike or homograph source domain on an allowlisted-looking host | high | mitigate | Punycode-encoded exact/single-label matching; `legislation.mt.evil.example` is an asserted rejection case in `allowlist.test.ts`. |
-| T-1-01 | Tampering | Verifier failing open on empty-200, 304, shell HTML or a recital-scoped anchor | high | mitigate | Six committed real-response fixtures pin every disposition offline; the `manual-attest` strategy records the absence of machine verification rather than faking its presence; byte floors live in one table so a loosening is a single visible diff. |
+| T-1-01 | Tampering | Verifier failing open on empty-200, 304, shell HTML, a challenge interstitial or a recital-scoped anchor | high | mitigate | Seven committed real-response fixtures pin every disposition offline; the `manual-attest` strategy records the absence of machine verification rather than faking its presence; byte floors live in one table so a loosening is a single visible diff. |
 | T-1-09 | Repudiation | A maintainer silently overriding a `source_unreachable` block | medium | mitigate | `overrideUnreachable` requires a non-empty maintainer identifier and reason, throws otherwise, and writes the override onto the result and into the run output. No implicit default parameter can apply it. |
 | T-1-10 | Denial of service | Third-party outage turning every contributor pull request red | medium | mitigate | The PR profile is fully offline and fixture-driven; all network verification is confined to the nightly job, which degrades to an ETag-keyed cache hit with a warning. |
 | T-1-SC | Tampering | npm installs | high | mitigate | No new package is installed by this plan; the pinned, audited set from plan 01 is unchanged and the lockfile stays frozen (`--frozen-lockfile` in both workflows). |
@@ -363,7 +379,7 @@ specifically creates: `strategyFor`, `STRATEGY_TABLE`, `byteFloorFor`, `isAllowl
 
 <success_criteria>
 1. All five verification strategies exist, with `manual-attest` performing no fetch and requiring a dated human attestation.
-2. All six reproduced response shapes dispose correctly, offline, on every pull request.
+2. All seven reproduced response shapes dispose correctly, offline, on every pull request, and the challenge interstitial is named as an anti-automation gate rather than as a broken URL.
 3. No outbound request leaves a CI runner for a host that is not on the requesting country's allowlist.
 4. A transport failure blocks under its own status with a recorded, non-defaultable override; a data defect fails hard with no retry.
 5. A Cellar outage yields a cached warning; a changed ETag yields a review task, never an automatic content update.
@@ -371,7 +387,6 @@ specifically creates: `strategyFor`, `STRATEGY_TABLE`, `byteFloorFor`, `isAllowl
 
 <output>
 Create `.planning/phases/01-ground-truth-and-governance/01-02-SUMMARY.md` when done.
-Record in it: the six fixture filenames with their observed byte sizes, the five strategy byte floors,
+Record in it: the seven fixture filenames with their observed byte sizes, the interstitial markers the 403 recognition predicate matches on, the five strategy byte floors,
 and the exact override call signature so plan 05's governance docs can describe it accurately.
 </output>
-</content>

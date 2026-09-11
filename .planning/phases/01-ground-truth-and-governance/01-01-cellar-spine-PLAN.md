@@ -141,6 +141,13 @@ first-class peer, not an exception — it records the *absence* of machine verif
 is strictly better than a green produced by a fetch that never saw the statute. The five-member union
 is authored in full in this plan even though only `cellar` is implemented here; the other four
 implementations arrive in plan 02 against an already-frozen discriminant.
+**Reversibility of THIS decision: costly, not one-way, and it is the planner's call rather than the
+user's.** No CONTEXT.md decision records the five-member verification union; it comes from the research
+verifier design, and CONTEXT.md records "Claude's Discretion: None", so this is a design the user was
+never asked about. It is rated costly because until the repository goes public in plan 05 its consumers
+are three files inside this repository, and a collapse or an extension is a coordinated refactor rather
+than a migration of published data. It hardens at publication. Recorded here so that a reviewer can
+object to the union before plan 05 rather than discover it afterwards.
 
 **2. Noun: the provenance state of a legal fact (was: "verified or not").**
 `FactStatus` was four members. Three distinct claims were collapsing into "we have no national
@@ -178,7 +185,7 @@ the dismissal is auditable; each re-arms in the phase that creates its surface.
 
 <task type="auto">
   <name>Task 1: Bootstrap the workspace and discharge D-01 by proving Cellar answers from GitHub Actions</name>
-  <precondition>`gh auth status` reports a logged-in github.com account (the CI reachability proof requires pushing a workflow and reading its run conclusion)</precondition>
+  <precondition>`gh auth status` reports a logged-in github.com account AND `gh api user --jq .login` prints a non-empty login — the repository is created under whatever that login is, never under an owner hardcoded in this plan, and the CI reachability proof requires pushing a workflow to it and reading the run conclusion</precondition>
   <reversibility rating="reversible">Creating a private GitHub repository under a placeholder name is undoable by deleting it; the public-visibility flip and the final name are gated separately in plan 05.</reversibility>
   <files>package.json, pnpm-workspace.yaml, .npmrc, .gitignore, tsconfig.base.json, vitest.config.ts, README.md, packages/country-data/package.json, packages/country-data/tsconfig.json, .github/workflows/cellar-reachability.yml</files>
   <read_first>
@@ -207,7 +214,7 @@ Enable corepack (`corepack enable`) so the pinned pnpm major resolves, then inst
 
 `.github/workflows/cellar-reachability.yml`: a single job on `workflow_dispatch` and `push`, `runs-on: ubuntu-latest`, no checkout of secrets, that curls `http://publications.europa.eu/resource/celex/32023L0970` with `Accept: application/xhtml+xml` and `Accept-Language: eng`, following redirects, and asserts THREE things, failing the step on any of them: the final HTTP status is exactly 200 (not merely 2xx — a 202 with an empty body must not pass), the downloaded size is greater than 100000 bytes, and the body contains `id="art_7"`. Echo the resolved final URL and the `ETag` response header into the job log so the pinned expression URI and ETag are recorded as CI evidence. Do not add a retry loop to this job — its purpose is to answer a yes/no question, and a retry would mask a hard failure.
 
-Create the GitHub remote so the workflow can run: `gh repo create MarekFish93/jafn --private --source=. --remote=origin --push`. The name `jafn` is a PLACEHOLDER — the brand/domain decision is deferred in CONTEXT.md and is gated before the repo goes public in plan 05. The repository must be created PRIVATE; D-12 makes it public only at phase close, after the bad-PR drill.
+Create the GitHub remote so the workflow can run. Derive the owner from the authenticated account rather than hardcoding one — read it with `gh api user --jq .login` and fail loudly with that command's output if it prints nothing, then create the repository under that login with a `--private --source=. --remote=origin --push` creation, naming the repository `jafn`. Do not assume any particular owner: the account the developer is logged in as is the only correct answer, and a hardcoded owner would fail the phase's first and most load-bearing task for anyone else. The name `jafn` is a PLACEHOLDER — the brand/domain decision is deferred in CONTEXT.md and is gated before the repo goes public in plan 05. The repository must be created PRIVATE; D-12 makes it public only at phase close, after the bad-PR drill.
 
 Then run the workflow and read its conclusion. If the run concludes anything other than `success`, STOP: do not proceed to task 2, do not substitute another retrieval method, and report that D-01's conditional has fired and the retrieval method must return to the user. Substituting a retrieval method here would silently invalidate every decision built on D-01.
   </action>
@@ -216,7 +223,7 @@ Then run the workflow and read its conclusion. If the run concludes anything oth
     - Root `package.json` contains `"packageManager": "pnpm@12.3.4"` and an `engines.node` value of `>=22.12.0`
     - `packages/country-data/package.json` lists `zod` under `devDependencies` and lists nothing under `dependencies`
     - `vitest.config.ts` excludes `**/*.live.test.ts` from the default run
-    - `git remote get-url origin` prints a github.com URL, and `gh repo view --json visibility --jq .visibility` prints `PRIVATE`
+    - `git remote get-url origin` prints a github.com URL whose owner segment equals the value `gh api user --jq .login` prints, and `gh repo view --json visibility --jq .visibility` prints `PRIVATE`
     - `gh run list --workflow=cellar-reachability.yml --limit 1 --json conclusion --jq '.[0].conclusion'` prints `success`
     - The workflow run log contains a line carrying an `ETag` value beginning `"Con-` and a line carrying the resolved `publications.europa.eu/resource/cellar/` expression URI
   </acceptance_criteria>
@@ -231,7 +238,9 @@ Then run the workflow and read its conclusion. If the run concludes anything oth
 
 <task type="tracer">
   <name>Task 2: One fact end-to-end — Art. 7(4) from Cellar to a verified, freshness-evaluated Fact</name>
-  <reversibility rating="one-way">The five-member `FactStatus` union (including `directive_fallback`) and the five-member `Source.verification` union become the shape Phases 3, 5 and 6 branch on and the community PRs against; collapsing either later means migrating every country record and both the country-page and letter-generation paths. D-07 and the research verifier design already took this door — the rating is recorded, not re-asked.</reversibility>
+  <reversibility rating="one-way">Scoped to `directive_fallback`, and to that alone. D-07 froze an explicit "national citation suppressed, Directive fallback in use" state as a schema state that Phases 3 and 5 both branch on, rated it one-way in the user's own words, and the user took that door; removing it later means migrating every country record and both the country-page and letter-generation paths. The rating is therefore recorded from D-07 and not re-asked. The remaining four `FactStatus` members are the pre-existing four-member union this plan carries forward unchanged.
+
+The five-member `Source.verification` union authored in the same file is a SEPARATE decision and is rated **costly**, not one-way. No CONTEXT.md decision records it — it comes from the research verifier design, and CONTEXT.md records no discretion area covering it. Until the repository goes public in plan 05 the union has exactly three consumers inside this repository (`verifier.ts`, `source-strategy.ts` and the seeded sources), so collapsing or extending it is a coordinated refactor with a known blast radius rather than a migration of published data. It hardens at publication, which is why it is written down here: a later collapse should be a visible, argued change, not a silent one.</reversibility>
   <files>packages/country-data/src/schema.ts, packages/country-data/src/verifier.ts, packages/country-data/src/freshness.ts, packages/country-data/scripts/fetch-directive.ts, packages/country-data/data/_directive.json, packages/country-data/test/fixtures/cellar-art7-en.xhtml, packages/country-data/test/spine.test.ts</files>
   <read_first>
     - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Directive Ground Truth" — the retrieval table, the structural citation keys (`art_7`, `007.004`), and the verbatim Art. 7(4) text in EN and PL
@@ -572,5 +581,3 @@ Create `.planning/phases/01-ground-truth-and-governance/01-01-SUMMARY.md` when d
 Record in it: the resolved pinned expression URI, the recorded `ETag`, the GitHub Actions run URL that
 discharged D-01, and the placeholder repository name so plan 05 can gate the rename.
 </output>
-</content>
-</invoke>

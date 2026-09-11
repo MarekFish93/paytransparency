@@ -3,7 +3,7 @@ phase: 01-ground-truth-and-governance
 plan: 07
 type: execute
 wave: 3
-depends_on: [01-06-frozen-contracts]
+depends_on: [01-06-frozen-contracts, 01-03-directive-corpus]
 files_modified:
   - packages/directive-engine/vectors/v01-quartile-boundary-ties/rederived.json
   - packages/directive-engine/vectors/v02-n-mod-4-zero/rederived.json
@@ -35,6 +35,7 @@ must_haves:
     - "The comparison tool computes no metric of its own — it compares two authored files — so the vectors are never validated against an implementation that shares their assumptions"
     - "After any convention re-wording, the convention document still satisfies the documented-conventions test: every key has exactly one recorded decision, and the document's heading order still equals the type's key order"
     - "A vector whose disagreement is resolved carries a recorded note naming which convention was ambiguous and what the wording now says, so the resolution is auditable rather than a silently changed number"
+    - "Every definitionCite in the report type and in both answer files of every vector RESOLVES against the stored Directive corpus — the key names an entry that actually exists in packages/country-data/data/_directive.json. Plan 06 could only assert the key shape, because plan 03 was filling that corpus in its own wave; this plan runs after both and is where the engine-to-data link stops being a convention and becomes a checked fact"
   artifacts:
     - path: "packages/directive-engine/vectors/v01-quartile-boundary-ties/rederived.json"
       provides: "The independent second-pass answers for the quartile-tie vector"
@@ -54,6 +55,10 @@ must_haves:
       to: "packages/directive-engine/docs/CONVENTIONS.md"
       via: "a resolved disagreement must leave a recorded note naming the re-worded convention, asserted by the test"
       pattern: "CONVENTION_KEYS"
+    - from: "packages/directive-engine/test/rederivation.test.ts"
+      to: "packages/country-data/data/_directive.json"
+      via: "every definitionCite in types.ts, in every expected.json and in every rederived.json is looked up in the stored corpus and must be found — the resolve half of the link plan 06 could only assert as a shape"
+      pattern: "definitionCite"
   prohibitions:
     - "MUST NOT read, open, grep, or infer the contents of any expected answer file, any working section, or any prior summary quoting an answer, while producing the re-derivation — the whole value of the second pass is that it has not seen the first"
     - "MUST NOT write code that computes an Article 9 metric in order to produce or check the re-derivation; a second pass that shares an implementation with the first is not a second pass, and an engine written now would be written against the specification it is meant to satisfy"
@@ -185,7 +190,8 @@ door.
     - packages/directive-engine/vectors/*/expected.json — the first pass; reading these is correct and required NOW, and was forbidden during task 1
     - packages/directive-engine/docs/CONVENTIONS.md — the decisions being tested by the comparison, and re-worded where a disagreement proves one ambiguous
     - packages/directive-engine/test/conventions-documented.test.ts — the invariants any re-wording must continue to satisfy
-    - packages/directive-engine/src/types.ts — `CONVENTION_KEYS` and the metric positions the comparison iterates
+    - packages/directive-engine/src/types.ts — `CONVENTION_KEYS`, the metric positions the comparison iterates, and the exported citation-key pattern
+    - packages/country-data/data/_directive.json — the Directive corpus plan 03 filled, which is what every `definitionCite` must now be looked up in. Read the KEY SET only; nothing in this plan needs the quotations themselves
     - .planning/phases/01-ground-truth-and-governance/01-CONTEXT.md D-13 and D-16 — the disagreement-means-ambiguous-convention rule, and the amendment path a re-wording must follow
   </read_first>
   <behavior>
@@ -196,6 +202,7 @@ door.
     - Test: a non-empty `ambiguities` array in any `rederived.json` is surfaced in the report even when the answers happen to agree, because an ambiguity that produced the same answer by luck is still an ambiguity
     - Test: `compareVectors` contains no arithmetic over the input rows — it reads two authored files and compares them
     - Test: after a re-wording, `conventions-documented.test.ts` still passes with every key carrying exactly one decision and the heading order still matching the key order
+    - Test: every `definitionCite` appearing in the report type, in any `expected.json` and in any `rederived.json` is present as a key in the stored Directive corpus, and a deliberately altered key fails the assertion by naming the key and the file it came from. This is the resolve assertion plan 06 deferred: it could only check the key SHAPE, because the corpus was being filled in its own wave and held a single entry at its start
   </behavior>
   <action>
 Write `packages/directive-engine/scripts/rederive.ts` as a COMPARISON tool. It reads each vector's two
@@ -229,6 +236,16 @@ is a worse state than the disagreement it replaced.
 `packages/directive-engine/test/rederivation.test.ts` asserts the behaviours above and asserts the end
 state: every vector has both answer files and every metric position agrees. That final assertion is
 what makes the vectors an executable specification Phase 6 can be built against.
+
+It also closes the engine-to-data link. Collect every `definitionCite` from the report type and from
+both answer files of all ten vectors, load the key set from `packages/country-data/data/_directive.json`,
+and assert every collected key is present in it. Fail with the offending key AND the file it came from,
+because a citation key that resolves nowhere is how the engine and the legal corpus drift apart without
+either side going red. Plan 06 deliberately asserted only the key shape — it runs in the same wave as
+the corpus pull and would have been testing against a corpus of one entry — so this is the first point
+in the phase where the assertion can be made honestly. If a key does not resolve, the fix is to correct
+the citation, never to add an entry to the corpus to match it: the corpus is what the publisher served,
+and editing it to satisfy a test is the failure mode the whole phase exists to prevent.
   </action>
   <acceptance_criteria>
     - `compareVectors` reports a verdict per vector and per metric position, and the process exits non-zero when any vector disagrees
@@ -238,11 +255,13 @@ what makes the vectors an executable specification Phase 6 can be built against.
     - `packages/directive-engine/scripts/rederive.ts` reads no `input.json` and performs no arithmetic over worker rows
     - Every convention that was re-worded carries a note stating that two independent passes read it differently, and names the reading now chosen
     - `pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts` still passes after the re-wording
+    - Every `definitionCite` in the report type and in all twenty answer files resolves to a key present in `packages/country-data/data/_directive.json`, and an altered key fails the assertion with both the key and its source file named
+    - No entry was added to `packages/country-data/data/_directive.json` by this plan — an unresolved citation is fixed in the citation, never by extending the corpus to match it
     - At the end state, `pnpm rederive:vectors` exits zero with all ten vectors agreeing
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/directive-engine/test/rederivation.test.ts</automated>
-    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 7 cases are reported (one of the seven comparison behaviours was not registered)</fails_when>
+    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 8 cases are reported (one of the eight comparison behaviours was not registered)</fails_when>
     <automated>pnpm rederive:vectors</automated>
     <fails_when>non-zero exit, or the printed report names any vector with verdict `disagree`, or the report covers fewer than 10 vectors</fails_when>
     <automated>pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts</automated>
@@ -289,13 +308,15 @@ None of these exists before this phase.
 | T-1-29 | Spoofing | The second pass copying the first rather than deriving it | high | mitigate | Structural separation — a separate plan, a separate wave, a separate agent, and a context block that explicitly excludes the first pass's summary and answer files — plus a `working` field per pass and a human check comparing the two lines of reasoning. Residual risk is recorded honestly in the flagged assumptions rather than claimed as closed. |
 | T-1-22 | Repudiation | An ambiguous convention presented to an auditor as settled | high | mitigate | Every recorded ambiguity is surfaced in the report even when the two passes happened to agree, and every re-wording carries a note stating that two independent passes read the decision differently and which reading was chosen. |
 | T-1-30 | Tampering | The comparison tool computing metrics and so validating the vectors against shared assumptions | medium | mitigate | The tool reads only the two authored answer files, never `input.json`, and a test asserts it performs no arithmetic over worker rows. |
+| T-1-31 | Tampering | A `definitionCite` that resolves nowhere letting the engine contract and the legal corpus drift apart silently | medium | mitigate | Every citation key in the type and in all twenty answer files is looked up in the stored corpus and must be found, failing with the key and its source file named. The corpus may not be extended to make a key resolve — an unresolved citation is fixed in the citation. Plan 06 could only assert the key shape because it runs in the corpus pull's own wave. |
 | T-1-SC | Tampering | npm installs | high | mitigate | No package is installed by this plan; `packages/directive-engine` keeps its empty dependencies object and the audited, pinned dev toolchain from plan 01 is unchanged. |
 </threat_model>
 
 <verification>
 - Ten `rederived.json` files exist, each with a `working` section and an `ambiguities` array
 - `pnpm rederive:vectors` exits zero and reports all ten vectors agreeing
-- `pnpm vitest run packages/directive-engine/test/rederivation.test.ts` passes with at least seven cases
+- `pnpm vitest run packages/directive-engine/test/rederivation.test.ts` passes with at least eight cases
+- Every `definitionCite` in the report type and in all twenty answer files resolves to a key present in `packages/country-data/data/_directive.json`, and the corpus itself was not extended to make one resolve
 - `pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts` still passes after any re-wording
 - `packages/directive-engine` still declares an empty dependencies object and contains no Article 9 metric arithmetic
 - Human check recorded above: independence of the two passes and unambiguity of the re-worded conventions, harvested at end of phase
@@ -307,13 +328,15 @@ None of these exists before this phase.
 3. Every disagreement and every recorded ambiguity was resolved by tightening a convention's wording, never by editing a number.
 4. The convention document still carries exactly one decision per key in the frozen order.
 5. No Article 9 metric arithmetic was written in this phase.
+6. Every citation key the engine contract and the vectors carry resolves against the stored Directive corpus — the link plan 06 could only assert as a shape is now a checked fact.
 </success_criteria>
 
 <output>
 Create `.planning/phases/01-ground-truth-and-governance/01-07-SUMMARY.md` when done.
 Record in it: the per-vector verdict, every ambiguity recorded by the second pass with the convention
-key it named, the before-and-after wording of each convention that was tightened, and an explicit
+key it named, the distinct citation keys collected from the type and the answer files together with the
+confirmation that every one resolved against the stored corpus, the before-and-after wording of each
+convention that was tightened, and an explicit
 statement of whether the independence instruction held — including any accidental exposure to the first
 pass's answers, which must be reported rather than concealed.
 </output>
-</content>

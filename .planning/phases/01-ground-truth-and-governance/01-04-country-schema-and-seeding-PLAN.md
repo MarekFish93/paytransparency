@@ -50,6 +50,8 @@ files_modified:
   - .planning/REQUIREMENTS.md
 autonomous: true
 requirements: [LEGAL-01, LEGAL-02, LEGAL-03, LEGAL-04, LEGAL-05, LEGAL-06, LEGAL-08]
+coupling_justified:
+  - "01-02-verifier-strategies: both plans derive their source-host set from the same eleven-domain probe table in 01-RESEARCH.md § 'Governance Gates' point 1 — plan 02 writes it into allowlist.json, this plan writes hosts drawn from it into the seeded and proposed files. Neither reads the other's output and either order produces the same result; plan 05's url-hygiene rule is where the two are checked against each other, and it runs in a later wave."
 
 estimate:
   tokens: 88000
@@ -138,6 +140,23 @@ launch-country proposals, the resolution function, the D-10 freshness behaviour,
 requirement statements.
 </objective>
 
+<scope_note>
+## The file count is deliberate — recorded rather than left silent
+
+This plan declares roughly forty modified files, which is well above the usual per-plan threshold, and
+the shape is being KEPT rather than re-sliced. The reason it is not a real scope problem: 32 of those
+files (27 country records plus 5 proposals) are written by ONE script, `seed-from-nim.ts`, from one
+SPARQL result, in one repeated pattern. The executor authors one script and reviews one output shape,
+not forty files. The token estimate (88000) is the highest in the phase and still inside the per-plan
+budget.
+
+The split line if it ever proves too heavy is the `data/` versus `proposed/` boundary in task 2: the 27
+machine-seeded records are mechanical, while the five launch-country proposals carry per-country legal
+judgement about which candidate measure to propose and which verification strategy each source needs.
+Splitting there would give a machine half and a judgement half with no shared file. Do not pre-emptively
+split — take it only if task 2 actually runs long.
+</scope_note>
+
 <execution_context>
 @~/.claude/gsd-core/workflows/execute-plan.md
 @~/.claude/gsd-core/templates/summary.md
@@ -189,7 +208,9 @@ actually returned so the discrepancy is closed with evidence rather than by pref
 
 <task type="auto" tdd="true">
   <name>Task 1: The country record schema, the resolution function, and the emitted JSON Schema</name>
-  <reversibility rating="one-way">The country record shape and the `directive_fallback` resolution state are what Phase 3's country pages and Phase 5's letter generator both branch on, and what community pull requests are authored against once the repository is public; changing either later means migrating every country record and both consuming paths. D-07 already took this door, so the rating is recorded and no checkpoint re-asks it.</reversibility>
+  <reversibility rating="one-way">Scoped to the `directive_fallback` resolution state, and to that alone. D-07 froze an explicit "national citation suppressed, Directive fallback in use" state, rated it one-way in the user's own words, and the user took that door; Phase 3's country pages and Phase 5's letter generator both branch on it, and removing it later means migrating every country record and both consuming paths. The rating is recorded from D-07 and no checkpoint re-asks it.
+
+The wider `CountryRecord` field layout is a SEPARATE decision and is rated **costly**, not one-way. It is sourced to `ARCHITECTURE.md` § 2 and to the research field list, not to any CONTEXT.md decision — the user was asked which countries are verified how, not what the record's fields are called. It is costly because changing it means a coordinated migration of 27 data files, 5 proposal files, the emitted JSON Schema and one seed script, all inside this repository and all machine-rewritable from the seed. It hardens at publication in plan 05, when contributors start authoring against the emitted schema, which is the moment to object to it rather than after.
   <files>packages/country-data/src/country.ts, packages/country-data/src/resolve.ts, packages/country-data/scripts/emit-json-schema.ts, packages/country-data/country.schema.json, packages/country-data/test/schema.test.ts, packages/country-data/test/resolve.test.ts</files>
   <read_first>
     - packages/country-data/src/schema.ts — the frozen `Fact`, `Source`, `FactStatus`, `SourceVerification` and `Volatility` primitives this composes
@@ -295,7 +316,8 @@ stripping — no enums, no namespaces, no parameter properties — and add no sc
   <files>packages/country-data/scripts/seed-from-nim.ts, packages/country-data/data/AT.json, packages/country-data/data/BE.json, packages/country-data/data/BG.json, packages/country-data/data/HR.json, packages/country-data/data/CY.json, packages/country-data/data/CZ.json, packages/country-data/data/DK.json, packages/country-data/data/EE.json, packages/country-data/data/FI.json, packages/country-data/data/FR.json, packages/country-data/data/DE.json, packages/country-data/data/GR.json, packages/country-data/data/HU.json, packages/country-data/data/IE.json, packages/country-data/data/IT.json, packages/country-data/data/LV.json, packages/country-data/data/LT.json, packages/country-data/data/LU.json, packages/country-data/data/MT.json, packages/country-data/data/NL.json, packages/country-data/data/PL.json, packages/country-data/data/PT.json, packages/country-data/data/RO.json, packages/country-data/data/SK.json, packages/country-data/data/SI.json, packages/country-data/data/ES.json, packages/country-data/data/SE.json, packages/country-data/proposed/PL.json, packages/country-data/proposed/SK.json, packages/country-data/proposed/IT.json, packages/country-data/proposed/LT.json, packages/country-data/proposed/MT.json, packages/country-data/test/coverage.test.ts</files>
   <read_first>
     - packages/country-data/src/country.ts — the record shape every seeded file must satisfy, and the launch-country invariant
-    - packages/country-data/src/allowlist.ts — the per-country host allowlist a proposed source must pass
+    - packages/country-data/src/schema.ts — the `Source` URL-shape rules authored in plan 01, which are the guard this task can actually run: scheme, credentials, port, IP-literal host and tracking parameters
+    - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Governance Gates" point 1 — the eleven probed source domains with their observed responses. Choose every source host for the seeded and proposed files from THIS list. Plan 02 authors `allowlist.json` from the same list, which is what makes the two agree by construction; plan 05's url-hygiene rule is what proves it
     - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Transposition Reality" — the working SPARQL query, the per-state counts, the launch-country candidate table, the caution that the register is a discovery index, and the three data-quality traps
     - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Code Examples" → "Seeding the 27 files from the NIM register" — the full query with its OPTIONAL clauses and the deduplication instruction
     - .planning/phases/01-ground-truth-and-governance/01-RESEARCH.md § "Open Questions" 1 and 2 — why the Art. 12(3) option and the equality-body designation are UNKNOWN rather than findings
@@ -339,11 +361,12 @@ register supplies, and record the verification strategy each source needs:
    identifier and the title, explicitly NOT on the operative wording, because the substantive text is
    not on that page
  - IT — the May 2026 legislative decree, with its Gazzetta Ufficiale number and date. No national link
-   was supplied by the register; strategy `html-anchor` against the allowlisted Italian registers
+   was supplied by the register; strategy `html-anchor` against the Italian register named in the
+   probe table
  - PL — two candidate acts, a 2025 Labour Code amendment and a 2026 labour-inspection amendment. Eight
    of Poland's ten notified items are consolidated-text republications and are NOT transposing
    amendments; mark them as such in the hints and propose neither candidate as settled. Strategy
-   `html-anchor` against the allowlisted Polish journal
+   `html-anchor` against the Polish journal named in the probe table
  - SK — strategy `manual-attest`. The national register is a client-rendered shell whose statute text
    never appears in the HTTP response, and several of its notified measures are consolidated versions
    of pre-existing acts including a 2001 statistics statute. A dated human attestation is the honest
@@ -365,6 +388,16 @@ directory, one per code in `EU_COUNTRY_CODES`, each filename stem equal to its o
 states observed with no notified measure carry an empty `discovery_hints` array and the
 no-measure-notified status; and re-running `dedupeNimRows` over a fixture of raw rows is idempotent and
 order-stable.
+
+It also asserts the HOST INVENTORY: flatten every `source.url` across the 27 data files and the 5
+proposal files, extract the hosts from the parsed JSON rather than from source text, and assert every
+one of them is drawn from the probe table. Deliberately NOT asserted here: allowlist membership. The
+allowlist and its guard are authored in plan 02, in the same wave as this plan, so a run of this plan
+cannot depend on them existing. The enforcing check is plan 05's url-hygiene rule, which runs
+`assertFetchable` over the whole committed dataset on every pull request and again at the go-public
+gate — a continuously enforced check on the files as they actually stand, rather than a one-off
+assertion at authoring time. Recording the distinct host list in the summary is what lets plan 05's
+rule be checked against a stated expectation instead of discovering a divergence.
   </action>
   <acceptance_criteria>
     - `packages/country-data/data/` contains exactly 27 `.json` files and their stems sorted equal `EU_COUNTRY_CODES` sorted
@@ -375,7 +408,8 @@ order-stable.
     - No `discovery_hint` anywhere contains the string `1001-01-01` or a value wrapped in dollar signs
     - Running the seed twice produces no diff other than the recorded query timestamp
     - `packages/country-data/proposed/` contains exactly five files, one per launch country; none carries any fact with status `verified`; each names its verification strategy, and the SK and LT proposals name `manual-attest`
-    - Every source URL in every seeded and proposed file passes `assertFetchable` for its own country
+    - Every source URL in every seeded and proposed file parses against the `Source` schema authored in plan 01 — https, or the one documented Cellar http exception, with no credentials, no non-standard port, no IP-literal host and no tracking parameter
+    - Every distinct source host across all 32 written files appears in the eleven-domain probe table in `01-RESEARCH.md` § "Governance Gates" point 1, asserted against a host list extracted from the parsed files rather than against source text, and the same distinct-host list is recorded in the plan summary so plan 05's url-hygiene rule has a stated expectation to meet
   </acceptance_criteria>
   <verify>
     <automated>pnpm seed:nim</automated>
@@ -518,7 +552,7 @@ in `.planning/REQUIREMENTS.md`. None of these symbols or paths exists before thi
 |-----------|----------|-----------|----------|-------------|-----------------|
 | T-1-14 | Tampering | `seed-from-nim.ts` auto-promoting a register entry to `legal_basis` | high | mitigate | The script writes register rows only as `discovery_hints` and writes every legally-operative field as `pending_verification` with value null. A launch-country legally-operative field with status `verified` and a null `verified_by` fails `superRefine`, so the promotion boundary is structural rather than procedural. Asserted by a test over the seeded output. |
 | T-1-15 | Spoofing | A plausible-looking statute number entering a country record | high | mitigate | The anti-hallucination invariant: any statute or journal-reference pattern must sit inside a fact whose status is `verified` with at least one source; combined with the pending-must-be-null rule, an unsourced statute string cannot be expressed. Plan 05 wires the pattern lint into CI. |
-| T-1-16 | Information disclosure | A `source_url` in a seeded or proposed record pointing at an attacker-chosen host | high | mitigate | Every source URL in every seeded and proposed file is passed through `assertFetchable` for its own country before the file is written, and again by the pull-request lint in plan 05. |
+| T-1-16 | Information disclosure | A `source_url` in a seeded or proposed record pointing at an attacker-chosen host | high | mitigate | Two layers, in the order they can actually run. In this plan: every URL parses against the plan-01 `Source` schema (scheme, credentials, port, IP-literal, tracking parameters) and every host is drawn from the eleven-domain probe table, asserted over the parsed files by `coverage.test.ts`. The host-allowlist enforcement is plan 05's url-hygiene rule, which runs `assertFetchable` over the whole committed dataset on every pull request and again at the go-public gate — deliberately NOT at seed time, because `assertFetchable` is authored in plan 02 in this plan's own wave. The continuously-enforced check is also the stronger one: these files change after this plan runs, and an authoring-time assertion would not see those changes. |
 | T-1-17 | Repudiation | `verified_at` advancing without a value change | medium | mitigate | `assertNoUnchangedBump` makes it a mechanical rule; plan 05 wires it into the pull-request lint so it is not a hope about review attention. |
 | T-1-18 | Denial of service | A global freshness hard gate darkening the site on an unrelated change | medium | mitigate | `freshnessGate` fails only for launch-country legally-operative verified facts; everything else degrades in the UI with the last-confirmed date and keeps working (D-10). |
 | T-1-19 | Tampering | SPARQL endpoint slowness or a partial result silently producing an incomplete seed | medium | mitigate | The seed runs once, off both the pull-request and nightly paths, and `coverage.test.ts` asserts all 27 files exist with matching stems — a partial result fails the suite rather than committing a gap. |

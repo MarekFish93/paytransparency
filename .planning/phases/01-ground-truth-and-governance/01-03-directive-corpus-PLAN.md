@@ -30,6 +30,7 @@ must_haves:
     - "Art. 7(4) stores the two-month backstop wording verbatim in every retrieved language; the stored English form is the exact sentence beginning with the reasonable-period phrase and ending at the two-month limit"
     - "The four inherited citation errors are each proved corrected against primary text by an assertion that fails if the error returns: no annual frequency cap on the worker's right, Art. 6 subject matter distinct from Art. 7, the deadline stated as the Directive states it, and no numeric small-group threshold anywhere in the Directive"
     - "Art. 12(3) and Art. 7(2) are stored as separate provisions with separate citation keys, and a test asserts neither quotation is substitutable for the other"
+    - "A named regression case proves the recital reference to an article of a different instrument was not captured as this Directive's Article 10 — the collision is asserted to exist in the source document and asserted to be absent from the stored entry, so structural-id extraction is proved to be what separates them rather than assumed to be"
   artifacts:
     - path: "packages/country-data/src/extract.ts"
       provides: "Whole-article extraction with per-paragraph id tagging, scoped to the eli-subdivision subtree"
@@ -252,6 +253,7 @@ Wire the `fetch:directive` root script, declared in plan 01, to this entry point
     - Test "two-month backstop verbatim": the English Art. 7(4) stored text equals the authentic sentence exactly, byte for byte including the non-breaking spaces, and the Polish Art. 7(4) stored text equals the authentic Polish sentence exactly
     - Test "no numeric small-group threshold": no stored article text in any language contains a numeric identifiability threshold; the identifiability provision is asserted to state a condition and to name three bodies, with no number
     - Test "7(2) and 12(3) are distinct": the two provisions have different citation keys and neither stored text is a substring of the other; a test comment records that one is an unconditional standing right in every state and the other is an optional Member State measure conditional on identifiability
+    - Test "Article 10 is not Article 10 TFEU": a naive search of the full English expression for a bare reference to Article 10 returns at least one hit inside a recital, and that recital hit is asserted to be a reference to a different instrument entirely rather than to this Directive's Article 10; the stored Article 10 entry is asserted to have been located by its structural id, and its stored text is asserted NOT to contain the recital's surrounding sentence. This is the named regression case for the collision the research reproduced: the two are indistinguishable by string search and distinguishable only by structural id
     - Test "encoding contract": a re-fetch of the English Article 7 compares byte-equal to the stored raw text, while an ASCII-spaced hand-typed anchor compares equal only after NFC normalisation and non-breaking-space folding
   </behavior>
   <action>
@@ -270,6 +272,14 @@ identified by its paragraph id. Searching for wording is what produced the error
 locked: the deadline phrase also occurs in a recital about a different mechanism, and a bare article
 reference in a recital points at a different treaty entirely.
 
+Give that second collision its own named case rather than leaving it as prose. Name it exactly
+`Article 10 is not Article 10 TFEU`. Build it from the full English expression body rather than from the
+stored corpus, because the point is that the collision exists in the document the extractor reads: run
+the naive search, assert it finds a recital hit, assert the recital hit is a reference to a different
+instrument, then assert the stored Article 10 entry came from the structural id and shares no sentence
+with that recital. A case built the other way round — searching the already-extracted corpus — cannot
+fail, because the extraction is what removed the collision.
+
 For the byte-equality case, embed the expected English and Polish Art. 7(4) sentences as test
 constants taken verbatim from the retrieved corpus — including the non-breaking spaces and the
 typographic apostrophe — and compare with strict equality, not with a normalising comparison. A
@@ -285,16 +295,17 @@ second half would pass against a corpus that had been normalised on write.
     - The two-month case compares with strict equality against a constant containing at least one U+00A0, and fails if the stored text is whitespace-normalised
     - The small-group case asserts absence across all 66 stored entries, not only the English ones
     - The distinctness case asserts both that the citation keys differ and that neither stored text contains the other
+    - A case named exactly `Article 10 is not Article 10 TFEU` exists, asserts the naive search finds a recital hit referring to a different instrument, and asserts the stored Article 10 text shares no sentence with it; `pnpm vitest run packages/country-data/test/directive-text.test.ts -t "Article 10 is not Article 10 TFEU"` selects exactly one case
     - The encoding case asserts the raw form does NOT match the hand-typed ASCII anchor and the normalised form DOES
     - `pnpm vitest run packages/country-data/test/directive-text.test.ts -t "article coverage"` selects at least one case and reports it passing
   </acceptance_criteria>
   <verify>
     <automated>pnpm vitest run packages/country-data/test/directive-text.test.ts</automated>
-    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 13 cases are reported across tasks 1 and 3 (six extraction cases plus seven regression cases)</fails_when>
+    <fails_when>non-zero exit, or the summary line reports `0 passed`, or fewer than 14 cases are reported across tasks 1 and 3 (six extraction cases plus eight regression cases)</fails_when>
     <automated>pnpm vitest run packages/country-data/test/directive-text.test.ts -t "article coverage"</automated>
     <fails_when>the summary line reports `0 passed`, or reports `no tests found` — the filter matched nothing, which means the case was renamed and the VALIDATION.md row no longer selects it</fails_when>
   </verify>
-  <done>Each of the four inherited citation errors, and the conflation of the standing right with the optional identifiability measure, fails a named test if it returns.</done>
+  <done>Each of the four inherited citation errors, the conflation of the standing right with the optional identifiability measure, and the recital reference to an article of a different instrument, each fails a named test if it returns.</done>
 </task>
 
 </tasks>
@@ -351,4 +362,3 @@ Record in it: the eleven resolved pinned expression URIs with their ETags, the p
 strings chosen, and the exact English and Polish Art. 7(4) constants used in the byte-equality test so
 plan 05's PR template can quote them as the worked example of a correct citation.
 </output>
-</content>

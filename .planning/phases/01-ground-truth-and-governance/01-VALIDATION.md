@@ -45,28 +45,38 @@ owning task's `<verify><automated>` block.
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| TBD | TBD | ≥1 | LEGAL-01 | — | A `verified` fact without a source / `verified_at` fails schema parse | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "verified requires source"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-01 | — | A `pending_verification` fact with a non-null value fails | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "pending must be null"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-02 | — | Exactly 27 files, one per EU ISO-3166-1 alpha-2 code, filename matches `country.code` | unit | `pnpm vitest run packages/country-data/test/coverage.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-03 | — | `directive_fallback` status resolves to a Directive citation, never a national one | unit | `pnpm vitest run packages/country-data/test/resolve.test.ts -t "fallback"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-04 | — | The stored Art. 7(4) quotation matches the Cellar text byte-for-byte in EN and PL | integration | `pnpm vitest run packages/country-data/test/directive-text.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-05 | — | Art. 12(3) modelled as a condition, not a boolean route | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "art_12_3"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-06 | — | A human-confirm field cannot be satisfied by a register notification alone | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "human confirm"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-07 | — | All six articles (3, 6, 7, 9, 10, 12) present with paragraph ids, in every served locale | integration | `pnpm vitest run packages/country-data/test/directive-text.test.ts -t "article coverage"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-08 | — | Launch-country stale volatile fact fails; non-launch stale fact warns | unit | `pnpm vitest run packages/country-data/test/freshness.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | **LEGAL-09** | T-1-01 | 202/empty, 404, 400, 304, missing anchor, recital-scoped anchor, SPA shell each produce the correct classification | unit, **fixture-driven, no network** | `pnpm vitest run packages/country-data/test/verifier.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-09 | T-1-01 | Cellar responds 200 with `art_7` present | integration, **network (nightly only)** | `pnpm vitest run packages/country-data/test/verifier.live.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | LEGAL-10 | T-1-02 | The five bad-PR shapes each fail CI | e2e | **manual (D-12)** — evidenced by five rejected PR links | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | ENG-01 | — | Every golden vector file parses and declares a complete `Conventions` block | unit | `pnpm vitest run packages/directive-engine/test/vectors-wellformed.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | ENG-06 | — | Every `Conventions` key has a recorded decision in the convention doc | unit | `pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | ≥1 | GAP-06 | T-1-03 | The share-URL contract's transmitted set contains no country/sector/seniority/age key | unit | `pnpm vitest run packages/directive-engine/test/share-url-contract.test.ts` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-04 | 2 | LEGAL-01 | — | A `verified` fact without a source / `verified_at` fails schema parse | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "verified requires source"` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-04 | 2 | LEGAL-01 | — | A `pending_verification` fact with a non-null value fails | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "pending must be null"` | ❌ W0 | ⬜ pending |
+| Task 2 | 01-04 | 2 | LEGAL-02 | — | Exactly 27 files, one per EU ISO-3166-1 alpha-2 code, filename matches `country.code` | unit | `pnpm vitest run packages/country-data/test/coverage.test.ts` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-04 | 2 | LEGAL-03 | — | `directive_fallback` status resolves to a Directive citation, never a national one | unit | `pnpm vitest run packages/country-data/test/resolve.test.ts -t "fallback"` | ❌ W0 | ⬜ pending |
+| Task 3 | 01-03 | 2 | LEGAL-04 | — | The stored Art. 7(4) quotation matches the Cellar text byte-for-byte in EN and PL | integration | `pnpm vitest run packages/country-data/test/directive-text.test.ts` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-04 | 2 | LEGAL-05 | — | Art. 12(3) modelled as a condition, not a boolean route | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "art_12_3"` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-04 | 2 | LEGAL-06 | — | A human-confirm field cannot be satisfied by a register notification alone | unit | `pnpm vitest run packages/country-data/test/schema.test.ts -t "human confirm"` | ❌ W0 | ⬜ pending |
+| Task 3 | 01-03 | 2 | LEGAL-07 | — | All six articles (3, 6, 7, 9, 10, 12) present with paragraph ids, in every served locale | integration | `pnpm vitest run packages/country-data/test/directive-text.test.ts -t "article coverage"` | ❌ W0 | ⬜ pending |
+| Task 3 | 01-04 | 2 | LEGAL-08 | — | Launch-country stale volatile fact fails; non-launch stale fact warns | unit | `pnpm vitest run packages/country-data/test/freshness.test.ts` | ❌ W0 | ⬜ pending |
+| Task 2 | 01-02 | 2 | **LEGAL-09** | T-1-01 | 202/empty, 404, 400, 304, 403 challenge interstitial, missing anchor, recital-scoped anchor, SPA shell each produce the correct classification | unit, **fixture-driven, no network** | `pnpm vitest run packages/country-data/test/verifier.test.ts` | ❌ W0 | ⬜ pending |
+| Task 3 | 01-02 | 2 | LEGAL-09 | T-1-01 | Cellar responds 200 with `art_7` present | integration, **network (nightly only)** | `pnpm vitest run packages/country-data/test/verifier.live.test.ts` | ❌ W0 | ⬜ pending |
+| Task 4 | 01-05 | 4 | LEGAL-10 | T-1-02 | The five bad-PR shapes each fail CI | e2e | **manual (D-12)** — evidenced by five rejected PR links | ❌ W0 | ⬜ pending |
+| Task 3 | 01-06 | 2 | ENG-01 | — | Every golden vector file parses and declares a complete `Conventions` block | unit | `pnpm vitest run packages/directive-engine/test/vectors-wellformed.test.ts` | ❌ W0 | ⬜ pending |
+| Task 1 | 01-06 | 2 | ENG-06 | — | Every `Conventions` key has a recorded decision in the convention doc | unit | `pnpm vitest run packages/directive-engine/test/conventions-documented.test.ts` | ❌ W0 | ⬜ pending |
+| Task 2 | 01-06 | 2 | GAP-06 | T-1-03 | The share-URL contract's transmitted set contains no country/sector/seniority/age key | unit | `pnpm vitest run packages/directive-engine/test/share-url-contract.test.ts` | ❌ W0 | ⬜ pending |
+
+**Task ID convention.** `Task N` is the number carried in that task's own `<name>` heading inside the
+plan, which is the string a reader searches for. Checkpoint tasks carry no number of their own, and the
+two plans that contain one number their remaining tasks differently — `01-05` counts past its checkpoint
+(its drill task is named `Task 4`), `01-06` does not (its vectors task is named `Task 3`). Following the
+heading rather than the element position is what keeps both rows correct.
+
+**Wave numbering** is the plan's `wave` frontmatter value as authored: wave 1 is `01-01`; wave 2 is
+`01-02`, `01-03`, `01-04` and `01-06`; wave 3 is `01-07`; wave 4 is `01-05`, which carries the go-public
+step and therefore runs after every other plan including the vector re-derivation.
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
-**The LEGAL-09 verifier tests must be fixture-driven and offline.** The six real responses
+**The LEGAL-09 verifier tests must be fixture-driven and offline.** The seven real responses
 observed during research — the EUR-Lex `202`/empty, the Cellar `404` body, the `400` bad-language,
-the `304`, the `slov-lex.sk` SPA shell, the `legislation.mt` JSON-LD — are captured as committed
-fixtures. That makes the gate deterministic on every PR and confines network flakiness to the
+the `304`, the `slov-lex.sk` SPA shell, the `legislation.mt` JSON-LD, and the `e-tar.lt` `403` challenge
+interstitial — are captured as committed fixtures. That makes the gate deterministic on every PR and confines network flakiness to the
 nightly job. It is also the only way to test the empty-202 path without depending on EUR-Lex
 continuing to misbehave.
 
@@ -75,7 +85,7 @@ continuing to misbehave.
 ## Wave 0 Requirements
 
 - [ ] `vitest.config.ts` + `pnpm-workspace.yaml` with catalogs — no manifest exists yet
-- [ ] `packages/country-data/test/fixtures/` — the six captured HTTP responses
+- [ ] `packages/country-data/test/fixtures/` — the seven captured HTTP responses
 - [ ] `packages/country-data/test/schema.test.ts` — stubs for LEGAL-01, LEGAL-05, LEGAL-06
 - [ ] `packages/country-data/test/coverage.test.ts` — stubs for LEGAL-02
 - [ ] `packages/country-data/test/resolve.test.ts` — stubs for LEGAL-03

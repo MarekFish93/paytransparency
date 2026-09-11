@@ -2,8 +2,8 @@
 phase: 01-ground-truth-and-governance
 plan: 05
 type: execute
-wave: 3
-depends_on: [01-02-verifier-strategies, 01-03-directive-corpus, 01-04-country-schema-and-seeding]
+wave: 4
+depends_on: [01-02-verifier-strategies, 01-03-directive-corpus, 01-04-country-schema-and-seeding, 01-07-vector-rederivation]
 files_modified:
   - packages/country-data/src/lint.ts
   - packages/country-data/scripts/validate.ts
@@ -96,10 +96,43 @@ was never enacted. There is no reputational recovery path as cheap as prevention
 — a letter to an employer — has already been sent. The drill is a deliverable rather than a check:
 until each gate has been shown to reject, "the gates work" is an assertion.
 
-Output: the eight-rule policy lint on top of schema parse, the pull-request profile wired end to end,
+Output: the nine-rule policy lint on top of schema parse, the pull-request profile wired end to end,
 the full governance document set including the legal-error channel and the public correction log, the
 written Polish gate, five rejected drill pull requests with their links, and a public repository.
 </objective>
+
+<ordering_note>
+## Why this plan is the phase's last wave, not its third
+
+This plan moved from wave 3 to wave 4 and took `01-07-vector-rederivation` as a dependency. Two reasons,
+and the second is the load-bearing one.
+
+**Mechanically:** task 4's go-public gate runs `pnpm validate:country-data && pnpm vitest run` over the
+whole repository. Plan 07 concurrently writes `packages/directive-engine/test/rederivation.test.ts` and
+ten `rederived.json` files into that same tree. No `files_modified` entry overlaps, so the wave guard
+could not see the collision — but a half-written test file turns this plan's gate red for a reason that
+has nothing to do with governance, and that gate immediately precedes an irreversible publish. Scoping
+the verify to `--dir packages/country-data` would have hidden the collision at the cost of dropping the
+engine contract from the last check before publication, which is the wrong trade at this particular gate.
+
+**Substantively:** D-13 requires every golden vector to be independently re-derived, and plan 07 is where
+that happens. Publishing the repository before the re-derivation has run would make public a set of
+vectors whose answers have been computed exactly once. D-12 places the go-public step at phase close;
+wave 4 is what phase close actually means once plan 07 exists.
+
+The cost is that wave 3 now holds only plan 07. That is accepted: a wave that cannot genuinely run in
+parallel is not a wave, and this plan was always the phase's serial tail.
+</ordering_note>
+
+<scope_note>
+## Four tasks is deliberate — recorded rather than left silent
+
+Task 3 is a `checkpoint:decision` (the repository name), not a fourth unit of implementation work, and
+task 4 is the bad-PR drill, which D-12 and CONTEXT.md § "Specific Ideas" both make a DELIVERABLE rather
+than a check — it cannot be folded into task 1 or 2 without losing the property that the gates were
+proved to reject before a stranger's pull request arrived. The estimate (68000 tokens) is inside budget.
+The shape is being kept.
+</scope_note>
 
 <execution_context>
 @~/.claude/gsd-core/workflows/execute-plan.md
@@ -119,6 +152,7 @@ written Polish gate, five rejected drill pull requests with their links, and a p
 @.planning/phases/01-ground-truth-and-governance/01-02-SUMMARY.md
 @.planning/phases/01-ground-truth-and-governance/01-03-SUMMARY.md
 @.planning/phases/01-ground-truth-and-governance/01-04-SUMMARY.md
+@.planning/phases/01-ground-truth-and-governance/01-07-SUMMARY.md
 </context>
 
 <tasks>
@@ -496,4 +530,3 @@ Record in it: the five drill pull-request links with the rule that rejected each
 actual rejecting rule differed from the expected one; the naming decision taken and every place it was
 applied; the branch-protection configuration; and the named owner and review date on the Polish gate.
 </output>
-</content>

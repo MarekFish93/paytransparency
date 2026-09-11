@@ -64,6 +64,7 @@ must_haves:
     - "A lifetime total sitting exactly on a bucket boundary falls into the lower bucket — boundaries are inclusive on the lower side and exclusive on the upper — and a value below the first boundary or above the last falls into the named end buckets rather than out of range"
     - "The gap percentage transmitted in a share URL is produced by exactly one function, used by both the result page and the card renderer, so the card can never contradict the page; the rounding mode is stated numerically in the contract and asserted at a tie value"
     - "The transmitted parameter set is exhaustive and closed: a contract test enumerates it and fails if any key naming a country, sector, seniority, age, employer, salary or date is present, and fails if a key not on the list is added"
+    - "Every MetricValue position and every vector's expected values declare a definitionCite in the citation-key shape plan 01 fixed — CELEX id, hash, three-digit article id, dot, three-digit paragraph id — naming an article from the phase's cited set. That the keys RESOLVE against the stored Directive corpus is asserted in plan 07, after plan 03 has filled the corpus; asserting it here would test against a corpus holding one entry"
     - "Every golden vector directory carries its own input rows, its own complete Conventions block and its own expected values; there is no single canonical expected file shared across vectors, because the same input under different conventions is a different correct answer"
     - "The ten pathological cases are each present as their own vector: ties spanning a quartile boundary, headcounts leaving each of the four possible remainders on division by four, a category containing one woman, an all-male category, a negative gap, zero variable components, and a worker whose sex value is unmapped"
     - "Each vector is small enough to be recomputed by hand on paper, which is what makes independent re-derivation possible at all"
@@ -89,7 +90,7 @@ must_haves:
   key_links:
     - from: "packages/directive-engine/src/types.ts"
       to: "packages/country-data/data/_directive.json"
-      via: "every MetricValue.definitionCite is a citation key that must resolve against the stored Directive corpus, which is what makes the engine and the data layer non-driftable"
+      via: "every MetricValue.definitionCite is a citation key into the stored Directive corpus, which is what makes the engine and the data layer non-driftable. This plan asserts the KEY SHAPE only — the corpus is filled by plan 03 in this plan's own wave, and holds one entry when this plan starts. The resolve-against-corpus assertion is owned by plan 07, which runs in a later wave and reads a complete corpus"
       pattern: "definitionCite"
     - from: "packages/directive-engine/docs/CONVENTIONS.md"
       to: "packages/directive-engine/src/types.ts"
@@ -161,6 +162,27 @@ human rather than answered by the planner:
     unclassified requirement would be the planner deciding it rather than surfacing it.
 </flagged_assumptions>
 
+<scope_note>
+## Forty-eight files and four tasks are deliberate — recorded rather than left silent
+
+This plan declares 48 modified files and four tasks, both above the usual per-plan thresholds, and the
+shape is being KEPT rather than re-sliced. Thirty of those files are the ten vector directories' three
+JSON files each: one authoring pattern repeated ten times, produced in a single pass over a declared
+case list, and deliberately tiny — every `input.json` is capped at twelve rows precisely so a human can
+recompute it on paper. Splitting the vectors across plans would break the thing that makes them work:
+they must share one `Conventions` type and one convention document, and a second agent authoring
+vectors six to ten against a half-written document is how the two halves drift.
+
+The fourth task is a `checkpoint:decision`, not a fourth unit of implementation work. It sits between
+task 1 and task 2 because the share-URL bucket boundaries are one-way (D-15) and must be settled by the
+user before task 2 implements them. Counting it as a fourth task overstates the plan's execution weight;
+the estimate (72000 tokens) is mid-range for the phase and inside budget.
+
+If this ever needs splitting, the line is task 3: the ten vectors have no file overlap with the types,
+the documents or the share-URL contract, and depend on them only through `CONVENTION_KEYS` and the
+recorded decisions. Do not pre-emptively split — the shared-document drift risk above is the reason.
+</scope_note>
+
 <tasks>
 
 <task type="auto" tdd="true">
@@ -181,7 +203,7 @@ human rather than answered by the planner:
     - Test: every recorded decision states one of exactly three Directive positions — fixed, silent, or no EU value exists — and a decision stating none of them fails
     - Test: the decision for part-time and full-time-equivalent normalisation records no default and records that a missing value throws
     - Test: the decision for small-group suppression records a null default and records that no EU-level numeric threshold exists
-    - Test: every `MetricValue` position in the report type declares a `definitionCite`, and each cited key resolves against the stored Directive corpus
+    - Test: every `MetricValue` position in the report type declares a `definitionCite`, and every one of those keys matches the citation-key SHAPE plan 01 fixed — the CELEX id, a hash separator, then the publisher's three-digit article id, a dot, and the three-digit paragraph id — and names an article from the phase's cited set. Resolution against the stored corpus is deliberately NOT asserted here: the corpus is filled by plan 03 in this plan's own wave and holds a single entry when this plan starts, so an assertion made here would either fail or be quietly weakened. Plan 07 owns the resolve assertion and runs in a later wave against a complete corpus
   </behavior>
   <action>
 Create `packages/directive-engine` as a package that ships MIT with ZERO runtime dependencies. Its
@@ -194,8 +216,13 @@ AGPL; this package is the MIT lead magnet, and the boundary is proved mechanical
 `packages/directive-engine/src/types.ts` holds TYPES ONLY. No Article 9 arithmetic is written in this
 phase — the vectors and this type are the executable specification the engine must later satisfy, and
 an implementation written now would be written against itself.
- - `MetricValue`: `value` nullable number; `definitionCite` a citation key resolving to a stored
-   Directive quotation; `populationN`; `excludedN`; `suppressed` for privacy suppression; `unreliable`
+ - `MetricValue`: `value` nullable number; `definitionCite` a citation key into the stored Directive
+   corpus, written in the exact shape plan 01 fixed — the CELEX id, a hash separator, the publisher's
+   three-digit article id, a dot, the three-digit paragraph id. Author the shape as an exported pattern
+   so the test checks one constant rather than a re-typed literal. Assert the SHAPE and the cited
+   article set here; do NOT assert that the keys resolve against the corpus, because plan 03 fills that
+   corpus in this plan's own wave and it holds a single entry at this plan's start. Plan 07 asserts
+   resolution. `populationN`; `excludedN`; `suppressed` for privacy suppression; `unreliable`
    for statistical reliability. Keep those last two SEPARATE — an HR user must be able to tell "we
    cannot show this because it would identify someone" from "this number is too noisy to trust", and
    collapsing them into one flag loses the distinction the export has to carry.
@@ -214,34 +241,73 @@ an implementation written now would be written against itself.
    self-publishable set from the authority-only one; `draft` literally true, because the Directive
    requires management confirmation and the export is always a draft; and `warnings`.
 
-`packages/directive-engine/docs/CONVENTIONS.md` records ONE decision per convention key, in
-`CONVENTION_KEYS` order, each stating: the Directive's position in one of exactly three words —
+`packages/directive-engine/docs/CONVENTIONS.md` records ONE decision per convention key — ELEVEN
+decisions, no more and no fewer — in `CONVENTION_KEYS` order. Each decision is a level-2 heading whose
+text is EXACTLY the convention key name, so `conventions-documented.test.ts` extracts the headings with
+one pattern over the level-2 headings and the ordered comparison against `CONVENTION_KEYS` is mechanical
+rather than fuzzy. Under each heading: the Directive's position in one of exactly three words —
 **fixed**, **silent**, or **none** — the quoted text that fixes it where it is fixed, the project's
-recorded default, and whether an override is accepted. The substance, from the authentic text:
- - denominator: **fixed** by the gender-pay-gap and median-gender-pay-gap definitions, which both
-   express the difference as a percentage of the male figure. Not a choice.
- - quartile construction: **fixed** by the quartile-pay-band definition as four equal groups of
-   workers. Rank by pay, split by headcount, never by pay range. Not a choice.
- - category of workers: **fixed** by the definition making categories employer-defined and grouped on
-   non-discriminatory objective gender-neutral criteria. Require a category column; refuse to infer one
-   from a job title.
- - reference period: **fixed** as the previous calendar year; reject any non-calendar-year range.
- - even-count median: **silent**. Record the lower-of-two rule as the documented default and carry both
-   behaviours in the vectors.
- - quartile boundary ties and the remainder side: **silent**. Record a proportional allocation with the
-   remainder to the lower quarter, labelled plainly as a project convention and attributed to the
-   national guidance it is borrowed from, not to the Directive.
- - part-time and full-time-equivalent normalisation: **silent**, and this is the flagship case. Record
-   NO default. A missing value throws with a named code. Vendors assert normalisation as if it were
-   law; the Directive states none, and an HR user has to be able to defend the figure to their auditor.
- - small-group suppression: **none** — no EU-level numeric threshold exists anywhere in the Directive.
-   Default null, emitted in the export. The six-person figure that reached this project through the
-   brief is a German national rule attached to the individual information right, not an Article 9
-   reporting rule, and it belongs in `country-data` rather than here.
- - currency: not addressed. Record per country; no cross-currency aggregation in v1.
+recorded default, and whether an override is accepted.
 
-`packages/directive-engine/docs/ENGINE-REPORT.md` narrates the contract and — the part that makes the
-freeze survivable — writes down the AMENDMENT PATH: an amendment is permitted when it is written up
+The substance, one bullet per key, in `CONVENTION_KEYS` order, from the authentic text:
+ 1. `denominator` — **fixed** by the gender-pay-gap and median-gender-pay-gap definitions, which both
+    express the difference as a percentage of the male figure. Not a choice, no override.
+ 2. `medianRule` — **silent** on which of the two middle values an even headcount takes. Record the
+    lower-of-two rule as the documented default, accept an override, and carry both behaviours in the
+    vectors.
+ 3. `quartileTieRule` — **silent**. The quartile-pay-band definition FIXES the construction — four
+    equal groups of workers, ranked by pay and split by headcount, never by pay range — and that fixed
+    part is quoted under this heading because it is what the tie rule operates inside. What it does not
+    settle is where workers sitting on exactly the same pay value at a boundary go. Record a
+    proportional allocation, labelled plainly as a project convention and attributed to the national
+    guidance it is borrowed from, not to the Directive.
+ 4. `quartileRemainder` — **silent**. Record the remainder to the lower quarter, under the same
+    labelling rule: a project convention, stated as one, never presented as a Directive rule.
+ 5. `payBasis` — **fixed** in structure, **silent** in composition, and the decision records both under
+    the single position word **silent**, because the part that needs a project default is the part the
+    Directive leaves open. The Directive fixes that basic pay and complementary or variable components
+    are reported separately; which of an employer's own pay lines falls on which side is not settled at
+    EU level. Record no default, require the caller to declare the basis, and echo it in
+    `conventionSource` as `caller`.
+ 6. `partialPeriodPolicy` — **silent**, and this is the flagship case. Part-time and
+    full-time-equivalent normalisation. Record NO default. A missing value throws with a named code.
+    Vendors assert normalisation as if it were law; the Directive states none, and an HR user has to be
+    able to defend the figure to their auditor.
+ 7. `joinerLeaverPolicy` — **silent** on workers present for only part of the reference period. Record
+    the documented default as including them at the pay actually received over the period they were
+    employed, with an accepted override to exclude them, and label it a project convention. Record
+    explicitly that this interacts with key 6: a joiner is a partial period, and the two must be read
+    together or the same worker gets normalised twice.
+ 8. `sexMapping` — **none**. The Directive requires the metrics broken down by sex and prescribes no
+    coding scheme. Record no default map, require the caller to declare one, and record that a row whose
+    value the declared map does not cover goes to `excludedN` with a warning — never silently dropped,
+    because a silently dropped worker is how a confidently wrong percentage is produced.
+ 9. `componentMap` — **none**. Mapping an employer's own payroll columns onto the pay components is
+    employer-specific and no EU-level mapping exists. Record no default, caller-supplied, echoed in
+    `conventionSource` as `caller`. Record under this heading that the category column is required input
+    under the same rule and is never inferred from a job title.
+ 10. `minGroupSize` — **none** — no EU-level numeric threshold exists anywhere in the Directive.
+    Default null, emitted in the export. The six-person figure that reached this project through the
+    brief is a German national rule attached to the individual information right, not an Article 9
+    reporting rule, and it belongs in `country-data` rather than here.
+ 11. `referencePeriod` — **fixed** as the previous calendar year; reject any non-calendar-year range.
+    No override.
+
+Two points that were drafted as convention bullets are NOT convention keys and get no heading in this
+document — they are a Directive-fixed definition and a v1 scope statement respectively, and they move to
+`ENGINE-REPORT.md` where the metric positions are narrated. Leaving them here would put thirteen
+headings against eleven keys and make the ordered-equality test unsatisfiable by construction:
+ - **Category of workers** — fixed by the Directive's own definition: employer-defined, grouped on
+   non-discriminatory objective gender-neutral criteria. It constrains the per-category metric and the
+   required input columns, not a convention choice. Narrate it in `ENGINE-REPORT.md` alongside the
+   per-category metric; its input requirement is carried in the `componentMap` decision above.
+ - **Currency** — not addressed by the Directive. Recorded per country; no cross-currency aggregation
+   in v1. A v1 scope statement, so it belongs in `ENGINE-REPORT.md` too.
+
+`packages/directive-engine/docs/ENGINE-REPORT.md` narrates the contract, carries the two Directive-fixed
+points that are not convention keys — the category-of-workers definition next to the per-category metric,
+and the per-country currency scope statement — and, the part that makes the freeze survivable, writes
+down the AMENDMENT PATH: an amendment is permitted when it is written up
 with a stated reason and applied to the type, the convention document and the golden vectors TOGETHER,
 in one change. Building the engine will surface something a data-only design could not see, and the
 alternative to a recorded path is silent drift or an ugly workaround.
@@ -251,8 +317,11 @@ alternative to a recorded path is silent drift or an ugly workaround.
     - `packages/directive-engine/src/types.ts` contains no function body that computes a metric — the file exports types and the `CONVENTION_KEYS` tuple only
     - `CONVENTION_KEYS` has exactly the eleven key names of the `Conventions` type, and `conventions-documented.test.ts` compares it to the document headings as an ordered list
     - `MetricValue` declares `suppressed` and `unreliable` as two separate boolean fields
+    - Every `definitionCite` in `types.ts` matches the exported citation-key pattern and names an article from the phase's cited set, asserted against the exported pattern constant rather than against a re-typed literal
+    - `conventions-documented.test.ts` passes with the Directive corpus holding only the single Art. 7(4) entry plan 01 wrote — the shape check is the whole of this plan's citation assertion, and a test that needed a filled corpus would be asserting plan 03's output from inside plan 03's own wave
     - `EngineReport` declares `draft` as the literal `true`, not as a boolean
-    - `packages/directive-engine/docs/CONVENTIONS.md` contains exactly eleven decision headings, each carrying one of the three position words
+    - `packages/directive-engine/docs/CONVENTIONS.md` contains exactly eleven level-2 headings, their texts equal `CONVENTION_KEYS` as an ordered list, and each carries exactly one of the three position words
+    - The eleven heading texts in `CONVENTIONS.md` are exactly the eleven `CONVENTION_KEYS` strings and nothing else, so the ordered comparison is an equality rather than a subset check; `ENGINE-REPORT.md` is asserted to carry the category-of-workers definition and the per-country currency scope statement, which is where the two non-key points went
     - The part-time decision records no default value and records a throwing behaviour; the suppression decision records a null default
     - `packages/directive-engine/docs/ENGINE-REPORT.md` contains an amendment-path section naming all three artefacts that must change together
   </acceptance_criteria>
@@ -397,7 +466,7 @@ not a recorded decision.
     - Test: every `conventions.json` declares every key in `CONVENTION_KEYS` with no key missing and no extra key; a vector with an empty conventions object fails
     - Test: no vector inherits a convention from a sibling or from a shared default file — each is self-contained, because the same rows under different conventions are a different correct answer
     - Test: every `input.json` has at most twelve worker rows, so the vector can be recomputed by hand on paper
-    - Test: every `expected.json` covers all seven metric positions and declares a `definitionCite` per metric that resolves against the stored Directive corpus
+    - Test: every `expected.json` covers all seven metric positions and declares a `definitionCite` per metric matching the citation-key shape asserted in task 1; resolution against the stored Directive corpus is asserted in plan 07, which runs after plan 03 has filled it
     - Test: the ten pathological cases are all present, asserted by directory-name set equality against a declared list rather than by counting
     - Test: `v10-unmapped-sex` declares a `sexMapping` that does not cover one of its input rows, and its expected output records that row in `excludedN` rather than silently dropping it
     - Test: `v07-all-male-category` expects a null metric value with a recorded warning rather than a division-by-zero or a zero
@@ -453,6 +522,7 @@ that every vector is complete, self-contained, small, and covers every metric po
     - No `conventions.json` is a partial object referencing a shared default, and no shared default file exists in the vectors directory
     - Every `input.json` has a rows array of length twelve or fewer
     - Every `expected.json` contains a `working` field with the intermediate steps written out
+    - Every `definitionCite` in every `expected.json` matches the exported citation-key pattern; resolution against the corpus is not asserted in this plan
     - `v07-all-male-category` expects a null value with a non-empty warnings array
     - `v10-unmapped-sex` expects `excludedN` of at least one and a non-empty warnings array
     - No file under `packages/directive-engine/` other than the ten `expected.json` files contains any of the computed answers
@@ -528,4 +598,3 @@ decision that selected them; the eleven convention keys in their frozen order; a
 vectors, its name, its row count and the conventions it exercises. Do NOT record any computed vector
 answer — plan 07 re-derives them independently and must not be able to read them here.
 </output>
-</content>
