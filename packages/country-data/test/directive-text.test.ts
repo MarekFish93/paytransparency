@@ -566,8 +566,66 @@ describe('the encoding contract', () => {
 
     // The specific characters at stake: the no-break separators and the typographic
     // apostrophe, both authentic Official Journal typography.
-    expect(rawStored).toContain(' ');
-    expect(handTypedAscii).not.toContain(' ');
+    expect(rawStored).toContain('\u00a0');
+    expect(handTypedAscii).not.toContain('\u00a0');
     expect(stored(7, 'eng').raw_text).toContain('’');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CR-05 / WR-01 — the U+00A0 trap, pinned by CODE POINT rather than by rendering
+// ---------------------------------------------------------------------------
+
+/**
+ * This trap has now recurred four times: twice in `normaliseForMatch`, twice in
+ * `textOf`, each time as a literal ASCII space sitting where U+00A0 was intended, under
+ * a comment asserting in capitals that it was not. It recurs because U+00A0 and U+0020
+ * are indistinguishable on screen — so reviewer attention is not a control, and neither
+ * is a string-equality assertion, which passes happily when both sides are equally wrong.
+ *
+ * Every assertion below therefore compares NUMBERS. `codePointAt` cannot be fooled by a
+ * character that looks right.
+ */
+describe('the no-break space is a code point, not a rendering', () => {
+  it('textOf decodes &#160; to U+00A0 \u2014 asserted numerically', () => {
+    const decoded = textOf('<p>Article&#160;7</p>');
+    expect([...decoded].map((c) => c.codePointAt(0))).toContain(0x00a0);
+    // And explicitly NOT an ASCII space, which is what it silently was.
+    expect([...decoded].map((c) => c.codePointAt(0))).not.toContain(0x0020);
+  });
+
+  it.each([
+    ['&#160;', '<p>a&#160;b</p>'],
+    ['&#xa0;', '<p>a&#xa0;b</p>'],
+    ['&#xA0;', '<p>a&#xA0;b</p>'],
+    ['&nbsp;', '<p>a&nbsp;b</p>'],
+    ['&NBSP;', '<p>a&NBSP;b</p>'],
+  ])('decodes %s to code point 160', (_entity, html) => {
+    const decoded = textOf(html);
+    expect(decoded.length).toBe(3);
+    expect(decoded.codePointAt(1)).toBe(0x00a0);
+  });
+
+  it('is dormant on the committed corpus, and the corpus proves why it must still be right', () => {
+    // Honest statement of the current exposure: the Cellar XHTML emits LITERAL U+00A0
+    // rather than the entity, so nothing in the OJ corpus exercises the decoder today.
+    // `textOf` is nonetheless the storage-adjacent reader for `html-anchor` and
+    // `metadata-only` sources on national registers, where `&nbsp;` is ordinary output.
+    expect(ART7_EN).not.toContain('&#160;');
+    expect([...ART7_EN].some((c) => c.codePointAt(0) === 0x00a0)).toBe(true);
+  });
+
+  it('normaliseForMatch folds U+00A0, U+202F and U+2009 without relying on the \\s collapse', () => {
+    // The class under test is the ONE on its own line. Asserting through the later
+    // `\s+` collapse would pass against a class containing three ASCII spaces — which is
+    // precisely what it contained. Single characters, no runs, so `\s+` has nothing to do.
+    expect(normaliseForMatch('Article\u00a07')).toBe('Article 7');
+    expect(normaliseForMatch('Article\u202f7')).toBe('Article 7');
+    expect(normaliseForMatch('Article\u20097')).toBe('Article 7');
+  });
+
+  it('textOf decodes &amp; LAST, so &amp;lt; stays &lt; rather than becoming <', () => {
+    expect(textOf('<p>a &amp;lt; b</p>')).toBe('a &lt; b');
+    expect(textOf('<p>a &lt; b</p>')).toBe('a < b');
   });
 });

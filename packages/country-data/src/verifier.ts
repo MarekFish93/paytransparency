@@ -91,7 +91,15 @@ export const MAX_BODY_BYTES = 5 * 1024 * 1024;
 export const normaliseForMatch = (s: string): string =>
   s
     // U+00A0 no-break space, U+202F narrow no-break space, U+2009 thin space.
-    .replace(/[   ]/g, ' ')
+    //
+    // WRITTEN AS ESCAPES, AND THEY MUST STAY ESCAPES. This class previously held
+    // three literal ASCII spaces — it folded nothing the comment above claims, and
+    // matching survived only by accident, because the `\s+` collapse four lines down
+    // happens to catch all three code points. Anyone tidying that collapse away, on
+    // the reasonable reading that THIS line is the real mechanism, would silently
+    // break anchor matching against every authentic document. An escape survives
+    // every editor, every copy-paste and every diff review; a literal did not.
+    .replace(/[\u00a0\u202f\u2009]/g, ' ')
     // Curly quotes folded to ASCII for MATCHING only, so a hand-typed anchor still matches.
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
@@ -280,20 +288,33 @@ export function scopeToElement(xhtml: string, id: string): string | null {
 /**
  * Strip tags and decode the handful of entities the OJ XHTML actually uses.
  *
- * `&#160;` decodes to U+00A0, NOT to an ASCII space — look closely at the replacement
- * below. The no-break space between a paragraph number and its first word is authentic
- * Official Journal typography; folding it here would rewrite the statute on the way into
- * storage. Folding happens only in `normaliseForMatch`, which is used for comparison.
+ * `&#160;` decodes to U+00A0, NOT to an ASCII space. The no-break space between a
+ * paragraph number and its first word is authentic Official Journal typography; folding
+ * it here would rewrite the statute on the way into storage — `textOf` feeds
+ * `extract.ts#rawTextOf`, whose output is stored verbatim as `raw_text`. Folding happens
+ * only in `normaliseForMatch`, which is used for comparison.
+ *
+ * THE REPLACEMENT IS WRITTEN `'\u00a0'`, AS AN ESCAPE, AND MUST STAY ONE. It was a
+ * literal ASCII space for four revisions while this very docblock asserted in capitals
+ * that it was not — which is the whole problem with a literal: U+00A0 and U+0020 are
+ * indistinguishable on screen, so no amount of reviewer attention catches the
+ * substitution. `directive-text.test.ts` pins the code point NUMERICALLY, by
+ * `codePointAt`, because a string-equality assertion passes when both sides are equally
+ * wrong.
+ *
+ * The entity order is also load-bearing: `&amp;` is decoded LAST. Decoded first, source
+ * text published as `&amp;lt;` would become `<` rather than `&lt;` — a stored-text
+ * mutation on the same path.
  */
 export function textOf(xhtml: string): string {
   return xhtml
     .replace(/<[^>]*>/g, '')
-    .replace(/&#160;|&nbsp;/g, ' ')
-    .replace(/&#8217;/g, '’')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"');
+    .replace(/&#160;|&#xa0;|&nbsp;/gi, '\u00a0')
+    .replace(/&#8217;|&rsquo;/gi, '’')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/gi, '&');
 }
 
 /** Every `application/ld+json` block in a document, raw. */
