@@ -111,6 +111,9 @@ export type FreshnessFailure = {
 /** One `verified_at` that advanced while its value stood still. */
 export type UnchangedBump = { country: string; field: string; message: string };
 
+/** Why a date bump was, or was not, backed by evidence that the source was re-read. */
+export type RereadVerdict = { reread: boolean; why: string };
+
 type FactLike = {
   value?: unknown;
   status?: unknown;
@@ -226,13 +229,125 @@ export function freshnessGate(records: unknown[], today: string): FreshnessFailu
   return failures;
 }
 
+type SourceLike = { url?: unknown; accessed_at?: unknown };
+
+const sourcesOf = (fact: Record<string, unknown>): SourceLike[] =>
+  Array.isArray(fact['sources']) ? (fact['sources'] as SourceLike[]) : [];
+
+const accessedAtOf = (source: SourceLike): string | null =>
+  typeof source.accessed_at === 'string' ? source.accessed_at : null;
+
+const urlOf = (source: SourceLike): string | null =>
+  typeof source.url === 'string' ? source.url : null;
+
 /**
- * Every field whose `verified_at` moved while its `value` did not.
+ * Was the cited evidence actually re-read between these two revisions?
+ *
+ * THIS FUNCTION IS THE WHOLE OF THE DEADLOCK FIX, so it is worth stating what it is and
+ * what it deliberately is not.
+ *
+ * The deadlock: `freshnessGate` hard-fails a launch country's legally-operative fact once
+ * it passes its TTL, and the only way to clear that is to move `verified_at` forward.
+ * `unchangedBumps` used to reject ANY fact whose `verified_at` moved while
+ * `JSON.stringify(value)` did not. But a re-verification that confirms the law has NOT
+ * changed — which is what re-verification usually confirms — is exactly that commit. The
+ * two rules were mutually exclusive: the only commit that cleared `freshness-gate` was
+ * precisely the commit `assertNoUnchangedBump` rejected, and the gate's own failure text
+ * instructed the maintainer to make it. Under time pressure the available moves were to
+ * weaken one gate or to fabricate a value change, both worse than either gate's absence.
+ *
+ * The exemption is keyed on EVIDENCE, never on a flag, a marker or an override. There is
+ * deliberately no way for a human to assert "trust me, I checked": that would re-open the
+ * hole the rule exists to close, and it is the first thing a person under deadline reaches
+ * for. What counts as evidence is that the CITED SOURCE'S OWN `accessed_at` moved forward
+ * — a claim about a specific document read on a specific day, sitting in the diff next to
+ * the date it justifies, rather than a mood.
+ *
+ * Three conditions, all required:
+ *
+ *   1. The fact cites at least one source. A verified fact with no sources cannot be
+ *      re-verified, and `Fact`'s own invariant already forbids it.
+ *   2. EVERY source carried over from the previous revision has an `accessed_at` that moved
+ *      strictly FORWARD. "Every", not "at least one", because re-reading the easy source
+ *      and bumping the date is the same defect in a smaller costume. A source that is new
+ *      in this revision is itself fresh evidence and needs no predecessor.
+ *   3. The new `verified_at` is not LATER than the most recent `accessed_at`. You cannot
+ *      have verified a fact on a day after the last day you read its source. This is the
+ *      condition that stops `accessed_at` being nudged by one day to unlock an arbitrary
+ *      `verified_at`.
+ *
+ * What this does NOT claim: that the human really opened the page. Nothing visible in two
+ * JSON revisions can establish that, and pretending otherwise would be exactly the vacuous
+ * gate this codebase keeps auditing itself for. What it does establish is that the bump is
+ * an explicit, dated, per-source assertion localised in the diff a reviewer reads, rather
+ * than a one-character change to a field nobody looks at. The machine-checked half of
+ * "was it really re-read" lives in `verify:sources`, which dispatches the source against a
+ * real response; this is the half that can run offline on a contributor's pull request.
+ */
+export function evidenceReread(
+  before: Record<string, unknown>,
+  after: Record<string, unknown>,
+): RereadVerdict {
+  const afterSources = sourcesOf(after);
+  if (afterSources.length === 0) {
+    return { reread: false, why: 'the fact cites no source, so there is nothing to re-read' };
+  }
+
+  const beforeByUrl = new Map<string, SourceLike>();
+  for (const source of sourcesOf(before)) {
+    const url = urlOf(source);
+    if (url !== null) beforeByUrl.set(url, source);
+  }
+
+  const accessedDates: string[] = [];
+  for (const source of afterSources) {
+    const url = urlOf(source);
+    const accessed = accessedAtOf(source);
+    if (accessed === null) {
+      return {
+        reread: false,
+        why: `a cited source carries no accessed_at, so nothing records when it was last read`,
+      };
+    }
+    accessedDates.push(accessed);
+
+    const previousSource = url === null ? undefined : beforeByUrl.get(url);
+    // A source that did not exist in the previous revision IS the new evidence.
+    if (previousSource === undefined) continue;
+
+    const previousAccessed = accessedAtOf(previousSource);
+    if (previousAccessed !== null && accessed <= previousAccessed) {
+      return {
+        reread: false,
+        why: `${url ?? 'a cited source'} still records accessed_at ${previousAccessed}, so it was not read again`,
+      };
+    }
+  }
+
+  const latestAccessed = accessedDates.reduce((a, b) => (a > b ? a : b));
+  const afterDate = typeof after['verified_at'] === 'string' ? after['verified_at'] : null;
+  if (afterDate !== null && afterDate > latestAccessed) {
+    return {
+      reread: false,
+      why: `verified_at ${afterDate} is later than the most recent accessed_at ${latestAccessed} — a fact cannot be verified after the last day its source was read`,
+    };
+  }
+
+  return { reread: true, why: `every cited source was read again, most recently ${latestAccessed}` };
+}
+
+/**
+ * Every field whose `verified_at` moved while its `value` did not AND nothing shows the
+ * source was read again.
  *
  * A date that advances without a value advancing makes the page look more trustworthy
  * while being less so, and it is the exact shape of a "silent deadline change disguised as
  * a typo fix". Making it mechanical is the point — the alternative is a hope about review
- * attention. Plan 01-05 wires this into the pull-request lint.
+ * attention.
+ *
+ * The second clause is what keeps the rule compatible with routine re-verification rather
+ * than mutually exclusive with it. See `evidenceReread` for why the exemption is keyed on
+ * the cited source's own `accessed_at` and on nothing a human can simply assert.
  *
  * Walks the record structurally rather than from a fixed path list, so a field added to
  * the schema later cannot escape the rule by not being on a list somebody forgot.
@@ -247,17 +362,19 @@ export function unchangedBumps(previous: unknown, next: unknown): UnchangedBump[
     if (isFact) {
       const beforeDate = before['verified_at'] ?? null;
       const afterDate = after['verified_at'] ?? null;
-      if (
-        beforeDate !== afterDate &&
-        JSON.stringify(before['value'] ?? null) === JSON.stringify(after['value'] ?? null)
-      ) {
-        bumps.push({
-          country,
-          field: path,
-          message: `${path} moved verified_at from ${String(beforeDate)} to ${String(
-            afterDate,
-          )} while its value did not change — a date that moves without a value moving is provenance theatre`,
-        });
+      const sameValue =
+        JSON.stringify(before['value'] ?? null) === JSON.stringify(after['value'] ?? null);
+      if (beforeDate !== afterDate && sameValue) {
+        const verdict = evidenceReread(before, after);
+        if (!verdict.reread) {
+          bumps.push({
+            country,
+            field: path,
+            message: `${path} moved verified_at from ${String(beforeDate)} to ${String(
+              afterDate,
+            )} while its value did not change, and ${verdict.why}. A date that moves without either the value or the evidence moving is provenance theatre. To re-confirm an unchanged fact, record the day you read each cited source in that source's accessed_at — do not extend the TTL, and do not fabricate a value change`,
+          });
+        }
       }
       return;
     }

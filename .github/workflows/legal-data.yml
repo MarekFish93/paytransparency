@@ -183,7 +183,7 @@ jobs:
               process.stdout.write('freshness-gate: ok — ' + records.length + ' records, no launch-country legally-operative fact is past its window\n');
             } else {
               for (const f of failures) process.stderr.write('  x ' + f.message + '\n');
-              process.stderr.write('\nfreshness-gate: FAILED — ' + failures.length + ' stale launch-country legally-operative fact(s). Re-verify the source and record who read it in verified_by; do NOT extend the TTL to turn this green.\n');
+              process.stderr.write('\nfreshness-gate: FAILED — ' + failures.length + ' stale launch-country legally-operative fact(s). Read each cited source again, record the day you read it in that source accessed_at, name yourself in verified_by, and move verified_at to a date no later than that. The unchanged-bump rule accepts exactly that commit and rejects a bare date bump, so a re-confirmation of an UNCHANGED value is a legitimate move here. Do NOT extend the TTL and do NOT invent a value change to turn this green.\n');
               process.exitCode = 1;
             }
           "

@@ -306,6 +306,19 @@ export const Fact = <S extends z.ZodType>(inner: S) =>
         ctx.addIssue({ code: 'custom', message: `verified_at ${f.verified_at} is in the future` });
       }
 
+      // `accessed_at` is now load-bearing, not bookkeeping: `freshness.ts#evidenceReread`
+      // keys the unchanged-bump exemption on it moving forward. Without this check a single
+      // `accessed_at: '2099-01-01'` would satisfy "read again" for the next seventy years.
+      f.sources.forEach((source, i) => {
+        if (source.accessed_at > todayIso()) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['sources', i, 'accessed_at'],
+            message: `accessed_at ${source.accessed_at} is in the future — a source cannot have been read on a day that has not happened, and this date is what exempts an unchanged-value re-verification from the bump rule`,
+          });
+        }
+      });
+
       f.sources.forEach((source, i) => {
         if (source.verification !== 'manual-attest' && source.anchor.trim().length === 0) {
           ctx.addIssue({

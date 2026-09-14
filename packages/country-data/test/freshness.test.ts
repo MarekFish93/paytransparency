@@ -15,6 +15,7 @@ import { LAUNCH_COUNTRIES } from '../src/country.ts';
 import {
   TTL_DAYS,
   assertNoUnchangedBump,
+  evidenceReread,
   degradationFor,
   freshnessGate,
   freshnessOf,
@@ -232,5 +233,131 @@ describe('freshness: a date cannot move without a value moving', () => {
     const next = readRecord('EE');
     (next['article_12_3'] as Json)['verified_at'] = '2026-09-11';
     expect(unchangedBumps(previous, next)).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CR-02 — the freshness gate and the unchanged-bump rule used to be mutually exclusive
+// ---------------------------------------------------------------------------
+
+/**
+ * The deadlock, and the proof that it is gone.
+ *
+ * `freshnessGate` hard-fails a launch country's legally-operative fact past its TTL, and
+ * the only way to clear that is to move `verified_at` forward. `unchangedBumps` rejected
+ * any fact whose date moved while its value did not. A re-verification confirming the law
+ * has NOT changed — the usual outcome — is exactly that commit, so the only commit which
+ * cleared one gate was precisely the commit the other rejected. The routine re-verification
+ * the `freshness-gate` job's own failure text demands was mechanically impossible in CI.
+ *
+ * Every case below is asserted as a PAIR: what each gate says before the commit and what
+ * each says after it. Asserting only the bump rule would pass against a fix that broke the
+ * freshness gate instead, which is the shape the two gates kept failing in.
+ */
+describe('freshness: routine re-verification clears the gate without tripping the bump rule', () => {
+  const STALE_DATE = '2026-01-01';
+
+  /** A launch-country legally-operative fact, stale on TODAY, citing one source. */
+  const plLegalBasis = (verifiedAt: string, accessedAt: string, value?: unknown): Json => ({
+    country: { code: 'PL' },
+    article_7: {
+      legal_basis: {
+        value: value ?? { instrument: 'national', short_title: 'Ustawa' },
+        status: 'verified',
+        sources: [{ url: 'https://isap.sejm.gov.pl/x', accessed_at: accessedAt }],
+        verified_at: verifiedAt,
+        verified_by: 'marek',
+        volatility: 'volatile',
+      },
+    },
+  });
+
+  const before = () => plLegalBasis(STALE_DATE, STALE_DATE);
+
+  test('the fact really is stale before the commit \u2014 otherwise the rest proves nothing', () => {
+    expect(freshnessGate([before()], TODAY).map((f) => f.field)).toEqual([
+      'article_7.legal_basis',
+    ]);
+  });
+
+  test('re-reading the source and re-confirming the same value clears BOTH gates', () => {
+    // This is the commit that was impossible: the value is byte-identical, the date moved,
+    // and the cited source's own accessed_at moved with it.
+    const after = plLegalBasis(TODAY, TODAY);
+    expect(freshnessGate([after], TODAY)).toHaveLength(0);
+    expect(unchangedBumps(before(), after)).toHaveLength(0);
+    expect(() => assertNoUnchangedBump(before(), after)).not.toThrow();
+  });
+
+  test('bumping the date while the source is untouched is still rejected', () => {
+    // The shape the rule exists to catch, unweakened: a silent deadline change disguised
+    // as a typo fix moves nothing but the date.
+    const after = plLegalBasis(TODAY, STALE_DATE);
+    expect(freshnessGate([after], TODAY)).toHaveLength(0);
+    const bumps = unchangedBumps(before(), after);
+    expect(bumps).toHaveLength(1);
+    expect(bumps[0]?.message).toMatch(/was not read again/);
+    // The message must send the maintainer to the evidence, not to the TTL.
+    expect(bumps[0]?.message).toMatch(/do not extend the TTL/);
+  });
+
+  test('nudging accessed_at by a day does not unlock an arbitrary verified_at', () => {
+    // A fact cannot have been verified on a day after the last day its source was read.
+    const after = plLegalBasis(TODAY, '2026-01-02');
+    const bumps = unchangedBumps(before(), after);
+    expect(bumps).toHaveLength(1);
+    expect(bumps[0]?.message).toMatch(/later than the most recent accessed_at/);
+  });
+
+  test('re-reading one of two cited sources is not re-verification', () => {
+    // "Every source", not "at least one": re-reading the easy source and bumping the date
+    // is the same defect in a smaller costume.
+    const twoSources = (verifiedAt: string, firstAccessed: string, secondAccessed: string): Json => {
+      const record = plLegalBasis(verifiedAt, firstAccessed);
+      const fact = (record['article_7'] as Json)['legal_basis'] as Json;
+      (fact['sources'] as unknown[]).push({
+        url: 'https://dziennikustaw.gov.pl/y',
+        accessed_at: secondAccessed,
+      });
+      return record;
+    };
+    const previous = twoSources(STALE_DATE, STALE_DATE, STALE_DATE);
+    expect(unchangedBumps(previous, twoSources(TODAY, TODAY, STALE_DATE))).toHaveLength(1);
+    expect(unchangedBumps(previous, twoSources(TODAY, TODAY, TODAY))).toHaveLength(0);
+  });
+
+  test('a fact citing no source cannot be re-verified into freshness', () => {
+    const previous = plLegalBasis(STALE_DATE, STALE_DATE);
+    ((previous['article_7'] as Json)['legal_basis'] as Json)['sources'] = [];
+    const after = plLegalBasis(TODAY, TODAY);
+    ((after['article_7'] as Json)['legal_basis'] as Json)['sources'] = [];
+    expect(unchangedBumps(previous, after)[0]?.message).toMatch(/cites no source/);
+  });
+
+  test('there is no flag, marker or override that exempts a bump', () => {
+    // The exemption is keyed on EVIDENCE and on nothing a human can simply assert. This
+    // asserts the ABSENCE of the escape hatch a person under deadline reaches for first.
+    const after = plLegalBasis(TODAY, STALE_DATE);
+    const fact = (after['article_7'] as Json)['legal_basis'] as Json;
+    for (const escape of ['reverified', 'reverified_at', 'override', 'skip_bump_check']) {
+      fact[escape] = true;
+      expect(`${escape}: ${unchangedBumps(before(), after).length}`).toBe(`${escape}: 1`);
+      delete fact[escape];
+    }
+  });
+
+  test('evidenceReread reports WHY, so a failure is actionable rather than a puzzle', () => {
+    const stale = (plLegalBasis(STALE_DATE, STALE_DATE)['article_7'] as Json)[
+      'legal_basis'
+    ] as Record<string, unknown>;
+    const fresh = (plLegalBasis(TODAY, TODAY)['article_7'] as Json)['legal_basis'] as Record<
+      string,
+      unknown
+    >;
+    expect(evidenceReread(stale, fresh)).toEqual({
+      reread: true,
+      why: `every cited source was read again, most recently ${TODAY}`,
+    });
+    expect(evidenceReread(stale, stale).reread).toBe(false);
   });
 });

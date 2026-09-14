@@ -92,12 +92,14 @@ export {
   freshnessGate,
   unchangedBumps,
   assertNoUnchangedBump,
+  evidenceReread,
 } from './freshness.ts';
 export type {
   Freshness,
   DegradationDescriptor,
   FreshnessFailure,
   UnchangedBump,
+  RereadVerdict,
 } from './freshness.ts';
 
 export {
