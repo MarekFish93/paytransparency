@@ -20,7 +20,10 @@ export {
   DirectiveQuotation,
   DirectiveFact,
   DirectiveFile,
+  SafeUrl,
+  HarvestedUrl,
   sourceUrlIssues,
+  harvestedUrlIssues,
 } from './schema.ts';
 export type { FactEnvelope } from './schema.ts';
 
@@ -59,7 +62,16 @@ export type { ScopeRule, StrategyAssertion, StrategyEntry } from './source-strat
  * bundle that needs `@paytransparency/country-data` should get a data-only subpath export rather
  * than a weaker guard.
  */
-export { isAllowlisted, assertFetchable, assertRedirectChain, AllowlistViolation } from './allowlist.ts';
+export {
+  isAllowlisted,
+  assertFetchable,
+  assertRedirectChain,
+  AllowlistViolation,
+  allowedHostsFor,
+  linkableHostsFor,
+  isLinkable,
+  assertLinkable,
+} from './allowlist.ts';
 export type { AllowlistData, AllowlistViolationReason } from './allowlist.ts';
 
 export {

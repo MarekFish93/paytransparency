@@ -25,10 +25,10 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 
-import { AllowlistViolation, assertFetchable } from './allowlist.ts';
+import { AllowlistViolation, assertFetchable, assertLinkable } from './allowlist.ts';
 import { EU_COUNTRY_CODES, factAt, FACT_PATHS, isLaunchCountry } from './country.ts';
 import { assertNoUnchangedBump, freshnessGate, freshnessOf } from './freshness.ts';
-import { sourceUrlIssues } from './schema.ts';
+import { harvestedUrlIssues, sourceUrlIssues } from './schema.ts';
 import type { Volatility } from './schema.ts';
 
 /** The nine numbered policy rules, in report order. */
@@ -511,15 +511,76 @@ export function L4_noUnsourcedStatute(files: readonly LintFile[]): RuleReport {
 // ---------------------------------------------------------------------------
 
 /**
- * Every source URL is https, carries no tracking parameter, and sits on a host that
- * country's allowlist names.
+ * EVERY url in the record is https, carries no tracking parameter, and sits on a host
+ * that country's allowlist names.
  *
- * The host half DELEGATES to `assertFetchable`. That is not tidiness: a second host
- * matcher here would have to re-derive the label-boundary rule that stops
- * `evil-legislation.mt` matching `legislation.mt`, and the second implementation is the
- * one that gets it wrong. The test asserts the delegation by requiring the finding's
- * `cause` to be an `AllowlistViolation`.
+ * "Every" is the load-bearing word and it was not always true. This rule used to visit
+ * only `sources[]`, which is roughly a third of the URLs a record holds — so a community
+ * pull request could put `javascript:alert(document.cookie)` in
+ * `enforcement.equality_body.value[0].complaint_url`, the field the site renders under
+ * the words "file a complaint with your equality body", and pass both schema parse and
+ * the full lint with zero findings. The schema now types every one of those fields
+ * `SafeUrl`, so the state is unrepresentable; this rule is the second wall, because the
+ * lint also runs over `proposed/` records and over hand-edited JSON that has not been
+ * through `CountryRecord.parse` yet.
+ *
+ * THREE TIERS, deliberately distinct — a single blanket rule would either be too weak to
+ * stop a phishing host or too strong to express a legitimate national link:
+ *
+ *   1. SCHEME AND SHAPE (`sourceUrlIssues` / `harvestedUrlIssues`) applies to every URL
+ *      in the record without exception, and is always an ERROR. A `javascript:` URL must
+ *      be impossible to express anywhere.
+ *   2. FETCH-ALLOWLIST membership (`assertFetchable`) applies to `sources[].url` and to
+ *      `transposition.draft_asserting_sources[]`, which the record invariant already
+ *      requires to be a subset of the cited source URLs. These are the URLs CI actually
+ *      connects to, so they answer the forgery question (T-1-07).
+ *   3. LINK-ALLOWLIST membership (`assertLinkable`) applies to the fields the SITE
+ *      renders as an official link — the equality body, the labour inspectorate, the
+ *      filing authority, the statute. That is the phishing question (T-1-08) and it has
+ *      its own, wider list, because putting a complaint form on the FETCH list to permit
+ *      a link would buy a phishing control by paying in outbound surface.
+ *
+ * `discovery_hints[].national_link` sits under tier 1 only. It is harvested verbatim
+ * from the Commission's own register — its provenance IS that register — and the seven
+ * hosts it names today are national registers nobody has curated. Holding it to a
+ * curated list would make the rule red on 93 legitimate links in the committed tree,
+ * which is how a gate gets disabled.
+ *
+ * The host halves DELEGATE to `allowlist.ts`. That is not tidiness: a second host matcher
+ * here would have to re-derive the label-boundary rule that stops `evil-legislation.mt`
+ * matching `legislation.mt`, and the second implementation is the one that gets it wrong.
+ * The test asserts the delegation by requiring the finding's `cause` to be an
+ * `AllowlistViolation`.
  */
+
+/**
+ * Which keys hold a URL. A rule about NAMES, not a list of dotted paths, because a list
+ * of paths is exactly what went stale and produced this bug: a field added next year
+ * called `appeal_url` is covered the day it is written, with no second edit here.
+ *
+ * `art20_designation_source` and `draft_asserting_sources` are why `source`/`sources` is
+ * in the alternation.
+ */
+const URL_BEARING_KEY = /(^|_)(url|uri|link|source|sources)$/;
+
+/** Keys held to scheme hygiene only, never to a curated host list. See the docblock. */
+const HARVESTED_URL_KEYS: ReadonlySet<string> = new Set(['national_link']);
+
+/** Keys whose host must be FETCHABLE (tier 2) rather than merely linkable (tier 3). */
+const FETCHED_URL_KEYS: ReadonlySet<string> = new Set(['draft_asserting_sources', 'sources']);
+
+/**
+ * Schemes that are never a link, on ANY key, whatever it is called.
+ *
+ * This is the backstop that cannot go stale. `URL_BEARING_KEY` is a naming convention and
+ * conventions get broken; a stored `javascript:` string is stored XSS regardless of which
+ * field it arrived in, so it is rejected on every string leaf in the record. The leading
+ * whitespace/control class is not decoration: browsers strip leading control characters
+ * before resolving a scheme, so `"\u0009javascript:…"` is a live href.
+ */
+const DANGEROUS_SCHEME =
+  /^[\s\u0000-\u001f]*(javascript|data|vbscript|file)[\s\u0000-\u001f]*:/i;
+
 export function L5_urlHygiene(files: readonly LintFile[]): RuleReport {
   const findings: LintFinding[] = [];
 
@@ -527,43 +588,82 @@ export function L5_urlHygiene(files: readonly LintFile[]): RuleReport {
     const country = codeOf(file.record);
     const seen = new Set<string>();
 
-    const visitSource = (source: unknown, where: string): void => {
-      if (!isRecordLike(source)) return;
-      const url = source['url'];
-      if (typeof url !== 'string') return;
-      const key = `${where}::${url}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-
-      for (const issue of sourceUrlIssues(url)) {
-        findings.push(finding('L5', 'error', where, `${where} — ${url}: ${issue}`));
-      }
-
+    /** Tier 2 or tier 3 host membership, whichever this key calls for. */
+    const checkHost = (url: string, key: string, where: string): void => {
+      const guard = FETCHED_URL_KEYS.has(key) ? assertFetchable : assertLinkable;
       try {
-        assertFetchable(url, country);
+        guard(url, country);
       } catch (error) {
         if (!(error instanceof AllowlistViolation)) throw error;
         findings.push(finding('L5', 'error', where, `${where} — ${error.message}`, error));
       }
     };
 
-    const walk = (node: unknown, path: string): void => {
+    const visitSource = (source: unknown, where: string): void => {
+      if (!isRecordLike(source)) return;
+      const url = source['url'];
+      if (typeof url !== 'string') return;
+      if (seen.has(where)) return;
+      seen.add(where);
+
+      for (const issue of sourceUrlIssues(url)) {
+        findings.push(finding('L5', 'error', where, `${where} — ${url}: ${issue}`));
+      }
+      checkHost(url, 'sources', where);
+    };
+
+    /**
+     * Every string leaf, with the key that owns it. A string inside an array inherits the
+     * array's key, which is what makes `draft_asserting_sources[0]` classifiable.
+     */
+    const visitString = (value: string, key: string, where: string): void => {
+      if (DANGEROUS_SCHEME.test(value)) {
+        findings.push(
+          finding(
+            'L5',
+            'error',
+            where,
+            `${where} — ${JSON.stringify(value)}: a javascript:, data:, vbscript: or file: URL is never a link. Stored here it is stored XSS the moment the site renders the field`,
+          ),
+        );
+        return;
+      }
+      if (!URL_BEARING_KEY.test(key)) return;
+      if (seen.has(where)) return;
+      seen.add(where);
+
+      const harvested = HARVESTED_URL_KEYS.has(key);
+      const issues = harvested ? harvestedUrlIssues(value) : sourceUrlIssues(value);
+      for (const issue of issues) {
+        findings.push(finding('L5', 'error', where, `${where} — ${value}: ${issue}`));
+      }
+      // An unparseable or off-scheme URL has already been reported; running the host
+      // guard on it would report the same string twice under a less useful reason.
+      if (issues.length > 0 || harvested) return;
+      checkHost(value, key, where);
+    };
+
+    const walk = (node: unknown, path: string, key: string): void => {
+      if (typeof node === 'string') {
+        visitString(node, key, `${file.path}#${path}`);
+        return;
+      }
       if (Array.isArray(node)) {
-        node.forEach((child, i) => walk(child, `${path}[${i}]`));
+        node.forEach((child, i) => walk(child, `${path}[${i}]`, key));
         return;
       }
       if (!isRecordLike(node)) return;
-      for (const key of Object.keys(node)) {
-        const child = node[key];
-        if (key === 'sources' && Array.isArray(child)) {
+      for (const childKey of Object.keys(node)) {
+        const child = node[childKey];
+        if (childKey === 'sources' && Array.isArray(child)) {
           child.forEach((source, i) => visitSource(source, `${file.path}#${path}.sources[${i}]`));
           continue;
         }
-        walk(child, `${path}.${key}`);
+        walk(child, `${path}.${childKey}`, childKey);
       }
     };
 
-    walk(file.record, '');
+    walk(file.record, '', '');
   }
 
   return report('L5', 'url hygiene — https, no tracking, allowlisted host', findings);

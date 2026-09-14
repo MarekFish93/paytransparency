@@ -30,7 +30,7 @@
  */
 import { z } from 'zod';
 
-import { Fact, IsoDate, Source } from './schema.ts';
+import { Fact, HarvestedUrl, IsoDate, SafeUrl, Source } from './schema.ts';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -144,7 +144,7 @@ export const NationalLegalBasis = z.strictObject({
   article: z.string().min(1).nullable(),
   adopted_at: IsoDate.nullable(),
   in_force_from: IsoDate.nullable(),
-  url: z.string().nullable(),
+  url: SafeUrl.nullable(),
 });
 export type NationalLegalBasis = z.infer<typeof NationalLegalBasis>;
 
@@ -227,9 +227,9 @@ export type Art7_2Standing = z.infer<typeof Art7_2Standing>;
 export const EqualityBodyEntry = z.strictObject({
   name_local: z.string().min(2),
   name_en: z.string().min(2).nullable(),
-  url: z.string().nullable(),
-  complaint_url: z.string().nullable(),
-  art20_designation_source: z.string().nullable(),
+  url: SafeUrl.nullable(),
+  complaint_url: SafeUrl.nullable(),
+  art20_designation_source: SafeUrl.nullable(),
 });
 export type EqualityBodyEntry = z.infer<typeof EqualityBodyEntry>;
 
@@ -265,7 +265,7 @@ export const NationalAct = z.strictObject({
   official_title: z.string().nullable(),
   journal_ref: z.string().nullable(),
   adopted_at: IsoDate.nullable(),
-  url: z.string().nullable(),
+  url: SafeUrl.nullable(),
 });
 
 export const PartialInForceValue = z.array(
@@ -296,7 +296,14 @@ export const DiscoveryHint = z.strictObject({
   oj_number: z.string().nullable(),
   oj_date: IsoDate.nullable(),
   notified_at: IsoDate.nullable(),
-  national_link: z.string().nullable(),
+  /**
+   * HARVESTED, not authored: the ELI the Commission register itself published. Typed
+   * `HarvestedUrl` rather than `SafeUrl` because 18 of the 93 ELIs the register serves
+   * today are plain `http:`, and rewriting a register's own identifier to make a lint go
+   * green would be falsifying provenance. Every other hygiene rule still applies — a
+   * `javascript:` or `data:` link is a parse error here exactly as it is everywhere else.
+   */
+  national_link: HarvestedUrl.nullable(),
   kind: DiscoveryHintKind,
   source_query_at: IsoDate,
 });
@@ -336,7 +343,7 @@ const countryRecordShape = {
      * says draft, the data must say draft, and a contributor ticks the box rather than a
      * reviewer hoping.
      */
-    draft_asserting_sources: z.array(z.string()),
+    draft_asserting_sources: z.array(SafeUrl),
   }),
 
   article_7: z.strictObject({
@@ -386,7 +393,7 @@ const countryRecordShape = {
       z.strictObject({
         name_local: z.string().min(2),
         name_en: z.string().min(2).nullable(),
-        url: z.string().nullable(),
+        url: SafeUrl.nullable(),
       }),
     ),
     penalties: Fact(
@@ -421,10 +428,10 @@ const countryRecordShape = {
       z.strictObject({
         name_local: z.string().min(2),
         name_en: z.string().min(2).nullable(),
-        url: z.string().nullable(),
+        url: SafeUrl.nullable(),
       }),
     ),
-    template: Fact(z.strictObject({ url: z.string(), format: z.string().min(2) })),
+    template: Fact(z.strictObject({ url: SafeUrl, format: z.string().min(2) })),
     /** Set to e.g. "pl" when `packages/adapters-pl` ships. */
     adapter_id: z.string().nullable(),
   }),

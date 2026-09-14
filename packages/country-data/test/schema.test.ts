@@ -531,3 +531,141 @@ describe('the country record: no per-worker annual request frequency', () => {
     expect(src).not.toMatch(/import\s*\(/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// CR-01 — every URL-bearing field, not only sources[]
+// ---------------------------------------------------------------------------
+
+describe('the country record: every url field is a SafeUrl, not a bare string', () => {
+  /**
+   * The regression payload, verbatim from the code review that found this.
+   *
+   * Before `SafeUrl` existed, `L5_urlHygiene` walked `sources[]` and nothing else, and
+   * every other URL in the record was `z.string().nullable()`. This exact record parsed
+   * clean. `enforcement.equality_body.value[].complaint_url` is the field the site renders
+   * under the words "file a complaint with your equality body", so a `javascript:` href
+   * there is stored XSS and a look-alike host there is a phishing page wearing the
+   * project's own "official body" label.
+   */
+  const hostile = (): Json => {
+    const record = baseRecord('PL') as Json;
+    const enforcement = record['enforcement'] as Json;
+    enforcement['equality_body'] = {
+      value: [
+        {
+          name_local: 'Rzecznik Praw Obywatelskich',
+          name_en: 'Commissioner for Human Rights',
+          url: 'javascript:alert(document.cookie)',
+          complaint_url: 'http://phish.example/steal?utm_source=x',
+          art20_designation_source: null,
+        },
+      ],
+      status: 'verified',
+      sources: [source()],
+      verified_at: QUERY_DATE,
+      verified_by: 'marek',
+      volatility: 'stable',
+    };
+    const reporting = record['reporting'] as Json;
+    reporting['template'] = {
+      value: { url: 'javascript:void(fetch("//evil"))', format: 'xlsx' },
+      status: 'verified',
+      sources: [source()],
+      verified_at: QUERY_DATE,
+      verified_by: 'marek',
+      volatility: 'stable',
+    };
+    const transposition = record['transposition'] as Json;
+    transposition['draft_asserting_sources'] = ['http://evil.example/not-a-source'];
+    return record;
+  };
+
+  test('rejects the whole hostile payload, naming every offending field', () => {
+    const result = CountryRecord.safeParse(hostile());
+    expect(result.success).toBe(false);
+    const paths = result.success
+      ? []
+      : result.error.issues.map((i) => i.path.join('.')).sort();
+    expect(paths).toEqual(
+      expect.arrayContaining([
+        'enforcement.equality_body.value.0.complaint_url',
+        'enforcement.equality_body.value.0.url',
+        'reporting.template.value.url',
+        'transposition.draft_asserting_sources.0',
+      ]),
+    );
+  });
+
+  test.each([
+    ['enforcement.equality_body[].url', 'javascript:alert(1)'],
+    ['enforcement.equality_body[].complaint_url', 'data:text/html,<script>x</script>'],
+    ['enforcement.equality_body[].art20_designation_source', 'file:///etc/passwd'],
+  ])('rejects %s carrying %s', (_field, url) => {
+    const record = baseRecord('PL') as Json;
+    const enforcement = record['enforcement'] as Json;
+    enforcement['equality_body'] = {
+      value: [
+        {
+          name_local: 'X',
+          name_en: null,
+          url: _field.endsWith('.url') ? url : null,
+          complaint_url: _field.endsWith('complaint_url') ? url : null,
+          art20_designation_source: _field.endsWith('designation_source') ? url : null,
+        },
+      ],
+      status: 'verified',
+      sources: [source()],
+      verified_at: QUERY_DATE,
+      verified_by: 'marek',
+      volatility: 'stable',
+    };
+    expect(CountryRecord.safeParse(record).success).toBe(false);
+  });
+
+  test('accepts the same fields carrying an https URL', () => {
+    const record = baseRecord('PL') as Json;
+    const enforcement = record['enforcement'] as Json;
+    enforcement['equality_body'] = {
+      value: [
+        {
+          name_local: 'Rzecznik Praw Obywatelskich',
+          name_en: 'Commissioner for Human Rights',
+          url: 'https://bip.brpo.gov.pl/',
+          complaint_url: 'https://bip.brpo.gov.pl/pl/wniosek',
+          art20_designation_source: null,
+        },
+      ],
+      status: 'verified',
+      sources: [source()],
+      verified_at: QUERY_DATE,
+      verified_by: 'marek',
+      volatility: 'stable',
+    };
+    expect(messagesOf(CountryRecord.safeParse(record))).toBe('');
+  });
+
+  test('national_link tolerates the register\u2019s own http ELIs but never javascript:', () => {
+    const hint = (link: string): Json => ({
+      celex: '32023L0970',
+      title: 'A notified national measure',
+      official_journal: null,
+      oj_number: null,
+      oj_date: null,
+      notified_at: null,
+      national_link: link,
+      kind: 'unclassified',
+      source_query_at: QUERY_DATE,
+    });
+
+    // 18 of the 93 ELIs the Commission register publishes today are plain http. They are
+    // the register's own identifiers and rewriting them to clear a lint would falsify
+    // provenance — see HARVESTED_POLICY in schema.ts.
+    const httpLink = baseRecord('AT') as Json;
+    httpLink['discovery_hints'] = [hint('http://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrStmk')];
+    expect(messagesOf(CountryRecord.safeParse(httpLink))).toBe('');
+
+    const scripted = baseRecord('AT') as Json;
+    scripted['discovery_hints'] = [hint('javascript:alert(1)')];
+    expect(CountryRecord.safeParse(scripted).success).toBe(false);
+  });
+});

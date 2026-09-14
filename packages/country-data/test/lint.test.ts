@@ -335,6 +335,131 @@ describe('L5 url hygiene', () => {
     const report = L5_urlHygiene([file('data/PL.json', withSource(source()))]);
     expect(report.findings).toHaveLength(0);
   });
+
+  // -------------------------------------------------------------------------
+  // CR-01 — the two thirds of the record's URLs this rule used to walk straight past
+  // -------------------------------------------------------------------------
+
+  /** A record carrying the named value at the named equality-body field. */
+  const withEqualityBody = (entry: Record<string, unknown>) =>
+    record('PL', {
+      enforcement: {
+        equality_body: fact({
+          value: [{ name_local: 'RPO', name_en: null, ...entry }],
+          status: 'verified',
+          sources: [source()],
+          verified_at: '2026-09-01',
+          verified_by: 'marek',
+        }),
+      },
+    });
+
+  it('reports the exact payload the review proved passed with zero findings', () => {
+    const rec = record('PL', {
+      transposition: {
+        status: fact({ value: 'draft', status: 'verified', sources: [source()], verified_at: '2026-09-01' }),
+        draft_asserting_sources: ['http://evil.example/not-a-source'],
+      },
+      enforcement: {
+        equality_body: fact({
+          value: [
+            {
+              name_local: 'RPO',
+              name_en: null,
+              url: 'javascript:alert(document.cookie)',
+              complaint_url: 'http://phish.example/steal?utm_source=x',
+              art20_designation_source: null,
+            },
+          ],
+          status: 'verified',
+          sources: [source()],
+          verified_at: '2026-09-01',
+          verified_by: 'marek',
+        }),
+      },
+      reporting: {
+        template: fact({
+          value: { url: 'javascript:void(fetch("//evil"))', format: 'xlsx' },
+          status: 'verified',
+          sources: [source()],
+          verified_at: '2026-09-01',
+          verified_by: 'marek',
+        }),
+      },
+    });
+
+    const report = L5_urlHygiene([file('data/PL.json', rec)]);
+    const messages = messagesOf(report);
+    expect(report.findings.length).toBeGreaterThan(0);
+    expect(messages).toContain('equality_body.value[0].url');
+    expect(messages).toContain('equality_body.value[0].complaint_url');
+    expect(messages).toContain('reporting.template.value.url');
+    expect(messages).toContain('draft_asserting_sources[0]');
+  });
+
+  it('rejects a javascript: url on ANY string leaf, whatever the key is called', () => {
+    // The backstop that cannot go stale: URL_BEARING_KEY is a naming convention, and a
+    // stored javascript: string is stored XSS whichever field it arrived in.
+    const rec = record('PL', { reporting: { adapter_id: '\tjavascript:alert(1)' } });
+    expect(messagesOf(L5_urlHygiene([file('data/PL.json', rec)]))).toMatch(/stored XSS/);
+  });
+
+  it('rejects an off-allowlist host presented as the equality body, via assertLinkable', () => {
+    const report = L5_urlHygiene([
+      file('data/PL.json', withEqualityBody({ url: 'https://rzecznik-praw.example/', complaint_url: null, art20_designation_source: null })),
+    ]);
+    const [found] = report.findings;
+    expect(found?.cause).toBeInstanceOf(AllowlistViolation);
+    expect((found?.cause as AllowlistViolation).reason).toBe('host_not_allowlisted');
+    // The message must send the contributor to the reviewed allowlist file, not tell
+    // them to delete the link.
+    expect(found?.message).toContain('_allowlist.json');
+  });
+
+  it('rejects a look-alike of an allowlisted host \u2014 the label-boundary rule, delegated', () => {
+    const report = L5_urlHygiene([
+      file('data/PL.json', withEqualityBody({ url: 'https://evil-brpo.gov.pl.attacker.example/', complaint_url: null, art20_designation_source: null })),
+    ]);
+    expect(report.findings.length).toBeGreaterThan(0);
+    expect((report.findings[0]?.cause as AllowlistViolation).reason).toBe('host_not_allowlisted');
+  });
+
+  it('accepts an equality-body link on that country\u2019s own allowlisted host', () => {
+    const report = L5_urlHygiene([
+      file('data/PL.json', withEqualityBody({ url: 'https://bip.brpo.gov.pl/', complaint_url: 'https://bip.brpo.gov.pl/pl/wniosek', art20_designation_source: null })),
+    ]);
+    expect(messagesOf(report)).toBe('');
+  });
+
+  it('holds discovery_hints[].national_link to scheme hygiene but not to a curated list', () => {
+    const hint = (national_link: string) => ({
+      celex: '32023L0970',
+      title: 'A notified measure',
+      official_journal: null,
+      oj_number: null,
+      oj_date: null,
+      notified_at: null,
+      national_link,
+      kind: 'unclassified',
+      source_query_at: '2026-09-11',
+    });
+
+    // Harvested verbatim from the Commission register: plain http on an uncurated
+    // national host is the register's own identifier, not a defect of ours.
+    const harvested = record('AT', { discovery_hints: [hint('http://www.ris.bka.gv.at/x')] });
+    expect(messagesOf(L5_urlHygiene([file('data/AT.json', harvested)]))).toBe('');
+
+    const scripted = record('AT', { discovery_hints: [hint('javascript:alert(1)')] });
+    expect(messagesOf(L5_urlHygiene([file('data/AT.json', scripted)]))).toMatch(/stored XSS/);
+  });
+
+  it('is clean on the whole committed tree', () => {
+    // The rule now walks 93 harvested links and 27 source URLs. If widening it had made
+    // the committed tree red, the pressure would be to weaken the rule rather than fix
+    // the data \u2014 which is how the original narrow walk survived review.
+    const report = L5_urlHygiene(loadRecords(DATA_DIR));
+    expect(messagesOf(report)).toBe('');
+  });
 });
 
 // ---------------------------------------------------------------------------

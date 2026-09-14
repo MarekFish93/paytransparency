@@ -83,11 +83,82 @@ export type FactStatus = z.infer<typeof FactStatus>;
 
 const CELLAR_HOST = 'publications.europa.eu';
 
+/**
+ * An IPv4 literal, an IPv6 literal (which `URL` surfaces bracketed), or a bare-decimal
+ * host such as `http://2130706433/`, which resolves to 127.0.0.1. Deliberately the same
+ * three cases `allowlist.ts` rejects — `allowlist.test.ts` pins that this lint never
+ * accepts something the pre-fetch guard would reject.
+ */
 const isIpLiteralHost = (host: string): boolean =>
-  /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.startsWith('[');
+  host.startsWith('[') || /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || /^\d+$/.test(host);
 
 /**
- * Returns the reasons a source URL is unacceptable, or an empty array.
+ * A URL policy. There are exactly two, and the difference between them is deliberate.
+ *
+ * `CITATION_POLICY` governs every URL this project AUTHORS: a source citation, a link to
+ * a national statute, the address of the equality body a worker is told to write to. It
+ * is https-only, with the one documented Cellar exception.
+ *
+ * `HARVESTED_POLICY` governs `discovery_hints[].national_link`, which is copied verbatim
+ * out of the Commission's National Implementing Measures register. 18 of the 93 ELI URIs
+ * that register publishes today are plain `http:`, and rewriting a register's own
+ * identifier to make a lint go green would be falsifying provenance. So `http:` survives
+ * there — and NOTHING else does. `javascript:`, `data:`, `file:`, credentials, IP
+ * literals, non-default ports and tracking parameters are rejected under BOTH policies,
+ * because those are the ones that turn a stored string into stored XSS or into an
+ * outbound request at somebody else's choosing.
+ */
+type UrlPolicy = {
+  /** How the field names itself in an issue message. */
+  readonly label: string;
+  /** `true` rejects every scheme but https (plus the Cellar http exception). */
+  readonly httpsOnly: boolean;
+};
+
+const CITATION_POLICY: UrlPolicy = { label: 'source url', httpsOnly: true };
+const HARVESTED_POLICY: UrlPolicy = { label: 'register-harvested link', httpsOnly: false };
+
+function urlIssues(raw: string, policy: UrlPolicy): string[] {
+  const issues: string[] = [];
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return [`${policy.label} is not a parseable absolute URL`];
+  }
+
+  const isCellarHttp = u.protocol === 'http:' && u.hostname === CELLAR_HOST;
+  if (policy.httpsOnly) {
+    if (u.protocol !== 'https:' && !isCellarHttp) {
+      issues.push(
+        `${policy.label} must use https:// (the only http:// exception is ${CELLAR_HOST}, whose canonical resource URI is content-negotiated over http)`,
+      );
+    }
+  } else if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+    issues.push(
+      `${policy.label} must use https:// or http:// — "${u.protocol}" is not a web scheme, and this string is rendered as a link a worker clicks`,
+    );
+  }
+  if (u.username !== '' || u.password !== '') {
+    issues.push(`${policy.label} must not carry credentials`);
+  }
+  if (u.port !== '') {
+    issues.push(`${policy.label} must not carry a non-standard port (:${u.port})`);
+  }
+  if (isIpLiteralHost(u.hostname)) {
+    issues.push(`${policy.label} host must be a domain name, not an IP literal`);
+  }
+  for (const key of u.searchParams.keys()) {
+    const k = key.toLowerCase();
+    if (k.startsWith('utm_') || k === 'fbclid') {
+      issues.push(`${policy.label} must not carry the tracking parameter "${key}"`);
+    }
+  }
+  return issues;
+}
+
+/**
+ * Returns the reasons a URL this project authors is unacceptable, or an empty array.
  *
  * `https://` is required, with ONE exception: the Cellar canonical resource URI is
  * served over plain http and content-negotiated, and forbidding it would block the
@@ -96,40 +167,38 @@ const isIpLiteralHost = (host: string): boolean =>
  * surfaces as a drift review task).
  */
 export function sourceUrlIssues(raw: string): string[] {
-  const issues: string[] = [];
-  let u: URL;
-  try {
-    u = new URL(raw);
-  } catch {
-    return ['source url is not a parseable absolute URL'];
-  }
-
-  const isCellarHttp = u.protocol === 'http:' && u.hostname === CELLAR_HOST;
-  if (u.protocol !== 'https:' && !isCellarHttp) {
-    issues.push(
-      `source url must use https:// (the only http:// exception is ${CELLAR_HOST}, whose canonical resource URI is content-negotiated over http)`,
-    );
-  }
-  if (u.username !== '' || u.password !== '') {
-    issues.push('source url must not carry credentials');
-  }
-  if (u.port !== '') {
-    issues.push(`source url must not carry a non-standard port (:${u.port})`);
-  }
-  if (isIpLiteralHost(u.hostname)) {
-    issues.push('source url host must be a domain name, not an IP literal');
-  }
-  for (const key of u.searchParams.keys()) {
-    const k = key.toLowerCase();
-    if (k.startsWith('utm_') || k === 'fbclid') {
-      issues.push(`source url must not carry the tracking parameter "${key}"`);
-    }
-  }
-  return issues;
+  return urlIssues(raw, CITATION_POLICY);
 }
 
-const SourceUrl = z.string().superRefine((value, ctx) => {
+/**
+ * Returns the reasons a register-harvested link is unacceptable, or an empty array.
+ *
+ * Weaker than `sourceUrlIssues` on exactly one axis — plain `http:` is tolerated on any
+ * host — and identical on every other. See `HARVESTED_POLICY`.
+ */
+export function harvestedUrlIssues(raw: string): string[] {
+  return urlIssues(raw, HARVESTED_POLICY);
+}
+
+/**
+ * THE url type. Every field in the record that stores a URL this project authors is
+ * typed with this, not with a bare `z.string()`.
+ *
+ * That is the whole point: before this existed, `sources[].url` was checked and the
+ * seven other URL-bearing fields were not, so a `javascript:` href in a community pull
+ * request parsed clean and reached the page as the equality body's "file a complaint"
+ * link. A shared branded type makes that state unrepresentable rather than merely
+ * lint-detectable.
+ */
+export const SafeUrl = z.string().superRefine((value, ctx) => {
   for (const message of sourceUrlIssues(value)) {
+    ctx.addIssue({ code: 'custom', message });
+  }
+});
+
+/** `discovery_hints[].national_link` only. See `HARVESTED_POLICY` for why it differs. */
+export const HarvestedUrl = z.string().superRefine((value, ctx) => {
+  for (const message of harvestedUrlIssues(value)) {
     ctx.addIssue({ code: 'custom', message });
   }
 });
@@ -151,7 +220,7 @@ export const SourceScope = z.object({
 export type SourceScope = z.infer<typeof SourceScope>;
 
 export const Source = z.object({
-  url: SourceUrl,
+  url: SafeUrl,
   title: z.string().min(3),
   publisher: z.string().min(2),
   kind: SourceKind,

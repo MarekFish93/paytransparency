@@ -62,6 +62,11 @@ export type AllowlistData = {
   all: string[];
   /** ISO-3166-1 alpha-2 → that country's national registers. */
   byCountry: Record<string, string[]>;
+  /**
+   * ISO-3166-1 alpha-2 → hosts the SITE may present as an official link, over and above
+   * the registers it fetches. See `assertLinkable` for why this is a second list.
+   */
+  linkable?: Record<string, string[]>;
 };
 
 /**
@@ -138,9 +143,10 @@ function violation(
   host: string,
   country: string,
   detail: string,
+  verb: 'fetch' | 'link to' = 'fetch',
 ): AllowlistViolation {
   return new AllowlistViolation(
-    `refusing to fetch ${detail} for country "${country}": ${reason}`,
+    `refusing to ${verb} ${detail} for country "${country}": ${reason}`,
     { host, country, reason },
   );
 }
@@ -225,6 +231,82 @@ export function assertFetchable(url: string, countryCode: string): void {
       country,
       `${host} — it is on neither the all-countries set nor the "${country}" register list`,
     );
+  }
+}
+
+/**
+ * The hosts the site may LINK to for this country: the fetch set plus `linkable`.
+ *
+ * Returns `null` for a code that is not one of the 27, matching `allowedHostsFor`.
+ */
+export function linkableHostsFor(countryCode: string): string[] | null {
+  const code = countryCode.toUpperCase();
+  const fetchable = allowedHostsFor(code);
+  if (fetchable === null) return null;
+  return [...fetchable, ...(ALLOWLIST.linkable?.[code] ?? [])];
+}
+
+/**
+ * The link guard, for a URL the SITE renders rather than one CI retrieves.
+ *
+ * Two lists exist because they answer two different questions, and merging them would
+ * make each worse. `assertFetchable` answers "may a runner connect to this host" — a
+ * server-side request forgery question (T-1-07), and every host added to it widens the
+ * outbound surface. This answers "may we put this host under the words *your equality
+ * body*" — a phishing question (T-1-08). A complaint form is never fetched by CI, so
+ * adding it to the fetch list to permit a link would buy a phishing control by paying in
+ * forgery surface.
+ *
+ * Every hygiene rule `assertFetchable` applies still applies here: scheme, credentials,
+ * IP literal, port, tracking parameters. Only the membership set is wider.
+ */
+export function assertLinkable(url: string, countryCode: string): void {
+  const country = countryCode.toUpperCase();
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw violation(
+      'unparseable_url',
+      '',
+      country,
+      `"${url}" (not a parseable absolute URL)`,
+      'link to',
+    );
+  }
+  const host = canonicalHost(parsed.hostname);
+
+  const allowed = linkableHostsFor(country);
+  if (allowed === null) {
+    throw violation(
+      'unknown_country',
+      host,
+      country,
+      `${host} — "${country}" is not one of the 27 member-state codes in _allowlist.json`,
+      'link to',
+    );
+  }
+
+  if (!allowed.some((entry) => hostMatches(host, entry))) {
+    throw violation(
+      'host_not_allowlisted',
+      host,
+      country,
+      `${host} — the site would present this as an official link for "${country}", but the host is on neither the all-countries set, nor the "${country}" register list, nor the "${country}" linkable list in _allowlist.json. Add it there, with evidence, rather than inside a country record`,
+      'link to',
+    );
+  }
+}
+
+/** Boolean form of `assertLinkable`. Never throws. */
+export function isLinkable(url: string, countryCode: string): boolean {
+  try {
+    assertLinkable(url, countryCode);
+    return true;
+  } catch (error) {
+    if (error instanceof AllowlistViolation) return false;
+    throw error;
   }
 }
 
