@@ -343,6 +343,26 @@ export const Fact = <S extends z.ZodType>(inner: S) =>
               'a cellar source must carry a scope id — the anchor is asserted INSIDE the cited subdivision, never across the whole document',
           });
         }
+        // The Cellar 200 carries an EMPTY `Content-Language` header. The subdivision's own
+        // `<id>.tit_1` subtitle is therefore the ONLY thing in the response that identifies
+        // which language the server actually returned, and `verifyCellar` runs that check
+        // only `if (scope.expected_subtitle !== null)`. `expected_subtitle` defaulted to
+        // null, so a cellar source could be dispositioned `verified` with no language
+        // evidence of any kind and no note recording the gap — the shape of green this
+        // project keeps auditing itself for. Required here, at parse, rather than left to a
+        // branch that quietly does not run.
+        if (
+          source.verification === 'cellar' &&
+          source.scope !== null &&
+          source.scope.expected_subtitle === null
+        ) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['sources', i, 'scope', 'expected_subtitle'],
+            message:
+              'a cellar source must carry expected_subtitle — the Cellar 200 has an empty Content-Language header, so the subdivision subtitle is the only language evidence in the response. Without it the language confirmation does not run and the source is dispositioned verified having proved nothing about which expression was returned',
+          });
+        }
       });
     });
 

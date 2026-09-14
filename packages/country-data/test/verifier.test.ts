@@ -551,3 +551,36 @@ describe('the cellar path still bites after the taxonomy was wired in', () => {
     expect(result.reason).toBe('anchor_absent');
   });
 });
+
+describe('WR-05 — a cellar source with no expected_subtitle proves nothing about language', () => {
+  /**
+   * The Cellar 200 carries an EMPTY `Content-Language` header. The subdivision's own
+   * `<id>.tit_1` subtitle is the ONLY thing in the response that says which language
+   * expression the server returned — which is why `verifyCellar` checks it.
+   *
+   * `expected_subtitle` defaults to null, and the check ran only `if (… !== null)`. So a
+   * cellar source with a null subtitle fell through to `disposition: 'verified'` with no
+   * language evidence of any kind and no note recording the gap. A Polish citation could
+   * be dispositioned verified against the English expression.
+   */
+  const noSubtitle = source({
+    url: 'http://publications.europa.eu/resource/celex/32023L0970',
+    verification: 'cellar',
+    kind: 'eu_institution',
+    anchor: 'within a reasonable period of time but in any event within two months',
+    scope: { id: 'art_7', expected_subtitle: null },
+  });
+
+  it('is a data defect, not a silent pass', () => {
+    const result = verifySource(noSubtitle, { status: 200, body: CELLAR_XHTML, headers: {} });
+    expect(result.disposition).toBe('data_defect');
+    expect(result.reason).toBe('language_unconfirmed');
+    expect(result.message).toMatch(/empty Content-Language/);
+  });
+
+  it('the same source WITH a subtitle verifies, so the rule is not just refusing everything', () => {
+    expect(
+      verifySource(CELLAR_SOURCE, { status: 200, body: CELLAR_XHTML, headers: {} }).disposition,
+    ).toBe('verified');
+  });
+});

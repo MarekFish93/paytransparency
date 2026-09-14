@@ -562,7 +562,19 @@ function verifyCellar(source: Source, body: string, response: VerifierResponse):
 
   // 9. Confirm the language from the subdivision's own subtitle. `Content-Language` is
   //    empty on this server, so nothing else in the response identifies the language.
-  if (scope.expected_subtitle !== null) {
+  //
+  //    A null subtitle is a DATA DEFECT, not a skip. It used to fall straight through to
+  //    `disposition: 'verified'` with no language evidence at all and no note recording
+  //    the gap — the check that silently does not run. `schema.ts` now rejects such a
+  //    source at parse; this branch keeps the two layers agreeing for a source built by
+  //    hand, and makes the reason visible rather than inferred from an absent finding.
+  if (scope.expected_subtitle === null) {
+    return defect(
+      'language_unconfirmed',
+      `cellar source ${source.url} carries no scope.expected_subtitle, and the Cellar 200 has an empty Content-Language header — nothing in this response identifies which language expression was returned, so it cannot be verified`,
+    );
+  }
+  {
     const titleSubtree = scopeToElement(subtree, `${scope.id}.tit_1`);
     const titleText = titleSubtree === null ? '' : normaliseForMatch(textOf(titleSubtree));
     const expected = normaliseForMatch(scope.expected_subtitle);

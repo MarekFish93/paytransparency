@@ -669,3 +669,42 @@ describe('the country record: every url field is a SafeUrl, not a bare string', 
     expect(CountryRecord.safeParse(scripted).success).toBe(false);
   });
 });
+
+describe('WR-05 — a cellar source must carry its language evidence', () => {
+  const cellarSource = (expectedSubtitle: string | null) => ({
+    url: 'http://publications.europa.eu/resource/celex/32023L0970',
+    title: 'Directive (EU) 2023/970',
+    publisher: 'Publications Office of the European Union',
+    kind: 'eu_institution',
+    verification: 'cellar',
+    anchor: 'For the purposes of this Directive',
+    language: 'en',
+    accessed_at: QUERY_DATE,
+    scope: { id: 'art_7', expected_subtitle: expectedSubtitle },
+  });
+
+  const withSource = (expectedSubtitle: string | null): Json => {
+    const record = baseRecord('PL') as Json;
+    (record['transposition'] as Json)['status'] = {
+      value: 'unknown',
+      status: 'verified',
+      sources: [cellarSource(expectedSubtitle)],
+      verified_at: QUERY_DATE,
+      verified_by: 'marek',
+      volatility: 'volatile',
+    };
+    return record;
+  };
+
+  test('rejects a cellar source whose expected_subtitle is null', () => {
+    // The schema already required `scope`; it did not require the one field inside it that
+    // the language confirmation reads, so the confirmation simply did not run.
+    expect(messagesOf(CountryRecord.safeParse(withSource(null)))).toMatch(
+      /empty Content-Language/,
+    );
+  });
+
+  test('accepts the same source once the subtitle is recorded', () => {
+    expect(messagesOf(CountryRecord.safeParse(withSource('Right to information')))).toBe('');
+  });
+});
