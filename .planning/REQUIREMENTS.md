@@ -10,16 +10,16 @@
 
 ### Legal data layer
 
-- [ ] **LEGAL-01**: Every legal fact in `country-data` carries a source URL and a `verified_at` date, or renders as "pending verification"
+- [x] **LEGAL-01**: Every legal fact in `country-data` carries a source URL and a `verified_at` date, or renders as "pending verification"
 - [ ] **LEGAL-02**: `country-data` covers all 27 member states with transposition status (in force / from date / draft / pending)
-- [ ] **LEGAL-03**: Each country record states the legal basis — the national article where verified, otherwise the Directive article
-- [ ] **LEGAL-04**: Each country record states the response deadline as *"within a reasonable period of time but in any event within two months"* unless national law verifiably sets a different period **[corrects brief]**
+- [x] **LEGAL-03**: Each country record states the legal basis — the national article where verified, otherwise the Directive article
+- [x] **LEGAL-04**: Each country record states the response deadline as *"within a reasonable period of time but in any event within two months"* unless national law verifiably sets a different period **[corrects brief]**
 - [ ] **LEGAL-05**: Each country record states whether that state took the Art. 12(3) option — under which, where a disclosure would directly or indirectly reveal the pay of an identifiable worker, only the workers' representatives, the labour inspectorate or the equality body have access to that information — modelled as a condition with the bodies it routes to, never as a blanket routing rule **[research]**
 - [ ] **LEGAL-06**: Each country record names the national equality body and the applicable anti-retaliation provision
 - [x] **LEGAL-07**: Directive Articles 3, 6, 7, 9, 10 and 12 are re-verified against EUR-Lex primary text, with quotations stored alongside the data **[research]**
 - [ ] **LEGAL-08**: A stale fact degrades in the UI to "last confirmed on {date} — status may have changed" and is suppressed from any share card or letter citation; the build hard-fails only when a **launch-country** legally-operative fact is past its freshness window
 - [x] **LEGAL-09**: The fact verifier asserts a non-empty response body and an expected anchor string, not merely HTTP 200 **[research]**
-- [ ] **LEGAL-10**: A contributor can correct or add a country fact by pull request, gated by CI schema validation and source checking
+- [x] **LEGAL-10**: A contributor can correct or add a country fact by pull request, gated by CI schema validation and source checking
 - [ ] **LEGAL-11**: The UI never displays a guessed value — an unknown field renders as "pending verification"
 - [ ] **LEGAL-12**: Where the underlying source says "draft", the UI says "draft"
 
@@ -81,12 +81,12 @@
 
 ### Engine
 
-- [ ] **ENG-01**: Golden test vectors and a frozen `EngineReport` type exist as data before any engine code is written **[research]**
+- [x] **ENG-01**: Golden test vectors and a frozen `EngineReport` type exist as data before any engine code is written **[research]**
 - [ ] **ENG-02**: `directive-engine` has zero runtime dependencies
 - [ ] **ENG-03**: `directive-engine` is published to npm under MIT with tests and an auditable README
 - [ ] **ENG-04**: The engine throws on a missing calculation convention rather than silently defaulting **[research]**
 - [ ] **ENG-05**: CI proves the MIT/AGPL boundary by packing the engine, building it in a clean directory and running the golden vectors **[research]**
-- [ ] **ENG-06**: Every calculation convention is documented — denominator, quartile construction by headcount, component treatment, part-time handling
+- [x] **ENG-06**: Every calculation convention is documented — denominator, quartile construction by headcount, component treatment, part-time handling
 
 ### Design system
 
@@ -177,16 +177,16 @@ success criteria.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LEGAL-01 | Phase 1 | Pending |
-| LEGAL-02 | Phase 1 | Pending |
-| LEGAL-03 | Phase 1 | Pending |
-| LEGAL-04 | Phase 1 | Pending |
-| LEGAL-05 | Phase 1 | Pending |
-| LEGAL-06 | Phase 1 | Pending |
+| LEGAL-01 | Phase 1 | Complete |
+| LEGAL-02 | Phase 1 | Partial |
+| LEGAL-03 | Phase 1 | Complete |
+| LEGAL-04 | Phase 1 | Complete |
+| LEGAL-05 | Phase 1 | Partial |
+| LEGAL-06 | Phase 1 | Partial |
 | LEGAL-07 | Phase 1 | Complete |
-| LEGAL-08 | Phase 1 | Pending |
+| LEGAL-08 | Phase 1 | Partial |
 | LEGAL-09 | Phase 1 | Complete |
-| LEGAL-10 | Phase 1 | Pending |
+| LEGAL-10 | Phase 1 | Complete |
 | LEGAL-11 | Phase 3 | Pending |
 | LEGAL-12 | Phase 3 | Pending |
 | LTR-01 | Phase 5 | Pending |
@@ -233,12 +233,12 @@ success criteria.
 | EMP-12 | Phase 7 | Pending |
 | EMP-13 | Phase 6 | Pending |
 | EMP-14 | Phase 7 | Pending |
-| ENG-01 | Phase 1 | Pending |
+| ENG-01 | Phase 1 | Complete |
 | ENG-02 | Phase 6 | Pending |
 | ENG-03 | Phase 6 | Pending |
 | ENG-04 | Phase 6 | Pending |
 | ENG-05 | Phase 6 | Pending |
-| ENG-06 | Phase 1 | Pending |
+| ENG-06 | Phase 1 | Complete |
 | DSN-01 | Phase 2 | Pending |
 | DSN-02 | Phase 2 | Pending |
 | DSN-03 | Phase 2 | Pending |
@@ -292,3 +292,26 @@ Article makes the restriction conditional on a disclosure revealing the pay of a
 identifiable worker, and the previous wording read it as a blanket routing rule. No
 requirement moved phase, and none was added or removed, so the traceability table, the
 phase totals and the coverage counts are unchanged.*
+
+### Phase 1 traceability — recorded 2026-09-14
+
+Set after `01-VERIFICATION.md` (5/5 must-haves verified) and the review-fix pass. Four IDs
+are **Partial**, not Complete, and the reason is the same in every case: Phase 1 built and
+proved the machinery, while D-06 reserves the promotion of any legal fact to a human who has
+read the primary source. 540 of 567 country facts remain `pending_verification` by design,
+not by omission.
+
+| ID | Why Partial |
+|----|-------------|
+| LEGAL-02 | Partial — all 27 states covered, but every transposition.status value is `unknown` (15) or `no_measure_notified` (12); none yet resolved to in_force/draft. D-06 reserves resolution to a human who has read the source. |
+| LEGAL-05 | Partial — the Art. 12(3) condition is modelled in the schema (never as a blanket routing rule); no state's option is yet stated. All 27 pending_verification. |
+| LEGAL-06 | Partial — the fields exist and validate; 0 of 27 states name an equality body or anti-retaliation provision. |
+| LEGAL-08 | Partial — the data-side gate shipped per D-10 (hard-fail scoped to launch-country legally-operative facts); the UI degrade is Phase 3. |
+
+The six moved to Complete each carry an explicit "or pending" / fallback clause in their own
+wording, which the shipped mechanism satisfies: LEGAL-01 ("or renders as pending
+verification"), LEGAL-03 ("otherwise the Directive article", resolved through
+`DIRECTIVE_FALLBACK_KEYS` with a referential pass proving every key resolves), LEGAL-04 (the
+two-month wording serves as the default until national law verifiably differs), LEGAL-10
+(proved by the five-case bad-PR drill), ENG-01 and ENG-06 (vectors, the frozen `EngineReport`
+and `CONVENTIONS.md` all exist as data with no engine code written).
