@@ -11,7 +11,8 @@
  * pull-request profile and a contributor's pull request must never be red because a
  * third party had an outage.
  */
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -544,6 +545,79 @@ describe('L7 letter coverage arms itself when the letters package arrives', () =
     expect(report.rule).toBe('L7');
     expect(report.skipped).toBe(true);
     expect(report.skipReason).toMatch(/letters/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // WR-02 — the rule flips from an honest SKIP to a green that asserts nothing
+  // -------------------------------------------------------------------------
+
+  it('reports HOW MANY countries it examined, so a vacuous green is visible', () => {
+    // The day `packages/letters` appears, L7 `continue`s past every country whose
+    // `article_7.legal_basis` is pending — and all 27 are pending today. Without the count
+    // it would go straight from SKIP to `L7 ok` having checked nothing at all.
+    const templates = mkdtempSync(resolve(tmpdir(), 'letters-'));
+    try {
+      const report = L7_letterCoverage(fullDataSet(), { lettersDir: templates });
+      expect(report.skipped).toBe(false);
+      expect(report.findings).toHaveLength(0);
+      expect(report.checked).toEqual({ examined: 0, ofTotal: 27, unit: 'countries' });
+    } finally {
+      rmSync(templates, { recursive: true, force: true });
+    }
+  });
+
+  it('takes the template directory as an option rather than guessing the layout', () => {
+    // `readdirSync(lettersDir).filter(e => e.isFile())` expected `pl.en.md` to sit directly
+    // in the package root, beside package.json and README.md — which no real letters
+    // package will do.
+    const root = mkdtempSync(resolve(tmpdir(), 'letters-'));
+    const templates = resolve(root, 'templates');
+    try {
+      mkdirSync(templates);
+      writeFileSync(resolve(templates, 'pl.en.md'), '# letter');
+
+      const verified = record('PL', {
+        article_7: {
+          legal_basis: fact({
+            value: { instrument: 'national' },
+            status: 'verified',
+            sources: [source()],
+            verified_at: '2026-09-01',
+            verified_by: 'marek',
+          }),
+        },
+      });
+      const files = [file('data/PL.json', verified)];
+
+      // Found under the conventional `templates/` subdirectory…
+      const conventional = L7_letterCoverage(files, { lettersDir: root });
+      expect(messagesOf(conventional)).toBe('');
+      expect(conventional.checked?.examined).toBe(1);
+
+      // …and under an explicitly named one.
+      expect(messagesOf(L7_letterCoverage(files, { lettersDir: root, lettersTemplatesDir: templates }))).toBe('');
+
+      // The search is recursive and matches on the basename, so a Phase 5 layout that
+      // nests by locale still arms the rule rather than reporting 27 missing templates.
+      const nested = resolve(templates, 'en');
+      mkdirSync(nested);
+      writeFileSync(resolve(nested, 'sk.en.md'), '# letter');
+      expect(
+        messagesOf(L7_letterCoverage([file('data/SK.json', { ...verified, country: { code: 'SK' } })], { lettersDir: root })),
+      ).toBe('');
+
+      // A directory genuinely holding no template still reports, and names where it looked.
+      const empty = mkdtempSync(resolve(tmpdir(), 'letters-empty-'));
+      try {
+        const missing = L7_letterCoverage(files, { lettersDir: root, lettersTemplatesDir: empty });
+        expect(messagesOf(missing)).toMatch(/no English letter template/);
+        expect(messagesOf(missing)).toContain(empty);
+      } finally {
+        rmSync(empty, { recursive: true, force: true });
+      }
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('fails a country with a non-pending legal basis and no English template once the package exists', () => {

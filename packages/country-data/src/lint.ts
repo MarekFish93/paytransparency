@@ -126,6 +126,19 @@ export type LintOptions = {
   exercised?: ExercisedEvidence;
   /** Where `packages/letters` will live. L7 skips while it is absent. */
   lettersDir?: string;
+  /**
+   * Where the letter TEMPLATES live inside `lettersDir`, e.g. `packages/letters/templates`.
+   *
+   * Explicit rather than inferred. L7 used to call `readdirSync(lettersDir)` and expect
+   * `pl.en.md` to sit directly in the package root, beside `package.json` and `README.md`
+   * — which no real letters package will do. A rule that guesses another package's layout
+   * will be wrong on the day that package is written, and its wrongness looks like a
+   * missing template rather than like a wrong assumption.
+   *
+   * Defaults to `<lettersDir>/templates`, with `<lettersDir>` itself as the fallback when
+   * that subdirectory does not exist, so an early Phase 5 layout still arms the rule.
+   */
+  lettersTemplatesDir?: string;
   /** Path → the same record on the base branch. Drives the unchanged-bump rule. */
   previous?: Record<string, unknown>;
 };
@@ -828,21 +841,28 @@ export function L7_letterCoverage(
     return skipped(
       'L7',
       'letter coverage',
-      `packages/letters does not exist yet (Phase 5), so no country can have a template. The rule is authored and arms itself automatically when the directory appears — it is not faked into a pass.`,
+      `packages/letters does not exist yet (Phase 5), so no country can have a template. The rule is authored and arms itself automatically when the directory appears \u2014 it is not faked into a pass.`,
     );
   }
 
+  // Explicit, not inferred. See `LintOptions.lettersTemplatesDir`.
+  const conventional = resolvePath(lettersDir, 'templates');
+  const templatesDir =
+    options.lettersTemplatesDir ?? (existsSync(conventional) ? conventional : lettersDir);
+
   const templates = new Set(
-    readdirSync(lettersDir, { withFileTypes: true })
+    readdirSync(templatesDir, { withFileTypes: true, recursive: true })
       .filter((e) => e.isFile())
       .map((e) => e.name.toLowerCase()),
   );
 
   const findings: LintFinding[] = [];
+  let examined = 0;
   for (const file of files) {
     const code = codeOf(file.record);
     const basis = factsOf(file.record).find((f) => f.path === 'article_7.legal_basis');
     if (basis === undefined || basis.fact.status === 'pending_verification') continue;
+    examined += 1;
     const expected = `${code.toLowerCase()}.en.md`;
     if (!templates.has(expected)) {
       findings.push(
@@ -850,13 +870,22 @@ export function L7_letterCoverage(
           'L7',
           'error',
           file.path,
-          `${code} has a non-pending article_7.legal_basis (status "${basis.fact.status}") but no English letter template — expected ${expected} in the letters package. A country whose law we state is a country a worker can write to`,
+          `${code} has a non-pending article_7.legal_basis (status "${basis.fact.status}") but no English letter template \u2014 expected ${expected} under ${templatesDir}. A country whose law we state is a country a worker can write to`,
         ),
       );
     }
   }
 
-  return report('L7', 'letter coverage', findings);
+  return {
+    ...report('L7', 'letter coverage', findings),
+    // The count is the whole point. The rule `continue`s past every country whose
+    // `article_7.legal_basis` is `pending_verification`, and all 27 are pending today — so
+    // the day `packages/letters` appears it would flip from an honest SKIP straight to a
+    // green having examined ZERO countries. `L7 ok (0 of 27 countries checked)` and
+    // `L7 ok (5 of 27 countries checked)` are very different claims, and only one of them
+    // is worth the line it occupies in the summary.
+    checked: { examined, ofTotal: files.length, unit: 'countries' },
+  };
 }
 
 // ---------------------------------------------------------------------------
