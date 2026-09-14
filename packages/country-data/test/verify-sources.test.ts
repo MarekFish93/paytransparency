@@ -24,7 +24,12 @@ import { fileURLToPath } from 'node:url';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { suppliedBody, type Candidate } from '../scripts/verify-sources.ts';
+import {
+  countryForFile,
+  loadEnvelope,
+  suppliedBody,
+  type Candidate,
+} from '../scripts/verify-sources.ts';
 import type { Source } from '../src/schema.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -158,5 +163,74 @@ describe('the nightly probe compares every language, not whichever key sorts fir
     expect(NIGHTLY).toContain('--bodies "${CELLAR_CACHE_DIR}"');
     expect(NIGHTLY).toContain('--require-exercised cellar');
     expect(NIGHTLY).toContain('--profile nightly --exercised');
+  });
+});
+
+describe('a registered capture is a gate, not an optimisation', () => {
+  // WR-12. `loadEnvelope` returned null on any envelope it could not parse, `fixtureFor`
+  // propagated the null, and `dispatch` turned that into `mode: 'queued'` — a pass. The
+  // eur-lex 202-empty and e-tar 403-interstitial captures exist so that citing those hosts
+  // is a deterministic offline FAILURE; a corrupted or editor-normalised file silently
+  // removed that property, while a MISSING file threw. Two failure modes, one of them mute.
+  const write = (name: string, content: string): string => {
+    const path = resolve(bodies, name);
+    writeFileSync(path, content);
+    return path;
+  };
+
+  it('throws when the blank line separating headers from body is gone', () => {
+    const path = write('no-blank-line.txt', 'HTTP/1.1 202 Accepted\ncontent-length: 0\n');
+    expect(() => loadEnvelope(path)).toThrowError(/gate, not an optimisation/);
+  });
+
+  it('throws when the file does not begin with an HTTP status line', () => {
+    const path = write('not-http.txt', '<html>a saved page, not a capture</html>\n\nbody');
+    expect(() => loadEnvelope(path)).toThrowError(/HTTP status line/);
+  });
+
+  it('still parses a well-formed capture', () => {
+    const path = write('good.txt', 'HTTP/1.1 403 Forbidden\nETag: "x"\n\n<html>interstitial</html>');
+    const envelope = loadEnvelope(path);
+    expect(envelope.status).toBe(403);
+    expect(envelope.etag).toBe('"x"');
+    expect(envelope.body).toContain('interstitial');
+  });
+
+  it('parses every capture the dispatcher registers, in the committed tree', () => {
+    // The assertion that would have caught a corrupted fixture at review time.
+    for (const name of [
+      'eurlex-frontend-202-empty.txt',
+      'e-tar-lt-403-interstitial.html',
+      'slov-lex-spa-shell.html',
+      'legislation-mt-jsonld.html',
+    ]) {
+      expect(() => loadEnvelope(resolve(pkgRoot, 'test', 'fixtures', name))).not.toThrow();
+    }
+  });
+});
+
+describe('a file is read as the country it declares, not the country it is named', () => {
+  // WR-11. `collectDir` used the filename stem. L1 asserts the two agree, but L1 lives in
+  // a different entry point and `legal-data.yml` runs them as independent steps, so its
+  // verdict does not gate this script. L1's own worked example — "a contributor copies
+  // SK.json to CZ.json and forgets country.code" — is exactly where it matters: the Slovak
+  // sources would be evaluated against Czechia's empty register list.
+  it('prefers country.code over the filename stem, and says so', () => {
+    const mismatched = countryForFile({ country: { code: 'SK' } }, 'CZ.json');
+    expect(mismatched.country).toBe('SK');
+    expect(mismatched.mismatch).toMatch(/declares country.code "SK"/);
+  });
+
+  it('falls back to the stem only when the record declares nothing, and warns', () => {
+    const undeclared = countryForFile({}, 'PL.json');
+    expect(undeclared.country).toBe('PL');
+    expect(undeclared.mismatch).toMatch(/declares no country.code/);
+  });
+
+  it('is silent when the two agree', () => {
+    expect(countryForFile({ country: { code: 'PL' } }, 'PL.json')).toEqual({
+      country: 'PL',
+      mismatch: null,
+    });
   });
 });

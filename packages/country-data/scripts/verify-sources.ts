@@ -121,13 +121,58 @@ function collectFrom(record: unknown, file: string, country: string): Candidate[
   return out;
 }
 
+/** The record's own declared country code, or `''` when it has none. */
+function declaredCodeOf(record: unknown): string {
+  if (!isRecordLike(record)) return '';
+  const country = record['country'];
+  if (!isRecordLike(country)) return '';
+  return typeof country['code'] === 'string' ? country['code'] : '';
+}
+
+/**
+ * Which country's allowlist governs a file's sources.
+ *
+ * THE RECORD'S OWN `country.code` WINS, not the filename. This used to be
+ * `name.replace(/\.json$/i, '')`, and the two entry points then disagreed about what
+ * country a file is: L1 asserts filename and `country.code` agree, but L1 lives in
+ * `validate:country-data` and `legal-data.yml` runs the two as independent steps in the
+ * same job, so L1's verdict does not gate this script. The scenario L1's own comment
+ * describes — "a contributor copies SK.json to CZ.json and forgets country.code" — is
+ * exactly the case where it matters: the Slovak sources would be evaluated against
+ * Czechia's empty register list, or the reverse.
+ *
+ * A disagreement is reported here too rather than trusted silently, so a mis-named file is
+ * a named defect in whichever entry point the maintainer happens to run first.
+ */
+export function countryForFile(record: unknown, fileName: string): { country: string; mismatch: string | null } {
+  const stem = fileName.replace(/\.json$/i, '');
+  const declared = declaredCodeOf(record);
+  if (declared === '') {
+    return {
+      country: stem,
+      mismatch: `${fileName} declares no country.code, so its sources are being checked against the allowlist for "${stem}" — the filename — which nothing verifies`,
+    };
+  }
+  if (declared !== stem) {
+    return {
+      country: declared,
+      mismatch: `${fileName} declares country.code "${declared}" — its sources are checked against that country's allowlist, not "${stem}"'s. One of the two is wrong (L1 says which); until it is fixed this file is being read as ${declared}`,
+    };
+  }
+  return { country: declared, mismatch: null };
+}
+
+/** Naming disagreements found while collecting. Reported by `main`, never swallowed. */
+const collectionWarnings: string[] = [];
+
 function collectDir(dir: string): Candidate[] {
   const label = dir.replace(/\\/g, '/').split('/').filter(Boolean).pop() ?? dir;
   const out: Candidate[] = [];
   for (const name of readdirSync(dir).sort()) {
     if (!name.endsWith('.json') || name.startsWith('_')) continue;
     const record = JSON.parse(readFileSync(resolve(dir, name), 'utf8')) as unknown;
-    const country = name.replace(/\.json$/i, '');
+    const { country, mismatch } = countryForFile(record, name);
+    if (mismatch !== null) collectionWarnings.push(`${label}/${mismatch}`);
     out.push(...collectFrom(record, `${label}/${name}`, country));
   }
   return out;
@@ -169,14 +214,38 @@ function collectCorpus(): Candidate[] {
 // Responses, from committed bytes only
 // ---------------------------------------------------------------------------
 
-/** A recorded HTTP response: status line, headers, blank line, body. */
-function loadEnvelope(path: string): VerifierResponse | null {
+/**
+ * A recorded HTTP response: status line, headers, blank line, body.
+ *
+ * THROWS rather than returning null on a capture it cannot parse, and that is the point.
+ *
+ * It used to return `null`, `fixtureFor` propagated the null, and `dispatch` turned that
+ * into `mode: 'queued'` — a pass. The eur-lex 202-empty and e-tar 403-interstitial captures
+ * are registered here precisely so that citing those hosts is a deterministic offline
+ * FAILURE rather than a "queued, not exercised" that quietly passes. If either file were
+ * corrupted, renamed, or had its blank line normalised away by an editor, that property
+ * disappeared with no signal at all. A missing file already threw, from `readFileSync` — so
+ * the two failure modes were inconsistent as well as one of them being silent.
+ *
+ * These fixtures are a GATE, not an optimisation. An unloadable one stops the run.
+ */
+export function loadEnvelope(path: string): VerifierResponse {
   const raw = readFileSync(path, 'utf8');
   const split = raw.indexOf('\n\n');
-  if (split < 0) return null;
+  if (split < 0) {
+    throw new Error(
+      `registered capture ${path} has no blank line separating headers from body, so it is not a parseable HTTP envelope. This fixture is a gate, not an optimisation — an editor that normalised the blank line away has disarmed it`,
+    );
+  }
   const head = raw.slice(0, split).split('\n');
   const match = /^HTTP\/[\d.]+ (\d{3})/.exec(head[0] ?? '');
-  if (match === null) return null;
+  if (match === null) {
+    throw new Error(
+      `registered capture ${path} does not begin with an HTTP status line (found ${JSON.stringify(
+        (head[0] ?? '').slice(0, 60),
+      )}). This fixture is a gate, not an optimisation`,
+    );
+  }
   const headers: Record<string, string> = {};
   for (const line of head.slice(1)) {
     const at = line.indexOf(':');
@@ -485,6 +554,14 @@ function main(): number {
       bodiesDir === null ? 'committed fixtures only' : `bodies from ${bodiesDir}`
     }${covers.length === 0 ? '' : `, requiring [${covers.join(', ')}] to be exercised`}\n\n`,
   );
+
+  if (collectionWarnings.length > 0) {
+    process.stdout.write(
+      `::warning title=${collectionWarnings.length} file(s) disagree with their own country.code::\n`,
+    );
+    for (const warning of collectionWarnings) process.stdout.write(`  ! ${warning}\n`);
+    process.stdout.write('\n');
+  }
 
   const outcomes = candidates.map((c) => dispatch(c, bodiesDir));
   const defects = outcomes.filter((o) => o.result?.disposition === 'data_defect');
