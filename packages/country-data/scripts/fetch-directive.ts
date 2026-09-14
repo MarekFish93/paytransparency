@@ -94,6 +94,16 @@ export async function fetchExpression(
     );
   }
 
+  // T-1-05 BEFORE the allocation, not after it: a cap measured on an already-read body
+  // detects an oversized response without preventing one. Same ordering defect, same fix
+  // as `verifier.ts#verifySourceLive`.
+  const declared = Number(res.headers.get('content-length') ?? '');
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
+    throw new SourceDefect(
+      `${BASE} (${lang3}) declares Content-Length ${declared}, above the ${MAX_BODY_BYTES}-byte cap — refused without reading the body`,
+    );
+  }
+
   const body = await res.text();
   const bodyBytes = byteLengthOf(body);
   if (bodyBytes === 0) {

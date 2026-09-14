@@ -78,6 +78,17 @@ export const BYTE_FLOOR: Record<SourceVerification, number> = Object.fromEntries
  * Upper bound on an accepted body (threat T-1-05). The extractor is string-slicing with
  * `indexOf` — never a DOM, never `eval`, never a regex over the whole body — but an
  * unbounded remote body is still an unbounded allocation at build time.
+ *
+ * ENFORCED BEFORE THE ALLOCATION, in two places, because a cap measured after
+ * `await res.text()` detects an oversized body without preventing one — which is what the
+ * docblock claimed and the code did not do:
+ *
+ *   1. a declared `Content-Length` above the cap is rejected without reading anything;
+ *   2. a response with no declared length is read through `readBodyCapped`, which stops
+ *      and cancels the stream at the cap.
+ *
+ * The post-read measurement in `verifySource` stays as the backstop for a response handed
+ * in from a fixture, where nothing was allocated from the network at all.
  */
 export const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
@@ -696,7 +707,62 @@ export type FetchLike = (
   status: number;
   headers: { get(name: string): string | null };
   text(): Promise<string>;
+  /**
+   * OPTIONAL, and the reason it is here is the byte cap.
+   *
+   * A real `fetch` Response exposes its body as a stream, which lets `readBodyCapped` stop
+   * at `MAX_BODY_BYTES` instead of allocating whatever the server chose to send. A test
+   * double or a synthesised response does not, and falls back to `text()` — which is safe
+   * there precisely because the bytes are already local and bounded.
+   */
+  body?: ReadableStream<Uint8Array> | null;
 }>;
+
+/** Returned by `readBodyCapped` when the stream passed `MAX_BODY_BYTES`. */
+const OVER_CAP = Symbol('over_cap');
+
+/**
+ * Read a response body, stopping at `MAX_BODY_BYTES` rather than after it.
+ *
+ * Streams where the runtime gives us a stream, and cancels the moment the running total
+ * passes the cap — so an oversized body is never allocated, which is what T-1-05 asks for
+ * and what measuring `byteLengthOf(await res.text())` cannot provide.
+ */
+async function readBodyCapped(res: {
+  text(): Promise<string>;
+  body?: ReadableStream<Uint8Array> | null;
+}): Promise<string | typeof OVER_CAP> {
+  const stream = res.body ?? null;
+  if (stream === null || typeof stream.getReader !== 'function') {
+    // No stream to cap. Read whole and measure — honestly weaker, and the only option a
+    // synthesised response leaves open. Those bodies are local and already bounded.
+    const whole = await res.text();
+    return byteLengthOf(whole) > MAX_BODY_BYTES ? OVER_CAP : whole;
+  }
+
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value === undefined) continue;
+    total += value.byteLength;
+    if (total > MAX_BODY_BYTES) {
+      await reader.cancel();
+      return OVER_CAP;
+    }
+    chunks.push(value);
+  }
+
+  const merged = new Uint8Array(total);
+  let at = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, at);
+    at += chunk.byteLength;
+  }
+  return new TextDecoder('utf-8').decode(merged);
+}
 
 export type LiveOptions = {
   /** ISO-3166-1 alpha-2. The allowlist is per country; there is no global list. */
@@ -730,6 +796,7 @@ const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
  */
 const CAPTURED_HEADERS = [
   'etag',
+  'content-length',
   'last-modified',
   'content-language',
   'content-type',
@@ -833,7 +900,37 @@ export async function verifySourceLive(
 
         if (!REDIRECT_STATUSES.has(status)) {
           // A 304 legitimately carries no body, and reading one is not free.
-          body = status === 304 ? '' : await res.text();
+          if (status === 304) {
+            body = '';
+            break;
+          }
+
+          // T-1-05, BEFORE the allocation rather than after it. A declared length above
+          // the cap is refused without reading a byte.
+          const declared = Number(res.headers.get('content-length') ?? '');
+          if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
+            return {
+              ...defect(
+                'body_too_large',
+                `${url} declares Content-Length ${declared}, above the ${MAX_BODY_BYTES}-byte cap — refused without reading the body`,
+              ),
+              retries,
+              fetchCalls,
+            };
+          }
+
+          const read = await readBodyCapped(res);
+          if (read === OVER_CAP) {
+            return {
+              ...defect(
+                'body_too_large',
+                `${url} sent more than the ${MAX_BODY_BYTES}-byte cap with no usable Content-Length — the read was cancelled at the cap rather than completed`,
+              ),
+              retries,
+              fetchCalls,
+            };
+          }
+          body = read;
           break;
         }
 

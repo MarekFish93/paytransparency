@@ -19,6 +19,7 @@ import { describe, expect, it } from 'vitest';
 import { Source, SourceVerification, type Source as SourceT } from '../src/schema.ts';
 import {
   isChallengeInterstitial,
+  MAX_BODY_BYTES,
   overrideUnreachable,
   verifySource,
   verifySourceLive,
@@ -582,5 +583,106 @@ describe('WR-05 — a cellar source with no expected_subtitle proves nothing abo
     expect(
       verifySource(CELLAR_SOURCE, { status: 200, body: CELLAR_XHTML, headers: {} }).disposition,
     ).toBe('verified');
+  });
+});
+
+describe('WR-04 — the byte cap prevents an allocation rather than reporting one', () => {
+  /**
+   * The docblock said the cap exists because "an unbounded remote body is still an
+   * unbounded allocation at build time" (T-1-05). `verifySourceLive` did
+   * `body = await res.text()` — the full allocation — and measured it afterwards. The cap
+   * detected an oversized body; it did not prevent one.
+   */
+  const overCap = MAX_BODY_BYTES + 1;
+
+  it('refuses a declared Content-Length above the cap without reading a byte', async () => {
+    let textCalled = 0;
+    const fetchImpl: FetchLike = async () => ({
+      status: 200,
+      headers: {
+        get: (name: string) => (name.toLowerCase() === 'content-length' ? String(overCap) : null),
+      },
+      text: async () => {
+        textCalled += 1;
+        return 'x'.repeat(overCap);
+      },
+    });
+
+    const result = await verifySourceLive(CELLAR_SOURCE, {
+      countryCode: 'PL',
+      fetchImpl,
+      sleep: noSleep,
+    });
+    expect(result.disposition).toBe('data_defect');
+    expect(result.reason).toBe('body_too_large');
+    expect(result.message).toMatch(/refused without reading the body/);
+    // The assertion that distinguishes this fix from the bug: the body was never read.
+    expect(textCalled).toBe(0);
+  });
+
+  it('cancels the stream at the cap when no usable Content-Length is sent', async () => {
+    let cancelled = false;
+    let chunksHandedOut = 0;
+    const CHUNK = new Uint8Array(1024 * 1024);
+
+    const fetchImpl: FetchLike = async () => ({
+      status: 200,
+      headers: { get: () => null },
+      text: async () => {
+        throw new Error('text() must not be reached when a stream is available');
+      },
+      body: {
+        getReader: () => ({
+          read: async () => {
+            chunksHandedOut += 1;
+            return { done: false, value: CHUNK };
+          },
+          cancel: async () => {
+            cancelled = true;
+          },
+        }),
+      } as unknown as ReadableStream<Uint8Array>,
+    });
+
+    const result = await verifySourceLive(CELLAR_SOURCE, {
+      countryCode: 'PL',
+      fetchImpl,
+      sleep: noSleep,
+    });
+    expect(result.disposition).toBe('data_defect');
+    expect(result.reason).toBe('body_too_large');
+    expect(cancelled).toBe(true);
+    // The stream is infinite. Finishing at all proves the read stopped at the cap rather
+    // than draining whatever the server chose to send.
+    expect(chunksHandedOut).toBeLessThanOrEqual(MAX_BODY_BYTES / CHUNK.byteLength + 1);
+  });
+
+  it('still reads and verifies a normal streamed body', async () => {
+    const bytes = new TextEncoder().encode(CELLAR_XHTML);
+    let served = false;
+    const fetchImpl: FetchLike = async () => ({
+      status: 200,
+      headers: { get: (name: string) => (name.toLowerCase() === 'etag' ? '"x"' : null) },
+      text: async () => {
+        throw new Error('text() must not be reached when a stream is available');
+      },
+      body: {
+        getReader: () => ({
+          read: async () => {
+            if (served) return { done: true, value: undefined };
+            served = true;
+            return { done: false, value: bytes };
+          },
+          cancel: async () => undefined,
+        }),
+      } as unknown as ReadableStream<Uint8Array>,
+    });
+
+    const result = await verifySourceLive(CELLAR_SOURCE, {
+      countryCode: 'PL',
+      fetchImpl,
+      sleep: noSleep,
+    });
+    expect(result.disposition).toBe('verified');
   });
 });
