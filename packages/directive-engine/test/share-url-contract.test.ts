@@ -225,3 +225,68 @@ describe('docs/share-url-contract.md — the versioned specification', () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe('WR-10 — the base is not assumed to be bare, and the validator never throws', () => {
+  const input = { gapPct: 12.4, lifetimeTotalEur: 42_000, locale: 'pl' };
+
+  it('replaces a query the base already carries rather than appending a second one', () => {
+    // `${base}?${query}` on `https://site/og?lang=en` produced
+    // `https://site/og?lang=en?v=1&gap=…`, where `band` and `gap` end up inside the VALUE
+    // of `lang` and the card renderer reading `band` gets nothing.
+    const url = buildShareUrl('https://site/og?lang=en&tracking=1', input);
+    expect(url.match(/\?/g)).toHaveLength(1);
+    expect(transmittedKeysOf(url)).toEqual([...TRANSMITTED_KEYS]);
+    expect(url).toContain('lang=pl');
+    expect(url).not.toContain('tracking');
+  });
+
+  it('never nests the worker\u2019s private state inside another fragment', () => {
+    // The half that matters: the fragment is where the salary figures live, and the whole
+    // zero-egress promise rests on them being parseable by the worker's own browser.
+    const url = buildShareUrl('https://site/og#already=here', {
+      ...input,
+      privateState: { salary: '54000' },
+    });
+    expect(url.match(/#/g)).toHaveLength(1);
+    expect(url.slice(url.indexOf('#') + 1)).toBe('salary=54000');
+    expect(url).not.toContain('already=here');
+  });
+
+  it('handles a base carrying both, and one where the ? sits after the #', () => {
+    expect(buildShareUrl('https://site/og?a=1#b=2', input)).toBe(
+      `https://site/og?v=${SHARE_CONTRACT_VERSION}&gap=12&band=${bucketLifetime(42_000).id}&lang=pl`,
+    );
+    // A `?` after a `#` is part of the fragment, not a query — so the split must find the
+    // fragment marker first.
+    expect(buildShareUrl('https://site/og#f?notaquery', input)).toContain('https://site/og?v=');
+  });
+
+  it('the transmitted set stays closed for every shape of base', () => {
+    for (const base of [
+      'https://site/og',
+      'https://site/og?lang=en',
+      'https://site/og#x=1',
+      'https://site/og?lang=en#x=1',
+      'https://site/og?',
+      'https://site/og#',
+    ]) {
+      expect(`${base} -> ${transmittedKeysOf(buildShareUrl(base, input)).join(',')}`).toBe(
+        `${base} -> ${[...TRANSMITTED_KEYS].join(',')}`,
+      );
+    }
+  });
+
+  it('reports a malformed escape instead of throwing out of the check', () => {
+    // `transmittedKeysOf` is a validator run over arbitrary, possibly hostile text.
+    // `decodeURIComponent('%ZZ')` raises URIError, and a validator that throws is one
+    // `try` away from a caller that swallows it and concludes "no forbidden keys" — the
+    // worst outcome for a check whose job is to prove nothing private is in the query.
+    expect(() => transmittedKeysOf('https://site/og?%ZZ=1')).not.toThrow();
+    expect(transmittedKeysOf('https://site/og?%ZZ=1')).toEqual(['%ZZ']);
+
+    // And the undecodable key is REPORTED, so the closed-set comparison sees and rejects it.
+    const keys = transmittedKeysOf('https://site/og?v=1&%E0%A4%A=x');
+    expect(keys).toContain('%E0%A4%A');
+    expect(keys.every((key) => (TRANSMITTED_KEYS as readonly string[]).includes(key))).toBe(false);
+  });
+});

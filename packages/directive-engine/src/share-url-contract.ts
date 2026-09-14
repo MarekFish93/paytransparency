@@ -153,7 +153,46 @@ export interface ShareInput {
   privateState?: Readonly<Record<string, string>>;
 }
 
-/** Build the share URL. The query carries only {@link TRANSMITTED_KEYS}; inputs go after `#`. */
+/**
+ * Strip any query and fragment a base URL already carries, returning just the part before
+ * them.
+ *
+ * Hand-rolled rather than `new URL(base)` on purpose: `tsconfig.json` sets `types: []` for
+ * this package because nothing under `src/` may touch an environment global — it is
+ * consumed in the browser by the result page and by the card renderer. Adding the `DOM`
+ * lib to type `URL` would pull in `window` and `document` with it and weaken that guard for
+ * one string split.
+ *
+ * The fragment marker is found FIRST, because a `?` after a `#` is part of the fragment,
+ * not a query.
+ */
+function baseWithoutQueryOrFragment(base: string): string {
+  const hashAt = base.indexOf('#');
+  const beforeHash = hashAt === -1 ? base : base.slice(0, hashAt);
+  const queryAt = beforeHash.indexOf('?');
+  return queryAt === -1 ? beforeHash : beforeHash.slice(0, queryAt);
+}
+
+/**
+ * Build the share URL. The query carries only {@link TRANSMITTED_KEYS}; inputs go after `#`.
+ *
+ * ANY QUERY OR FRAGMENT ON `base` IS DISCARDED, and that is the contract rather than a
+ * convenience. This used to be `${base}?${query}${fragment}`, which assumed a base with
+ * neither:
+ *
+ *   - a base of `https://site/og?lang=pl` produced `https://site/og?lang=pl?v=1&gap=…`,
+ *     where `band` and `gap` land inside the VALUE of `lang` and the card renderer reading
+ *     `band` gets nothing;
+ *   - a base carrying a fragment put the worker's private state after an existing `#`,
+ *     i.e. inside another fragment's value. That is the half that matters: the fragment is
+ *     where the salary figures live, and the entire zero-egress promise rests on them
+ *     being parseable by the worker's own browser and by nothing else.
+ *
+ * Discarding rather than merging is what makes the transmitted set genuinely CLOSED:
+ * `transmittedKeysOf(buildShareUrl(anyBase, input))` is exactly `TRANSMITTED_KEYS`, for
+ * every base, with no unreviewed parameter riding along in a URL this contract claims to
+ * have enumerated.
+ */
 export function buildShareUrl(base: string, input: ShareInput): string {
   const values: Record<TransmittedKey, string> = {
     v: String(SHARE_CONTRACT_VERSION),
@@ -161,18 +200,41 @@ export function buildShareUrl(base: string, input: ShareInput): string {
     band: bucketLifetime(input.lifetimeTotalEur).id,
     lang: input.locale,
   };
+
+  // Key order is the contract's, not the caller's: TRANSMITTED_KEYS is what a reviewer
+  // reads the URL against.
   const query = TRANSMITTED_KEYS.map((key) => `${key}=${encodeURIComponent(values[key])}`).join('&');
+
   const entries = Object.entries(input.privateState ?? {});
   const fragment = entries.length
     ? `#${entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')}`
     : '';
-  return `${base}?${query}${fragment}`;
+
+  return `${baseWithoutQueryOrFragment(base)}?${query}${fragment}`;
 }
 
-/** The parameter names actually present in a URL's query — the closed-set check, in both directions. */
+/**
+ * The parameter names actually present in a URL's query — the closed-set check, in both
+ * directions.
+ *
+ * NEVER THROWS. This is a validator run over arbitrary, possibly hostile text, and it used
+ * to call `decodeURIComponent` on it directly — which raises `URIError` on a malformed
+ * escape such as `?%ZZ=1`. A validator that throws instead of reporting is one `try` away
+ * from a caller that swallows the error and concludes "no forbidden keys", which is the
+ * worst possible outcome for a check whose whole job is to prove nothing private is in the
+ * query string. A key that cannot be decoded is REPORTED, raw, so the closed-set comparison
+ * sees it and rejects it.
+ */
 export function transmittedKeysOf(url: string): string[] {
   const afterFragment = url.split('#')[0] ?? '';
   const query = afterFragment.slice(afterFragment.indexOf('?') + 1);
   if (!afterFragment.includes('?') || query === '') return [];
-  return query.split('&').map((pair) => decodeURIComponent(pair.split('=')[0] ?? ''));
+  return query.split('&').map((pair) => {
+    const raw = pair.split('=')[0] ?? '';
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
+  });
 }
