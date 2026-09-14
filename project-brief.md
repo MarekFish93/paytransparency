@@ -1,11 +1,15 @@
-# Project brief: JAFN — "Ask about your pay" (working codename)
+# Project brief: paytransparency — "Ask about your pay"
 
 > Paste this whole file as the first message of a new Claude Code session, then run your GSD
 > project-initialisation command (e.g. `/gsd-new-project` or whatever `@opengsd/gsd-core`
 > exposes in your setup) and point it at this brief. Sections 9–11 are written to map
 > directly onto GSD phases, HITL decisions and definition of done.
 >
-> "Jafn" is Old Norse for *equal / even*. It is a placeholder — see HITL decision H1.
+> **Naming note, added 2026-09-14.** This brief was written under the working codename
+> "Jafn" (Old Norse for *equal / even*), recorded at the time as a placeholder pending HITL
+> decision H1. That decision has since been taken: the project is **`paytransparency`**,
+> named after the Directive rather than after a verdict about pay. The rest of this brief is
+> left as written, as the historical record of what was originally asked for.
 
 ---
 

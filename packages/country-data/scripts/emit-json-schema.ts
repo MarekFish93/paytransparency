@@ -33,8 +33,8 @@ export function emitJsonSchema(): string {
     unknown
   >;
 
-  schema['$id'] = 'https://github.com/MarekFish93/jafn/packages/country-data/country.schema.json';
-  schema['title'] = 'JAFN country record';
+  schema['$id'] = 'https://github.com/MarekFish93/paytransparency/packages/country-data/country.schema.json';
+  schema['title'] = 'Pay Transparency country record';
   schema['description'] =
     'One EU member state\'s legal-data record. Every legal fact is a Fact<T> envelope: a value cannot exist without the source and date that justify it. Unknown is value:null with status:"pending_verification" — never a guess. Cross-field invariants (launch-country verified_by, Art. 12(3) as a condition, the Directive fallback citation rule) are enforced by CI, not by this file.';
 

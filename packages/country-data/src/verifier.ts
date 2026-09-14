@@ -35,7 +35,7 @@
  *
  * This module is BUILD-TIME ONLY: `allowlist.ts` reads its data with `node:fs`, so the
  * package barrel is not browser-bundler-safe today. When the web app first imports
- * `@jafn/country-data` in a client bundle, move the verifier behind a `./verify` subpath
+ * `@paytransparency/country-data` in a client bundle, move the verifier behind a `./verify` subpath
  * export rather than weakening the guard.
  */
 import type { Source, SourceVerification, Volatility } from './schema.ts';

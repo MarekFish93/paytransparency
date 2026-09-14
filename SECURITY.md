@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 Report security vulnerabilities through
-**[GitHub Security Advisories](https://github.com/MarekFish93/jafn/security/advisories/new)**.
+**[GitHub Security Advisories](https://github.com/MarekFish93/paytransparency/security/advisories/new)**.
 That channel is private until an advisory is published.
 
 Please do **not** open a public issue for a vulnerability.

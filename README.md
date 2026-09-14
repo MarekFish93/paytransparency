@@ -1,4 +1,4 @@
-# JAFN — ask about your pay
+# paytransparency — ask about your pay
 
 A free, no-signup toolkit that lets an employee in the EU use their rights under the
 Pay Transparency Directive (EU) 2023/970, and an open-source Directive engine underneath it.
@@ -64,4 +64,10 @@ advise you.
 
 ## Status
 
-Pre-release. The repository name `jafn` is a placeholder pending the brand decision.
+Pre-release. The project is named **`paytransparency`**, after the Directive it implements.
+
+The name was chosen deliberately over alternatives that editorialise. `fairpay` and
+`equalpay` assert a verdict; this project reports what the law provides and never evaluates
+anyone's situation, so a name that takes a position would contradict the first page of
+[CONTRIBUTING.md](CONTRIBUTING.md). `paytransparency` also survives the locale roadmap —
+PL, SK, IT, LT, then DE, NL, CS, SV, DA — without asking a reader to parse an English idiom.

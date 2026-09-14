@@ -1,5 +1,5 @@
 /**
- * `@jafn/directive-engine` — Directive (EU) 2023/970 Article 9, as a contract.
+ * `@paytransparency/directive-engine` — Directive (EU) 2023/970 Article 9, as a contract.
  *
  * MIT, and ZERO runtime dependencies, ever. That is the condition of this package's
  * role as the open-source lead magnet and it is enforced in CI; the surrounding web

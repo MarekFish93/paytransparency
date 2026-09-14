@@ -13,7 +13,7 @@ Whichever is least friction for you. They all reach the same place.
 
 | Route | Use it when |
 |---|---|
-| **[Open an issue](https://github.com/MarekFish93/jafn/issues/new?labels=legal-error&title=Legal+error%3A+)** with the `legal-error` label | You have a GitHub account. Fastest route. |
+| **[Open an issue](https://github.com/MarekFish93/paytransparency/issues/new?labels=legal-error&title=Legal+error%3A+)** with the `legal-error` label | You have a GitHub account. Fastest route. |
 | **Open a pull request** | You already know the correct answer and the official source. See [CONTRIBUTING.md](CONTRIBUTING.md). |
 
 A report in two sentences with no citation is worth far more to us than a report you never

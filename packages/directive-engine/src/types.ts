@@ -1,5 +1,5 @@
 /**
- * `@jafn/directive-engine` — the frozen Article 9 report contract.
+ * `@paytransparency/directive-engine` — the frozen Article 9 report contract.
  *
  * TYPES ONLY. No Article 9 metric arithmetic is written in this phase. The golden
  * vectors under `vectors/` and this file together are the executable specification the
@@ -33,7 +33,7 @@ export const DIRECTIVE_CELEX = '32023L0970';
  * for the string "Article 7" (which does not occur with an ASCII space in the
  * authentic text).
  *
- * Kept byte-identical to the pattern in `@jafn/country-data`'s schema. It is
+ * Kept byte-identical to the pattern in `@paytransparency/country-data`'s schema. It is
  * duplicated rather than imported because this package ships MIT with zero runtime
  * dependencies and country-data is AGPL; a drift between the two is caught by the
  * corpus-resolution assertion plan 07 owns.

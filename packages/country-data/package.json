@@ -1,5 +1,5 @@
 {
-  "name": "@jafn/country-data",
+  "name": "@paytransparency/country-data",
   "version": "0.0.0",
   "private": true,
   "type": "module",
