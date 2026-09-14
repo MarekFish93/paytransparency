@@ -37,16 +37,24 @@ permissions:
 env:
   CELLAR_CACHE_DIR: .cache/cellar
   CELEX_URI: http://publications.europa.eu/resource/celex/32023L0970
-  # Outside the checkout on purpose: this is a derived index of the committed corpus,
-  # not a repository artefact, and nothing in this workflow may write into the working
-  # tree. Outside CELLAR_CACHE_DIR too, because that directory is restored from and
-  # saved to a cache keyed on the very ETags this file records.
-  STORED_ETAGS: ${{ runner.temp }}/stored-etags.json
 
 jobs:
   live-sources:
     name: live-sources
     runs-on: ubuntu-latest
+    # Outside the checkout on purpose: this is a derived index of the committed corpus,
+    # not a repository artefact, and nothing in this workflow may write into the working
+    # tree. Outside CELLAR_CACHE_DIR too, because that directory is restored from and
+    # saved to a cache keyed on the very ETags this file records.
+    #
+    # Declared at JOB level, not workflow level. `runner.*` does not exist in the
+    # workflow-level `env:` context, and GitHub rejects the ENTIRE FILE for an invalid
+    # context reference there - a startup_failure with zero jobs, which reads as "the
+    # nightly is broken" rather than "this line is wrong". Found on the first push
+    # after CR-04; a local rehearsal cannot catch it, because the error is in GitHub's
+    # workflow validation, not in anything the script does.
+    env:
+      STORED_ETAGS: ${{ runner.temp }}/stored-etags.json
     outputs:
       cache-key: ${{ steps.stored.outputs.cache_key }}
       outcome: ${{ steps.probe.outputs.outcome }}
