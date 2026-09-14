@@ -351,6 +351,7 @@ function main(): number {
     { data, proposed },
     {
       profile,
+      corpus,
       lettersDir: resolve(pkgRoot, '..', 'letters'),
       ...(previous === undefined ? {} : { previous }),
       ...(exercised === undefined ? {} : { exercised }),

@@ -94,6 +94,7 @@ export {
   assertNoUnchangedBump,
   evidenceReread,
   staleEtagClaims,
+  corpusFreshness,
 } from './freshness.ts';
 export type {
   Freshness,
@@ -102,6 +103,7 @@ export type {
   UnchangedBump,
   RereadVerdict,
   StaleEtagClaim,
+  CorpusFreshnessFinding,
 } from './freshness.ts';
 
 export {

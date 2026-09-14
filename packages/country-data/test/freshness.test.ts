@@ -12,11 +12,13 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
 import { LAUNCH_COUNTRIES } from '../src/country.ts';
+import { L8_freshness } from '../src/lint.ts';
 import {
   TTL_DAYS,
   assertNoUnchangedBump,
   evidenceReread,
   staleEtagClaims,
+  corpusFreshness,
   degradationFor,
   freshnessGate,
   freshnessOf,
@@ -430,5 +432,67 @@ describe('freshness: a claim cannot move while the ETag that 304s past it stays 
     expect(staleEtagClaims(withSource({}), withSource({}))).toHaveLength(0);
     // A date bump on its own is the OTHER rule's business, not this one's.
     expect(staleEtagClaims(withSource({}), withSource({ accessed_at: '2026-09-14' }))).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WR-03 — the Directive corpus was the one dataset every gate filtered out
+// ---------------------------------------------------------------------------
+
+describe('freshness: the Directive corpus has a gate of its own', () => {
+  /**
+   * `loadRecords` filters `!name.startsWith('_')`, so `_directive.json` never reached L8 or
+   * `freshnessGate`, and the `freshness-gate` CI job applied the same filter.
+   * `verifySource` checks freshness only on the `manual-attest` branch, and no corpus
+   * source is manual-attest. The 66 entries had NO freshness gate of any kind.
+   *
+   * They are `stable` (365 days) with `verified_at: 2026-09-11`, so on 2027-09-11 every one
+   * goes stale, `resolve()` reports `freshness: 'stale'` for every `directive_fallback`,
+   * and D-10 suppresses a stale value from share cards and letter citations — the Art. 7(4)
+   * two-month citation would silently drop out of every letter with nothing having warned.
+   */
+  const CORPUS = JSON.parse(
+    readFileSync(new URL('../data/_directive.json', import.meta.url), 'utf8'),
+  ) as Record<string, unknown>;
+
+  test('the committed corpus really is stable/365 and dated, or the rest proves nothing', () => {
+    const entries = Object.values(CORPUS) as Record<string, unknown>[];
+    expect(entries.length).toBeGreaterThan(0);
+    for (const entry of entries) {
+      expect(entry['volatility']).toBe('stable');
+      expect(entry['verified_at']).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+    expect(TTL_DAYS.stable).toBe(365);
+  });
+
+  test('is silent today', () => {
+    expect(corpusFreshness(CORPUS, '2026-09-14')).toHaveLength(0);
+  });
+
+  test('warns 91 days before the citations would drop out, not on the day they do', () => {
+    // 0.75 x 365 = day 274. A gate that first speaks on the day the citations disappear is
+    // not notice at all.
+    expect(corpusFreshness(CORPUS, '2027-06-11')).toHaveLength(0);
+
+    const ageing = corpusFreshness(CORPUS, '2027-06-12');
+    expect(ageing.length).toBe(Object.keys(CORPUS).length);
+    expect(ageing.every((f) => f.severity === 'warning')).toBe(true);
+    expect(ageing[0]?.daysRemaining).toBe(91);
+    expect(ageing[0]?.message).toMatch(/D-10 silently drops this citation from every letter/);
+  });
+
+  test('fails on the day the TTL expires', () => {
+    const stale = corpusFreshness(CORPUS, '2027-09-11');
+    expect(stale.length).toBe(Object.keys(CORPUS).length);
+    expect(stale.every((f) => f.severity === 'error')).toBe(true);
+    expect(stale[0]?.freshness).toBe('stale');
+  });
+
+  test('L8 carries the corpus findings, so they reach the one summary a maintainer reads', () => {
+    const report = L8_freshness([], { today: '2027-09-11', corpus: CORPUS });
+    expect(report.findings.length).toBe(Object.keys(CORPUS).length);
+    expect(report.findings.every((f) => f.path === 'data/_directive.json')).toBe(true);
+    // And without a corpus supplied, L8 behaves exactly as it did before.
+    expect(L8_freshness([], { today: '2027-09-11' }).findings).toHaveLength(0);
   });
 });

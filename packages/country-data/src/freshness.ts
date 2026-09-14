@@ -117,6 +117,16 @@ export type RereadVerdict = { reread: boolean; why: string };
 /** One source whose claim changed while the ETag that would 304 past it stayed put. */
 export type StaleEtagClaim = { country: string; field: string; url: string; message: string };
 
+/** One Directive corpus entry that is running out of verified life. */
+export type CorpusFreshnessFinding = {
+  citationKey: string;
+  freshness: Freshness;
+  severity: 'error' | 'warning';
+  ageDays: number | null;
+  daysRemaining: number | null;
+  message: string;
+};
+
 type FactLike = {
   value?: unknown;
   status?: unknown;
@@ -460,4 +470,57 @@ export function staleEtagClaims(previous: unknown, next: unknown): StaleEtagClai
 
   walk(previous, next, '');
   return claims;
+}
+
+/**
+ * The Directive corpus's own freshness — the one dataset every gate was filtering out.
+ *
+ * `loadRecords` filters `!name.startsWith('_')`, so `_directive.json` never reaches L8 or
+ * `freshnessGate`, and the `freshness-gate` CI job applied the same filter. `verifySource`
+ * checks freshness only on the `manual-attest` branch, and no corpus source is
+ * manual-attest. So the 66 entries had NO freshness gate of any kind.
+ *
+ * They are `volatility: 'stable'` (365 days) with `verified_at: 2026-09-11`. On 2027-09-11
+ * every one of them becomes `stale`; `resolve()` then reports `freshness: 'stale'` for
+ * every `directive_fallback`, and D-10 suppresses a stale value from share cards and letter
+ * citations — so the Art. 7(4) two-month citation would silently drop out of every letter,
+ * with no gate having warned in advance.
+ *
+ * WARNS AT `ageing` AND FAILS AT `stale`. The warning arrives at 0.75 × 365 = day 274,
+ * which is 91 days of notice — the point being that a gate which first speaks on the day
+ * the citations disappear is not notice at all.
+ */
+export function corpusFreshness(corpus: unknown, today: string): CorpusFreshnessFinding[] {
+  if (!isRecordLike(corpus)) return [];
+  const findings: CorpusFreshnessFinding[] = [];
+
+  for (const citationKey of Object.keys(corpus).sort()) {
+    const entry = corpus[citationKey];
+    if (!isRecordLike(entry) || !('verified_at' in entry)) continue;
+
+    const volatility = (typeof entry['volatility'] === 'string'
+      ? entry['volatility']
+      : 'stable') as Volatility;
+    const verifiedAt = verifiedAtOf(entry as FactLike);
+    const freshness = freshnessOf(verifiedAt, volatility, today);
+    if (freshness === 'fresh') continue;
+
+    const ttlDays = TTL_DAYS[volatility];
+    const ageDays = verifiedAt === null ? null : elapsedDays(verifiedAt, today);
+    const daysRemaining = ttlDays === null || ageDays === null ? null : ttlDays - ageDays;
+
+    findings.push({
+      citationKey,
+      freshness,
+      severity: freshness === 'stale' ? 'error' : 'warning',
+      ageDays,
+      daysRemaining,
+      message:
+        freshness === 'stale'
+          ? `${citationKey} was last confirmed ${verifiedAt ?? 'never'} \u2014 ${ageDays ?? 'unknown'} days ago, past its ${ttlDays ?? 'n/a'}-day ${volatility} window. resolve() now reports this as stale, and D-10 suppresses a stale value from every share card and letter citation, so this quotation has already dropped out of the letters. Re-pull the corpus with fetch:directive and record who read it`
+          : `${citationKey} was last confirmed ${verifiedAt ?? 'never'} and has ${daysRemaining ?? 'unknown'} day(s) of its ${ttlDays ?? 'n/a'}-day ${volatility} window left. Re-pull the corpus before it expires \u2014 on the day it does, D-10 silently drops this citation from every letter`,
+    });
+  }
+
+  return findings;
 }

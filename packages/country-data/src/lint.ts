@@ -29,6 +29,7 @@ import { AllowlistViolation, assertFetchable, assertLinkable } from './allowlist
 import { EU_COUNTRY_CODES, factAt, FACT_PATHS, isLaunchCountry } from './country.ts';
 import {
   assertNoUnchangedBump,
+  corpusFreshness,
   freshnessGate,
   freshnessOf,
   staleEtagClaims,
@@ -141,6 +142,14 @@ export type LintOptions = {
   lettersTemplatesDir?: string;
   /** Path → the same record on the base branch. Drives the unchanged-bump rule. */
   previous?: Record<string, unknown>;
+  /**
+   * The parsed `data/_directive.json`. L8 gates its freshness too.
+   *
+   * Supplied rather than read, because this module is READ-ONLY and takes no filesystem
+   * dependency beyond L7's directory probe. `loadRecords` filters `_`-prefixed files, so
+   * without this the corpus reached no gate at all.
+   */
+  corpus?: unknown;
 };
 
 export type LintReport = {
@@ -905,6 +914,14 @@ export function L7_letterCoverage(
 export function L8_freshness(files: readonly LintFile[], options: LintOptions = {}): RuleReport {
   const today = options.today ?? todayIso();
   const findings: LintFinding[] = [];
+
+  // The Directive corpus, which every other gate filtered out because its filename starts
+  // with an underscore. See `corpusFreshness`.
+  for (const finding_ of corpusFreshness(options.corpus, today)) {
+    findings.push(
+      finding('L8', finding_.severity, 'data/_directive.json', `data/_directive.json#${finding_.message}`),
+    );
+  }
 
   for (const failure of freshnessGate(
     files.map((f) => f.record),

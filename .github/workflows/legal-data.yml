@@ -187,3 +187,34 @@ jobs:
               process.exitCode = 1;
             }
           "
+
+      # The Directive corpus was the one dataset every gate filtered out: `loadRecords` and
+      # the block above both drop files whose name starts with `_`, so `_directive.json`
+      # reached neither L8 nor `freshnessGate`. Its 66 entries are `stable` (365 days) with
+      # `verified_at: 2026-09-11`, so on 2027-09-11 every one goes stale, `resolve()`
+      # reports `freshness: 'stable' -> 'stale'` for every `directive_fallback`, and D-10
+      # suppresses a stale value from share cards and letter citations — the Art. 7(4)
+      # two-month citation would silently drop out of every letter with no advance warning.
+      #
+      # Warns at `ageing` (0.75 x 365 = day 274, i.e. 91 days of notice) and fails at the
+      # TTL. A gate that first speaks on the day the citations disappear is not notice.
+      - name: Directive corpus freshness gate
+        run: |
+          set -euo pipefail
+          node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            import { corpusFreshness } from './packages/country-data/src/freshness.ts';
+            const corpus = JSON.parse(readFileSync('packages/country-data/data/_directive.json', 'utf8'));
+            const today = new Date().toISOString().slice(0, 10);
+            const findings = corpusFreshness(corpus, today);
+            const errors = findings.filter((f) => f.severity === 'error');
+            const warnings = findings.filter((f) => f.severity === 'warning');
+            for (const w of warnings) process.stdout.write('::warning title=Directive corpus is ageing::' + w.message + '\n');
+            if (errors.length === 0) {
+              process.stdout.write('corpus-freshness: ok — ' + Object.keys(corpus).length + ' entries, ' + warnings.length + ' ageing, 0 stale\n');
+            } else {
+              for (const e of errors) process.stderr.write('  x ' + e.message + '\n');
+              process.stderr.write('\ncorpus-freshness: FAILED — ' + errors.length + ' stale Directive corpus entr(ies). Re-pull the Directive corpus with the corpus script in packages/country-data/scripts/ (the root package.json aliases it) and record who read it; do NOT extend the TTL.\n');
+              process.exitCode = 1;
+            }
+          "
