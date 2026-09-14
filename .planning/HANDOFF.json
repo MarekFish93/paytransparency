@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-09-14T13:37:33.661Z",
+  "phase": "02",
+  "phase_name": "Design System",
+  "phase_dir": ".planning/phases/02-design-system (NOT YET CREATED)",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
+  "status": "paused",
+  "completed_tasks": [
+    { "id": 1, "name": "Phase 01 Ground Truth and Governance — 7/7 plans, verification passed", "status": "done", "commit": "811552a" },
+    { "id": 2, "name": "01-05 governance gates: lint L1-L9, validate, verify-sources, CI gates, CODEOWNERS, contributor docs", "status": "done", "commit": "bc844a0" },
+    { "id": 3, "name": "Rename jafn to paytransparency across repo, packages, npm scope, schema, docs", "status": "done", "commit": "4764b0f" },
+    { "id": 4, "name": "Bad-PR drill: five planted defects, five CI rejections, none merged", "status": "done", "commit": "e6e8e54" },
+    { "id": 5, "name": "Repo published; original kept private as paytransparency-archive after refs/pull contamination found", "status": "done", "commit": "5960b54" },
+    { "id": 6, "name": "Code review (5 blockers, 13 warnings) and fix pass — all 18 resolved", "status": "done", "commit": "8cd7057" },
+    { "id": 7, "name": "nightly.yml startup_failure fixed — STORED_ETAGS resolved from RUNNER_TEMP at run time", "status": "done", "commit": "76b5e88" },
+    { "id": 8, "name": "Phase 01 UAT — all 7 human items answered; re-verification passed", "status": "done", "commit": "5843286" }
+  ],
+  "remaining_tasks": [
+    { "id": 9, "name": "Decide whether to run /gsd-discuss-phase 2 before planning Phase 2", "status": "not_started" },
+    { "id": 10, "name": "Plan Phase 2 Design System (no phase dir, no CONTEXT.md, no RESEARCH.md yet)", "status": "not_started" },
+    { "id": 11, "name": "Advisory fix: resolve() guard, key !== null should be typeof key === string, before Phase 3", "status": "not_started" }
+  ],
+  "blockers": [
+    { "description": "Phase 2 planning is PAUSED AT A QUESTION, not blocked technically. plan-phase reached its no-CONTEXT.md gate; the user asked to clarify the question rather than answer it, then paused. Nothing was written — no phase dir, no CONTEXT.md, no RESEARCH.md, no plans. Re-ask; do not assume an answer.", "type": "human_action", "workaround": "none needed — re-run /gsd-plan-phase 2 and present the gate again" },
+    { "description": "Launch-country Art. 6, 7 and 12(3) facts (PL, SK, IT, LT, MT) remain pending_verification. D-06 reserves promotion to a human who has read the primary source. Owed before Phase 5 ships letters. WINDOWS #13, OPEN.", "type": "human_action", "workaround": "resolve() returns the Directive article — legally correct, not country-specific" },
+    { "description": "resolve() throws MissingDirectiveCitation for a field outside DIRECTIVE_FALLBACK_KEYS: fallbackKeyFor returns undefined and the guard admits it. Unreachable from a typed caller today. Phase 3 iterates field paths in template loops and would get a crashed country page where pending verification was intended.", "type": "technical", "workaround": "one-line guard fix in packages/country-data/src/resolve.ts" },
+    { "description": "The @paytransparency npm scope is NOT proven free. The 404s were unauthenticated — consistent with availability, not proof. Re-check authenticated before the first publish. WINDOWS, OPEN.", "type": "external", "workaround": "nothing published yet (private: true, version 0.0.0)" },
+    { "description": "freshness-gate, L6 and L7 have never produced an ERROR in CI. L6 now fires with per-source findings on the nightly profile, but none has yet rejected anything. WINDOWS, OPEN.", "type": "technical", "workaround": "proved by construction, not by the dataset" },
+    { "description": "Drill evidence is not independently verifiable from the public repo — the five PRs and their CI runs live in the PRIVATE archive MarekFish93/paytransparency-archive. Stated plainly in docs/BAD-PR-DRILL.md. WINDOWS, OPEN.", "type": "external", "workaround": "the verifier independently reconstructed cases 1, 2, 3 and 5 offline against the committed tree" },
+    { "description": "enforce_admins=false on master branch protection. With a single maintainer, true makes the repository unmergeable. Flip it the day a second maintainer exists. WINDOWS, OPEN.", "type": "human_action", "workaround": "accepted at UAT with that trigger recorded" }
+  ],
+  "async_jobs": [],
+  "human_actions_pending": [
+    { "action": "Answer the Phase 2 context gate: discuss-phase first, plan without context, research-then-discuss, or do the resolve() fix first", "context": "Phase 2 is the Design System phase — every one of DSN-01 to DSN-07 is a taste or judgement call. Planning without CONTEXT.md means a planner encodes its own taste as the product's, and DSN-07 then propagates that to every frontend phase via UI-SPEC.md. The user asked to clarify the question and had not yet said what they wanted clarified.", "blocking": true },
+    { "action": "Promote launch-country Art. 6, 7 and 12(3) facts from pending_verification", "context": "D-06; owed before Phase 5 ships letters", "blocking": false },
+    { "action": "Consider /gsd-secure-phase 1 — security enforcement is on and Phase 1 has no SECURITY.md", "context": "its STRIDE T-1-27 (publishing exposes history permanently) fired twice this session", "blocking": false }
+  ],
+  "decisions": [
+    { "decision": "Repository named paytransparency; npm scope @paytransparency", "rationale": "Names the Directive rather than asserting a verdict, so it sits cleanly beside the 19 assertions that no governance document asserts legal advice or a claim. Travels across the whole locale roadmap without translating an English idiom. fairpay and equalpay were rejected for editorialising, askaboutyourpay for not travelling, article7 for being opaque and already excluding the Art. 9 employer door.", "phase": "01" },
+    { "decision": "Published a FRESH repository and kept the original PRIVATE as paytransparency-archive", "rationale": "A history rewrite cleaned the branch, but refs/pull/1..5/head still resolved to the contaminated commit. GitHub retains those independently of the head branch; they survive both branch deletion and history rewrite, and a closed PR cannot be purged via API. Reachable-only-if-you-know-to-fetch-hidden-pull-refs is obscurity, not a clean history.", "phase": "01" },
+    { "decision": "Art. 10(1) five-percent trigger tests MAGNITUDE, not the signed gap", "rationale": "Accepted by the maintainer at UAT. The signed reading would silently exempt every category in which men are the underpaid group, which the equal-pay principle does not permit. Art10Flag.gapPct carries the SIGNED value so direction is never lost.", "phase": "01" },
+    { "decision": "Phase 1 owed the machine, not the facts", "rationale": "Its own SC2 permits rendering as pending verification, and D-06 reserves promotion to a human. ROADMAP Phase 5's dependency line was reworded to relocate the obligation to the maintainer, not dissolve it — Phase 5's SC1 and SC2 still demand the state's own citation and equality body, so the Directive fallback cannot satisfy them.", "phase": "01" },
+    { "decision": "LEGAL-02, LEGAL-05, LEGAL-06 and LEGAL-08 recorded as PARTIAL, not Complete", "rationale": "Evidence read from the records rather than the summaries: transposition.status is unknown x15 and no_measure_notified x12, 0 of 27 states name an equality body, 0 of 27 state their Art. 12(3) option. The re-verifier independently downgraded LEGAL-05 further, from its own earlier SATISFIED (structure).", "phase": "01" },
+    { "decision": "Refused to hand-edit the VERIFICATION.md covered_digest to clear a stale gate", "rationale": "Recomputing a hash by hand so a gate turns green is the same move as widening an allowlist to admit your own source — which drill PR 3 exists to catch. Re-ran the verifier instead, which also put the orchestrator-written requirement traceability under an independent eye and produced one downgrade.", "phase": "01" }
+  ],
+  "uncommitted_files": [],
+  "next_action": "Re-run /gsd-plan-phase 2. It will stop at the no-CONTEXT.md gate. Present that gate again and ASK — the user paused mid-clarification and never stated an answer. Start by asking what they wanted clarified about the question, rather than re-listing the same four options.",
+  "context_notes": "Phase 1 is complete and verified; this is a clean stopping point, not a mid-task pause. Working tree clean, HEAD equals origin/master equals 811552a, public repo and CI green, nightly green, 411 tests, 10/10 vectors. Nothing is half-done in code. The biggest lesson of this session: every serious defect was caught by RUNNING something, never by reasoning about it. nightly.yml was rehearsed locally and still failed at startup in CI because the runner context is invalid in an env block — only gh workflow run proved it, and the first fix was wrong too. The personal-email leak was caught by a full-history sweep placed as a pre-flight on the irreversible step. The refs/pull contamination was caught only by re-running that sweep AFTER the fix rather than trusting the fix. 12 WINDOWS entries are open on purpose and /gsd-ship blocks while they stand; they are honest limitations, not defects to tidy away."
+}
