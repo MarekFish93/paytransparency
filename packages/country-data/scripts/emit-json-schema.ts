@@ -21,6 +21,8 @@
  * with no script-runner dependency, so only erasable syntax is used.
  */
 import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
 import { CountryRecord, EU_COUNTRY_CODES } from '../src/country.ts';
@@ -41,18 +43,66 @@ export function emitJsonSchema(): string {
   return `${JSON.stringify(schema, null, 2)}\n`;
 }
 
-const json = emitJsonSchema();
-writeFileSync(OUT, json, 'utf8');
+/**
+ * Throw unless the emitted document really constrains `country.code` to the 27 codes.
+ *
+ * Asserted against the ENUM ARRAY, by deep equality with `EU_COUNTRY_CODES`. The previous
+ * probe was `JSON.stringify(parsed).match(/"GR"/g)`, which any occurrence of the two
+ * characters `GR` between quotes anywhere in the document satisfies — including inside the
+ * long `description` string this very script writes. A check that its own prose can satisfy
+ * is not a check.
+ */
+export function assertConstrainsCountryCode(json: string): void {
+  const parsed = JSON.parse(json) as Record<string, unknown>;
 
-// Fail loudly rather than committing a schema that would validate a typo'd country code.
-const parsed = JSON.parse(json) as Record<string, unknown>;
-const codes = JSON.stringify(parsed).match(/"GR"/g);
-if (codes === null) {
-  throw new Error(
-    'the emitted schema does not constrain country.code — a typo\'d code would validate',
-  );
+  let node: unknown = parsed;
+  for (const segment of ['properties', 'country', 'properties', 'code']) {
+    if (typeof node !== 'object' || node === null) {
+      throw new Error(
+        `the emitted schema has no country.code node (lost at "${segment}") — a typo'd code would validate`,
+      );
+    }
+    node = (node as Record<string, unknown>)[segment];
+  }
+
+  const enumeration =
+    typeof node === 'object' && node !== null ? (node as Record<string, unknown>)['enum'] : undefined;
+  if (!Array.isArray(enumeration)) {
+    throw new Error(
+      "the emitted schema does not constrain country.code to an enum — a typo'd code would validate",
+    );
+  }
+
+  const emitted = [...(enumeration as unknown[])].map(String).sort().join(',');
+  const expected = [...EU_COUNTRY_CODES].sort().join(',');
+  if (emitted !== expected) {
+    throw new Error(
+      `the emitted country.code enum does not match EU_COUNTRY_CODES\n  emitted:  ${emitted}\n  expected: ${expected}`,
+    );
+  }
 }
 
-process.stdout.write(
-  `country.schema.json emitted: ${json.length} bytes, ${EU_COUNTRY_CODES.length} country codes constrained\n`,
-);
+/**
+ * VALIDATE FIRST, THEN WRITE. The order is the whole of this function.
+ *
+ * `writeFileSync` used to run before the check, under a comment reading "Fail loudly
+ * rather than committing a schema that would validate a typo'd country code" — so the bad
+ * schema was already on disk when the throw happened, and the next `git add -A` committed
+ * exactly what the comment said it prevented.
+ */
+export function writeJsonSchema(): string {
+  const json = emitJsonSchema();
+  assertConstrainsCountryCode(json);
+  writeFileSync(OUT, json, 'utf8');
+  return json;
+}
+
+// Guarded, like every other script in this package. Without it, importing
+// `emitJsonSchema` for a test rewrote the committed file as a side effect of the import.
+const invokedPath = process.argv[1];
+if (invokedPath !== undefined && resolve(invokedPath) === resolve(fileURLToPath(import.meta.url))) {
+  const json = writeJsonSchema();
+  process.stdout.write(
+    `country.schema.json emitted: ${json.length} bytes, ${EU_COUNTRY_CODES.length} country codes constrained\n`,
+  );
+}

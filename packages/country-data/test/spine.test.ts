@@ -493,3 +493,82 @@ describe('the PR-profile workflow stays offline', () => {
     expect(WORKFLOW).toContain('pnpm vitest run --dir packages/country-data');
   });
 });
+
+/**
+ * Every CLI script must recognise being invoked as a script, on every platform.
+ *
+ * `seed-from-nim.ts` guarded its entry point with a hand-built
+ * `file:///${argv[1].replace(/\/g, '/')}` template. That is correct only on Windows: a
+ * POSIX `process.argv[1]` is already `/home/runner/...`, so the template produced
+ * `file:////home/...` with four slashes and never matched `import.meta.url`. `pnpm
+ * seed:nim` on Linux exited 0 having done nothing — the silent no-op `rederive.ts`'s own
+ * comment calls "the worst possible failure for a gate".
+ *
+ * Asserted across the whole scripts directory rather than on the one file that had the
+ * bug, so the next script cannot be written the same way.
+ */
+describe('every CLI script guards its entry point portably', () => {
+  const SCRIPTS = [
+    resolve(pkgRoot, 'scripts', 'seed-from-nim.ts'),
+    resolve(pkgRoot, 'scripts', 'validate.ts'),
+    resolve(pkgRoot, 'scripts', 'verify-sources.ts'),
+    resolve(pkgRoot, 'scripts', 'fetch-directive.ts'),
+    resolve(pkgRoot, 'scripts', 'emit-json-schema.ts'),
+    resolve(pkgRoot, '..', 'directive-engine', 'scripts', 'rederive.ts'),
+  ];
+
+  it.each(SCRIPTS)('%s builds no file:// URL by hand', (path) => {
+    const source = readFileSync(path, 'utf8');
+    const executable = source
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('//') && !line.trim().startsWith('*'))
+      .join('\n');
+    expect(executable).not.toMatch(/`file:\/\/\//);
+  });
+
+  it.each(SCRIPTS)('%s has an entry-point guard at all', (path) => {
+    // A script with no guard runs its side effects on import — which is how importing a
+    // function for a test came to rewrite a committed file.
+    const source = readFileSync(path, 'utf8');
+    expect(source).toMatch(
+      /pathToFileURL\(process\.argv\[1\]\)|resolve\(fileURLToPath\(import\.meta\.url\)\)|fileURLToPath\(import\.meta\.url\) === resolve\(/,
+    );
+  });
+});
+
+/**
+ * The emitted JSON Schema is a COMMITTED artefact a contributor's editor reads. Two
+ * defects in the emitter, both of which produced a green over a bad output.
+ */
+describe('emit-json-schema validates before it writes, and means what it checks', () => {
+  it('rejects a schema whose country.code enum is wrong, however its prose reads', async () => {
+    const { assertConstrainsCountryCode } = await import('../scripts/emit-json-schema.ts');
+
+    // The exact document the previous probe accepted: `JSON.stringify(parsed).match(/"GR"/g)`
+    // is satisfied by any occurrence of the two characters GR between quotes ANYWHERE —
+    // including inside the long `description` string the emitter itself writes. A check its
+    // own prose can satisfy is not a check.
+    const decoy = JSON.stringify({
+      description: 'Codes such as "GR" are constrained by this schema.',
+      properties: { country: { properties: { code: { enum: ['XX'] } } } },
+    });
+    expect(() => assertConstrainsCountryCode(decoy)).toThrowError(/EU_COUNTRY_CODES/);
+
+    const missing = JSON.stringify({ properties: { country: { properties: { code: {} } } } });
+    expect(() => assertConstrainsCountryCode(missing)).toThrowError(/enum/);
+  });
+
+  it('accepts the committed schema', async () => {
+    const { assertConstrainsCountryCode } = await import('../scripts/emit-json-schema.ts');
+    const committed = readFileSync(resolve(pkgRoot, 'country.schema.json'), 'utf8');
+    expect(() => assertConstrainsCountryCode(committed)).not.toThrow();
+  });
+
+  it('importing the module does not rewrite the committed schema', async () => {
+    // There was no entry-point guard, so importing `emitJsonSchema` for a test wrote the
+    // file as a side effect of the import — and wrote it BEFORE validating it.
+    const before = readFileSync(resolve(pkgRoot, 'country.schema.json'), 'utf8');
+    await import('../scripts/emit-json-schema.ts');
+    expect(readFileSync(resolve(pkgRoot, 'country.schema.json'), 'utf8')).toBe(before);
+  });
+});

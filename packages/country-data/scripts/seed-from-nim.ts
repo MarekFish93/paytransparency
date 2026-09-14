@@ -26,6 +26,7 @@
  * so only erasable syntax is used.
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 
 import {
   EU_COUNTRY_CODES,
@@ -658,7 +659,16 @@ export async function seedFromNim(queryDate: string): Promise<{
   return { queryDate, measureCount: rows.length, perCountry };
 }
 
-const isEntryPoint = import.meta.url === `file:///${process.argv[1]?.replace(/\\/g, '/')}`;
+// Run the seed only when invoked as a script. `pathToFileURL` rather than string
+// surgery on argv, matching `rederive.ts`, `validate.ts` and `verify-sources.ts`.
+//
+// The previous template was `file:///${argv[1].replace(/\\/g, '/')}`, which is correct
+// ONLY on Windows: a POSIX `process.argv[1]` is already `/home/runner/...`, so the
+// template produced `file:////home/...` with FOUR slashes and never matched
+// `import.meta.url`. `pnpm seed:nim` on Linux exited 0 having done nothing — the same
+// silent no-op `rederive.ts`'s own comment calls "the worst possible failure for a gate".
+const isEntryPoint =
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
 if (isEntryPoint) {
   const queryDate = process.env['SEED_QUERY_DATE'] ?? new Date().toISOString().slice(0, 10);
   const result = await seedFromNim(queryDate);
