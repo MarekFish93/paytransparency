@@ -8,7 +8,21 @@ an assertion, and an assertion is not what this project can offer a worker who i
 send a letter to their employer citing a law.
 
 The drill was run on **2026-09-14**, against `ci/01-05-governance-gates` at `8abccad`,
-while the repository was still private. Each pull request carried exactly one defect so the
+while the repository was still private.
+
+> **The SHAs below were rewritten after the drill ran. The outcomes were not.**
+> A pre-publication sweep of the full history found that an earlier commit on this branch
+> published a personal email address as a contact route. Because publishing cannot be
+> undone and the branch had not yet merged to `master`, the affected commits were rewritten
+> to remove it before the repository was opened. Every commit SHA on this branch therefore
+> moved: the drill base `8abccad` is now `cab176f`, and the commits the five pull requests
+> were opened against no longer exist under their original identifiers.
+>
+> **What did not move:** the pull requests themselves, their CI runs, the jobs that failed,
+> and the messages quoted below. Those are recorded against the pull requests and their
+> workflow runs, which are unaffected by a branch rewrite. If you follow a link and GitHub
+> reports the head commit as unreachable, that is this rewrite and nothing else — the run
+> logs remain the evidence. Each pull request carried exactly one defect so the
 rejection would be attributable to a single rule. Each was closed without merging, with no
 bypass, no admin override and no auto-merge.
 

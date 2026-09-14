@@ -13,11 +13,20 @@ Whichever is least friction for you. They all reach the same place.
 
 | Route | Use it when |
 |---|---|
-| **[Open an issue](https://github.com/MarekFish93/paytransparency/issues/new?labels=legal-error&title=Legal+error%3A+)** with the `legal-error` label | You have a GitHub account. Fastest route. |
+| **[Report a legal error](https://github.com/MarekFish93/paytransparency/issues/new?template=legal-error.yml)** — a short form | Default route. It asks for the country, what it says now, what it should say, and your source. Only the first question is required. |
+| **[Private security advisory](https://github.com/MarekFish93/paytransparency/security/advisories/new)** | You would rather the report not be public while it is assessed. |
 | **Open a pull request** | You already know the correct answer and the official source. See [CONTRIBUTING.md](CONTRIBUTING.md). |
 
 A report in two sentences with no citation is worth far more to us than a report you never
 sent because you were not certain. **Report it and let us check.**
+
+> **A gap we have not closed, stated rather than papered over.**
+> All three routes above need a GitHub account. If you have no account **and** you want your
+> report kept private, this project does not serve you today. We are not going to list an
+> email address that does not exist to imply otherwise. A project alias is the intended fix
+> and is not in place yet; until it is, the honest answer is that this gap is real. If it is
+> blocking you, open a public issue with as little detail as you are comfortable giving and
+> say that you would rather continue privately — a maintainer will find a way.
 
 ## Response target
 

@@ -1,0 +1,99 @@
+name: Report a legal error
+description: Something in this dataset or on the site states the law wrongly.
+title: "Legal error: "
+labels: ["legal-error"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **You do not need to be a lawyer, and you do not need to be sure.**
+
+        A wrong statute here becomes a letter a worker has already sent to their employer.
+        A report in two sentences with no citation is worth far more to us than a report you
+        never sent because you were not certain.
+
+        **Only the first question below is required.** Everything else helps, and nothing
+        else is expected. If all you know is "that act was repealed", say exactly that.
+
+        If you would rather your report not be public while it is assessed, use a
+        [private security advisory](../security/advisories/new) instead — the form is
+        different, but it reaches the same people.
+
+  - type: textarea
+    id: what-is-wrong
+    attributes:
+      label: What is wrong?
+      description: In your own words. One or two sentences is plenty.
+      placeholder: The Polish response deadline is shown as 30 days. It should be two months.
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Which country?
+      description: >-
+        The name is fine — you do not need the code. If it is about the Directive itself
+        rather than one country, write "Directive".
+      placeholder: Poland
+    validations:
+      required: false
+
+  - type: input
+    id: field
+    attributes:
+      label: Which fact, if you know?
+      description: >-
+        For example "the response deadline", "the equality body", "the transposition
+        status", or the page section you were looking at.
+      placeholder: the response deadline
+    validations:
+      required: false
+
+  - type: textarea
+    id: should-say
+    attributes:
+      label: What should it say instead?
+      description: Leave blank if you know something is wrong but not what is right.
+    validations:
+      required: false
+
+  - type: input
+    id: source
+    attributes:
+      label: Official source URL, if you have one
+      description: >-
+        The official journal, the parliament, the ministry or the equality body. A link to
+        commentary or a news article is still useful — just say that is what it is.
+        Please do not link the EUR-Lex web front end: it returns an empty response to
+        anything that is not a browser, so we cannot machine-verify it. Use
+        publications.europa.eu instead if you are citing the Directive.
+      placeholder: https://dziennikustaw.gov.pl/...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Is this currently visible to users?
+      description: >-
+        This changes how fast we move. A wrong fact that could reach a letter someone sends
+        today is suppressed first and corrected second.
+      options:
+        - I do not know
+        - "Yes — it is shown on the site"
+        - "Yes — and it could end up in a generated letter"
+        - "No — this is about data that is not published yet"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: credit
+    attributes:
+      label: Credit
+      description: >-
+        Every correction is written up in CHANGELOG-legal.md with who reported it. Tick this
+        if you would rather not be named there.
+      options:
+        - label: Please record this correction without attributing it to me.
+          required: false
