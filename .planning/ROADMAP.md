@@ -53,7 +53,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A build fails when any fact is older than its freshness window, and the freshness window varies by how volatile the fact is
   5. Golden vectors and a frozen `EngineReport` type exist as reviewed data with no engine code written, and every calculation convention plus the share-URL parameter contract is a recorded decision the engine and the card must be given rather than assume
 
-**Plans**: 6/7 plans executed in 3 waves
+**Plans**: 7/7 plans executed in 3 waves
 
 Plans:
 **Wave 1**
@@ -73,7 +73,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-05-governance-gates-PLAN.md — Nine policy lint rules on top of schema parse, the full governance document set, the written Polish gate, five rejected bad-PR drill cases, and the repository made public
+- [x] 01-05-governance-gates-PLAN.md — Nine policy lint rules on top of schema parse, the full governance document set, the written Polish gate, five rejected bad-PR drill cases, and the repository made public
 
 **Open questions to resolve in this phase:**
 
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Ground Truth and Governance | 6/7 | In Progress|  |
+| 1. Ground Truth and Governance | 7/7 | In Progress|  |
 | 2. Design System | 0/TBD | Not started | - |
 | 3. Shell, Country Pages and the Zero-Egress Proof | 0/TBD | Not started | - |
 | 4. Career Gap and Range-o-meter | 0/TBD | Not started | - |
