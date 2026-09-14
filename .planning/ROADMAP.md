@@ -30,7 +30,7 @@ press material.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Ground Truth and Governance** - Re-verified Directive text, 27 seeded country files, the CI gates that stop a wrong statute reaching a worker, and the decisions too expensive to change later
+- [x] **Phase 1: Ground Truth and Governance** - Re-verified Directive text, 27 seeded country files, the CI gates that stop a wrong statute reaching a worker, and the decisions too expensive to change later
 - [ ] **Phase 2: Design System** - One visual language, one status taxonomy and one share-card family, decided once and inherited by every later phase
 - [ ] **Phase 3: Shell, Country Pages and the Zero-Egress Proof** - A deployed site with no input field anywhere, where the privacy claim is machine-proved and the quality gates are set on easy mode
 - [ ] **Phase 4: Career Gap and Range-o-meter** - Two B2C calculators whose inputs never leave the browser, plus the honest framing and the bucketed share-card family
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Ground Truth and Governance | 7/7 | In Progress|  |
+| 1. Ground Truth and Governance | 7/7 | Complete | 2026-09-14 |
 | 2. Design System | 0/TBD | Not started | - |
 | 3. Shell, Country Pages and the Zero-Egress Proof | 0/TBD | Not started | - |
 | 4. Career Gap and Range-o-meter | 0/TBD | Not started | - |
