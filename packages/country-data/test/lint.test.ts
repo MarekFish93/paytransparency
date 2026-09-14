@@ -107,6 +107,8 @@ function fullDataSet(): LintFile[] {
 const messagesOf = (report: { findings: readonly { message: string }[] }): string =>
   report.findings.map((f) => f.message).join('\n');
 
+const stemOfPath = (path: string): string => (path.split('/').pop() ?? path).replace('.json', '');
+
 // ---------------------------------------------------------------------------
 // L1 — file coverage
 // ---------------------------------------------------------------------------
@@ -119,9 +121,14 @@ describe('L1 file coverage', () => {
   });
 
   it('fails on 26 files, naming the missing code', () => {
-    const report = L1_fileCoverage(fullDataSet().slice(0, 26));
+    const files = fullDataSet();
+    // Drop whichever state sorts last rather than naming one: the assertion must survive
+    // a reordering of EU_COUNTRY_CODES, and hardcoding a code is how it would not.
+    const dropped = files.pop();
+    expect(dropped).toBeDefined();
+    const report = L1_fileCoverage(files);
     expect(report.findings.length).toBeGreaterThan(0);
-    expect(messagesOf(report)).toContain('SK');
+    expect(messagesOf(report)).toContain(stemOfPath(dropped!.path));
   });
 
   it('fails on 28 files, naming the extra path', () => {
@@ -403,6 +410,15 @@ describe('L8 freshness', () => {
     const report = L8_freshness([file('data/AT.json', rec)], { today: TODAY });
     expect(report.findings.filter((f) => f.severity === 'error')).toHaveLength(0);
     expect(report.findings.filter((f) => f.severity === 'warning').length).toBeGreaterThan(0);
+  });
+
+  it('leaves lintAll green when only warnings fire — validate exits zero on a warning', () => {
+    const rec = record('AT', { article_7: { legal_basis: staleBasis() } });
+    const report = lintAll({ data: [file('data/AT.json', rec)], proposed: [] }, { today: TODAY });
+    expect(report.warnings.length).toBeGreaterThan(0);
+    expect(report.errors.filter((f) => f.rule === 'L8')).toHaveLength(0);
+    // `ok` is derived from errors alone. A stale non-launch fact nags; it does not block.
+    expect(report.rules.find((r) => r.rule === 'L8')?.findings.some((f) => f.severity === 'warning')).toBe(true);
   });
 });
 
