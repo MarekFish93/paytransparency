@@ -441,12 +441,25 @@ export function verifySource(
   const body = response.body ?? '';
 
   // 2. 304 BEFORE any body check — a legitimate revalidation has a zero-length body.
+  //
+  //    A 304 is a statement about the SERVER'S document: it has not changed since the
+  //    stored ETag. It is NOT a statement about our claim. `anchor` and `scope.id` are OUR
+  //    data, and neither is checked on this path — so editing `anchor` while leaving
+  //    `etag` in place produces a source whose claim is never machine-checked on any run
+  //    that 304s. The note records that explicitly, because `revalidated` sitting silently
+  //    beside `verified` is exactly how a disposition comes to mean more than it proved.
+  //    The lint half is `L5`-adjacent: a diff that changes `anchor` or `scope` must clear
+  //    `etag` (see `staleEtagClaims` in freshness.ts), and `LiveOptions.revalidate: false`
+  //    drops `If-None-Match` so a caller that wants the anchor re-asserted can force it.
   if (status === 304) {
     const etag = response.etag ?? source.etag ?? null;
     return {
       disposition: 'revalidated',
       message: `304 Not Modified for ${source.url}; content unchanged since ETag ${etag ?? '(none recorded)'}`,
       etag,
+      notes: [
+        `the stored anchor and scope were NOT re-asserted: a 304 proves the publisher's document is unchanged, not that our citation still points at the right place in it. To force the assertion, re-run with revalidate: false, which drops If-None-Match`,
+      ],
     };
   }
 
@@ -768,6 +781,14 @@ export type LiveOptions = {
   /** ISO-3166-1 alpha-2. The allowlist is per country; there is no global list. */
   countryCode: string;
   fetchImpl: FetchLike;
+  /**
+   * Send `If-None-Match` from the stored ETag. Default `true`.
+   *
+   * `false` forces a full read, so the anchor and scope are re-asserted against real
+   * bytes. A 304 proves the publisher's document is unchanged; it proves nothing about
+   * whether OUR anchor still points at the right place in it.
+   */
+  revalidate?: boolean;
   context?: VerifyContext;
   /** Re-attempts after a transport failure or a 5xx. Default 3. */
   maxRetries?: number;
@@ -814,7 +835,7 @@ const ISO_639_2: Record<string, string> = {
   mt: 'mlt',
 };
 
-function requestHeadersFor(source: Source): Record<string, string> {
+function requestHeadersFor(source: Source, revalidate: boolean): Record<string, string> {
   const headers: Record<string, string> = {};
   if (source.verification === 'cellar') {
     headers['Accept'] = 'application/xhtml+xml';
@@ -825,7 +846,12 @@ function requestHeadersFor(source: Source): Record<string, string> {
   }
   // A stored ETag turns the nightly re-verification into a conditional GET, which is why
   // a 304 is a first-class disposition rather than an error.
-  if (source.etag !== undefined) headers['If-None-Match'] = source.etag;
+  //
+  // `revalidate: false` drops it, so the body is re-read and the anchor re-asserted. A 304
+  // revalidates the publisher's DOCUMENT; the anchor and scope are OUR data and are not
+  // checked on that path, so a caller that has reason to doubt the stored claim — rather
+  // than the document — needs a way to force a full read.
+  if (source.etag !== undefined && revalidate) headers['If-None-Match'] = source.etag;
   return headers;
 }
 
@@ -868,7 +894,7 @@ export async function verifySourceLive(
   const baseBackoffMs = options.baseBackoffMs ?? 500;
   const maxRedirects = options.maxRedirects ?? 5;
   const sleep = options.sleep ?? defaultSleep;
-  const requestHeaders = requestHeadersFor(source);
+  const requestHeaders = requestHeadersFor(source, options.revalidate ?? true);
 
   let retries = 0;
   let fetchCalls = 0;

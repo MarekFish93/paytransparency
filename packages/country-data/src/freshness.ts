@@ -114,6 +114,9 @@ export type UnchangedBump = { country: string; field: string; message: string };
 /** Why a date bump was, or was not, backed by evidence that the source was re-read. */
 export type RereadVerdict = { reread: boolean; why: string };
 
+/** One source whose claim changed while the ETag that would 304 past it stayed put. */
+export type StaleEtagClaim = { country: string; field: string; url: string; message: string };
+
 type FactLike = {
   value?: unknown;
   status?: unknown;
@@ -394,4 +397,67 @@ export function assertNoUnchangedBump(previous: unknown, next: unknown): void {
   throw new Error(
     `verified_at bumped without a value change:\n${bumps.map((b) => `  - ${b.message}`).join('\n')}`,
   );
+}
+
+/**
+ * Every source whose `anchor` or `scope` changed while its `etag` did not.
+ *
+ * `requestHeadersFor` sends `If-None-Match: source.etag`, and a 304 returns
+ * `disposition: 'revalidated'` before any scope or anchor check. That is correct with
+ * respect to the publisher's DOCUMENT — it has not changed — but `anchor` and `scope.id`
+ * are OUR data, not the server's. Editing the anchor while leaving the ETag in place
+ * produces a source whose claim is never machine-checked on any run that 304s, and on the
+ * pull-request profile only the `en`/`pl` Cellar sources have fixtures, so for the other
+ * 94 that is the only path that would ever check them.
+ *
+ * The rule is therefore: if you change what you are asserting, you give up the shortcut
+ * that would let the server tell you not to look. Clearing `etag` costs one full read on
+ * the next nightly and is the whole price.
+ */
+export function staleEtagClaims(previous: unknown, next: unknown): StaleEtagClaim[] {
+  const claims: StaleEtagClaim[] = [];
+  const country = codeOf(next) || codeOf(previous);
+
+  const claimOf = (source: Record<string, unknown>): string =>
+    JSON.stringify([source['anchor'] ?? null, source['scope'] ?? null]);
+
+  const walk = (before: unknown, after: unknown, path: string): void => {
+    if (!isRecordLike(before) || !isRecordLike(after)) return;
+
+    if (Array.isArray(after['sources']) && Array.isArray(before['sources'])) {
+      const beforeByUrl = new Map<string, Record<string, unknown>>();
+      for (const source of before['sources'] as unknown[]) {
+        if (isRecordLike(source) && typeof source['url'] === 'string') {
+          beforeByUrl.set(source['url'], source);
+        }
+      }
+      for (const source of after['sources'] as unknown[]) {
+        if (!isRecordLike(source) || typeof source['url'] !== 'string') continue;
+        const url = source['url'];
+        const previousSource = beforeByUrl.get(url);
+        if (previousSource === undefined) continue;
+        if (claimOf(previousSource) === claimOf(source)) continue;
+        // The claim moved. The ETag must not still be the one that would 304 past it.
+        const etagAfter = source['etag'] ?? null;
+        if (etagAfter !== null && etagAfter === (previousSource['etag'] ?? null)) {
+          claims.push({
+            country,
+            field: path,
+            url,
+            message: `${path} changed the anchor or scope it asserts about ${url} while keeping etag ${String(
+              etagAfter,
+            )}. The next run sends that ETag as If-None-Match, the server answers 304, and the NEW claim is never checked against a single byte \u2014 a 304 revalidates the publisher's document, not our citation. Clear etag in the same commit that changes what it asserts`,
+          });
+        }
+      }
+    }
+
+    for (const key of Object.keys(after)) {
+      if (key === 'sources') continue;
+      if (key in before) walk(before[key], after[key], path === '' ? key : `${path}.${key}`);
+    }
+  };
+
+  walk(previous, next, '');
+  return claims;
 }

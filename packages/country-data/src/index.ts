@@ -93,6 +93,7 @@ export {
   unchangedBumps,
   assertNoUnchangedBump,
   evidenceReread,
+  staleEtagClaims,
 } from './freshness.ts';
 export type {
   Freshness,
@@ -100,6 +101,7 @@ export type {
   FreshnessFailure,
   UnchangedBump,
   RereadVerdict,
+  StaleEtagClaim,
 } from './freshness.ts';
 
 export {

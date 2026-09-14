@@ -16,6 +16,7 @@ import {
   TTL_DAYS,
   assertNoUnchangedBump,
   evidenceReread,
+  staleEtagClaims,
   degradationFor,
   freshnessGate,
   freshnessOf,
@@ -359,5 +360,75 @@ describe('freshness: routine re-verification clears the gate without tripping th
       why: `every cited source was read again, most recently ${TODAY}`,
     });
     expect(evidenceReread(stale, stale).reread).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WR-06 — a 304 revalidates the publisher's document, not our citation
+// ---------------------------------------------------------------------------
+
+describe('freshness: a claim cannot move while the ETag that 304s past it stays put', () => {
+  /**
+   * `requestHeadersFor` sends `If-None-Match: source.etag`, and a 304 returns
+   * `disposition: 'revalidated'` before any scope or anchor check. Correct about the
+   * DOCUMENT; silent about `anchor` and `scope.id`, which are our data, not the server's.
+   * Editing the anchor while leaving the ETag in place produces a source whose claim is
+   * never machine-checked on any run that 304s — and on the pull-request profile only the
+   * en/pl Cellar sources have fixtures, so for the other 94 that is the only path that
+   * would ever check them.
+   */
+  const withSource = (over: Record<string, unknown>): Json => ({
+    country: { code: 'PL' },
+    article_7: {
+      legal_basis: {
+        value: { instrument: 'national' },
+        status: 'verified',
+        verified_at: '2026-09-01',
+        verified_by: 'marek',
+        volatility: 'volatile',
+        sources: [
+          {
+            url: 'http://publications.europa.eu/resource/celex/32023L0970',
+            anchor: 'within a reasonable period of time',
+            scope: { id: 'art_7', expected_subtitle: 'Right to information' },
+            etag: '"Con-20231213063525000"',
+            accessed_at: '2026-09-01',
+            ...over,
+          },
+        ],
+      },
+    },
+  });
+
+  test('reports an anchor edited while the etag stayed the same', () => {
+    const claims = staleEtagClaims(withSource({}), withSource({ anchor: 'something else' }));
+    expect(claims).toHaveLength(1);
+    expect(claims[0]?.field).toBe('article_7.legal_basis');
+    expect(claims[0]?.message).toMatch(/never checked against a single byte/);
+    // The message must name the fix, not just the fault.
+    expect(claims[0]?.message).toMatch(/Clear etag in the same commit/);
+  });
+
+  test('reports a scope edited while the etag stayed the same', () => {
+    const moved = withSource({ scope: { id: 'art_9', expected_subtitle: 'Reporting' } });
+    expect(staleEtagClaims(withSource({}), moved)).toHaveLength(1);
+  });
+
+  test('accepts the same edit once the etag is cleared', () => {
+    const cleared = withSource({ anchor: 'something else' });
+    const sources = ((cleared['article_7'] as Json)['legal_basis'] as Json)['sources'] as Json[];
+    delete sources[0]!['etag'];
+    expect(staleEtagClaims(withSource({}), cleared)).toHaveLength(0);
+  });
+
+  test('accepts an etag that moved along with the claim', () => {
+    const moved = withSource({ anchor: 'something else', etag: '"Con-20260914000000000"' });
+    expect(staleEtagClaims(withSource({}), moved)).toHaveLength(0);
+  });
+
+  test('is silent when nothing about the claim changed', () => {
+    expect(staleEtagClaims(withSource({}), withSource({}))).toHaveLength(0);
+    // A date bump on its own is the OTHER rule's business, not this one's.
+    expect(staleEtagClaims(withSource({}), withSource({ accessed_at: '2026-09-14' }))).toHaveLength(0);
   });
 });

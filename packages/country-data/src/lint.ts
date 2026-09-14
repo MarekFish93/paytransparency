@@ -27,7 +27,12 @@ import { resolve as resolvePath } from 'node:path';
 
 import { AllowlistViolation, assertFetchable, assertLinkable } from './allowlist.ts';
 import { EU_COUNTRY_CODES, factAt, FACT_PATHS, isLaunchCountry } from './country.ts';
-import { assertNoUnchangedBump, freshnessGate, freshnessOf } from './freshness.ts';
+import {
+  assertNoUnchangedBump,
+  freshnessGate,
+  freshnessOf,
+  staleEtagClaims,
+} from './freshness.ts';
 import { harvestedUrlIssues, sourceUrlIssues } from './schema.ts';
 import type { Volatility } from './schema.ts';
 
@@ -35,9 +40,17 @@ import type { Volatility } from './schema.ts';
 export const RULE_IDS = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9'] as const;
 
 /**
- * `BUMP` is not a numbered rule: L1–L9 each judge the tree as it stands, while the
- * unchanged-bump rule judges a CHANGE. It is reported alongside them because a
- * maintainer reading the summary needs one list, not two.
+ * `BUMP` is not a numbered rule: L1–L9 each judge the tree as it stands, while this rule
+ * judges a CHANGE. It is reported alongside them because a maintainer reading the summary
+ * needs one list, not two.
+ *
+ * It carries two findings families, both instances of one principle — a claim may not
+ * move without the evidence for it moving:
+ *
+ *   - `verified_at` advanced while neither the value nor the cited source's `accessed_at`
+ *     did (CR-02);
+ *   - a source's `anchor` or `scope` changed while its `etag` did not, so the next
+ *     conditional GET 304s past the new claim without ever checking it (WR-06).
  */
 export type RuleId = (typeof RULE_IDS)[number] | 'BUMP';
 
@@ -960,7 +973,7 @@ function bumpRule(files: readonly LintFile[], options: LintOptions): RuleReport 
   if (previous === undefined || Object.keys(previous).length === 0) {
     return skipped(
       'BUMP',
-      'a date cannot move without a value moving',
+      'a claim cannot move without its evidence moving',
       'no base-branch revision was supplied, so there is no change to judge. CI supplies it from the pull request base.',
     );
   }
@@ -981,9 +994,16 @@ function bumpRule(files: readonly LintFile[], options: LintOptions): RuleReport 
         ),
       );
     }
+
+    // The same principle one level down, on the source rather than the fact: a claim that
+    // moves while the ETag that would 304 past it stays put is a claim nothing will ever
+    // check. See `staleEtagClaims`.
+    for (const claim of staleEtagClaims(before, file.record)) {
+      findings.push(finding('BUMP', 'error', file.path, `${file.path}: ${claim.message}`));
+    }
   }
 
-  return report('BUMP', 'a date cannot move without a value moving', findings);
+  return report('BUMP', 'a claim cannot move without its evidence moving', findings);
 }
 
 // ---------------------------------------------------------------------------
