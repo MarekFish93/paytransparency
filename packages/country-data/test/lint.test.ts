@@ -31,6 +31,7 @@ import {
   L9_proposedCannotVerify,
   lintAll,
   RULE_IDS,
+  type ExercisedEvidence,
   type LintFile,
 } from '../src/lint.ts';
 import { assertFallbackKeysResolve, loadRecords } from '../scripts/validate.ts';
@@ -473,6 +474,67 @@ describe('L6 link liveness never runs on a pull request', () => {
     expect(report.skipped).toBe(true);
     expect(report.skipReason).toMatch(/nightly/i);
     expect(report.findings).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CR-03 — L6 could not produce a finding under ANY input. Both branches skipped.
+// ---------------------------------------------------------------------------
+
+describe('L6 link liveness can actually fire on the nightly profile', () => {
+  const evidence = (over: Partial<ExercisedEvidence> = {}): ExercisedEvidence => ({
+    covers: ['cellar'],
+    exercised: [],
+    attested: [],
+    unmet: [],
+    unreachable: [],
+    awaiting_promotion: [],
+    ...over,
+  });
+
+  it('is not a rule that can only ever skip \u2014 there is an input that makes it FAIL', () => {
+    // The whole of CR-03 in one assertion. Before this, `L6_linkLiveness` returned
+    // `skipped(...)` on BOTH branches: no input existed that produced a finding, while the
+    // summary listed it among the nine rules as though one could.
+    const report = L6_linkLiveness(fullDataSet(), {
+      profile: 'nightly',
+      exercised: evidence({ unmet: ['data/PL.json#.transposition.status.sources[0]'] }),
+    });
+    expect(report.skipped).toBe(false);
+    expect(report.findings.filter((f) => f.severity === 'error')).toHaveLength(1);
+    expect(messagesOf(report)).toContain('data/PL.json#.transposition.status.sources[0]');
+    // And it must not tell the maintainer to narrow the requirement to clear it.
+    expect(messagesOf(report)).toMatch(/do not resolve this by narrowing/i);
+  });
+
+  it('reports an unexercised source as a WARNING when no retrieval layer supplies it', () => {
+    // 86 sources reported `queued (not exercised)` under the word PASSED and never reached
+    // an annotation. They are not errors — no retrieval layer exists for a SPARQL endpoint
+    // that returns zero triples — but they must be visible.
+    const report = L6_linkLiveness(fullDataSet(), {
+      profile: 'nightly',
+      exercised: evidence({ unreachable: ['data/AT.json#.transposition.status.sources[0]'] }),
+    });
+    expect(report.findings.filter((f) => f.severity === 'warning')).toHaveLength(1);
+    expect(report.findings.filter((f) => f.severity === 'error')).toHaveLength(0);
+    expect(messagesOf(report)).toMatch(/never as a pass/i);
+  });
+
+  it('skips rather than passes when the nightly profile is selected with no evidence', () => {
+    // The honest state during an outage: the probe step did not run, so there is nothing
+    // to report on. A green here would be a rule reporting on retrieval it never observed.
+    const report = L6_linkLiveness(fullDataSet(), { profile: 'nightly' });
+    expect(report.skipped).toBe(true);
+    expect(report.skipReason).toMatch(/--exercised/);
+    expect(report.skipReason).toMatch(/will not report a pass it did not earn/);
+  });
+
+  it('makes its own coverage visible, so "ok" is never mistaken for "checked everything"', () => {
+    const report = L6_linkLiveness(fullDataSet(), {
+      profile: 'nightly',
+      exercised: evidence({ exercised: ['a', 'b'], attested: ['c'], unreachable: ['d', 'e'] }),
+    });
+    expect(report.checked).toEqual({ examined: 3, ofTotal: 5, unit: 'sources' });
   });
 });
 

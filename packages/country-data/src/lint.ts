@@ -62,6 +62,15 @@ export type RuleReport = {
   /** A rule that could not run. Reported as a skip, never counted as a pass. */
   skipped: boolean;
   skipReason: string | null;
+  /**
+   * How many subjects the rule actually examined, where "ok" is ambiguous without it.
+   *
+   * `L6 ok` and `L6 ok (0 of 106 sources checked)` are very different claims, and a rule
+   * that transitions from an honest SKIP straight to a green asserting nothing is the
+   * failure mode this field exists to make visible. Undefined where the count adds
+   * nothing (L1 reports the file set in its own findings).
+   */
+  checked?: { examined: number; ofTotal: number; unit: string };
 };
 
 export type LintFile = {
@@ -78,11 +87,30 @@ export type LintFile = {
   repoPath?: string;
 };
 
+/**
+ * What `verify:sources --report` observed. L6's ONLY input, and the reason it can fire.
+ *
+ * Structurally identical to `ExercisedReport` in `scripts/verify-sources.ts`, restated
+ * here rather than imported because `src/` must not depend on `scripts/`. The split
+ * between `unmet` and `unreachable` is made by the script, so the policy about which
+ * strategies a run promised to cover lives in exactly one place.
+ */
+export type ExercisedEvidence = {
+  covers: readonly string[];
+  exercised: readonly string[];
+  attested: readonly string[];
+  unmet: readonly string[];
+  unreachable: readonly string[];
+  awaiting_promotion: readonly string[];
+};
+
 export type LintOptions = {
   /** `YYYY-MM-DD`. Injected so a freshness boundary is not a function of the day. */
   today?: string;
   /** L6 is nightly-only; on a pull request it records a skip. */
   profile?: 'pull-request' | 'nightly';
+  /** The `verify:sources --report` evidence. Without it L6 skips rather than passing. */
+  exercised?: ExercisedEvidence;
   /** Where `packages/letters` will live. L7 skips while it is absent. */
   lettersDir?: string;
   /** Path → the same record on the base branch. Drives the unchanged-bump rule. */
@@ -674,12 +702,30 @@ export function L5_urlHygiene(files: readonly LintFile[]): RuleReport {
 // ---------------------------------------------------------------------------
 
 /**
- * Nightly only, never on a pull request.
+ * Nightly only, never on a pull request — and on the nightly profile it now REPORTS.
  *
  * A gate that goes red because a third party had an outage gets disabled within a month,
- * and a disabled gate is worse than no gate at all. The retrieval itself belongs to
- * `verify:sources` on the nightly profile; what this rule contributes on a pull request
- * is the honest record that it did NOT run.
+ * so the pull-request branch still records an honest skip and that stays.
+ *
+ * The nightly branch used to record a skip too. BOTH branches returned `skipped(...)`,
+ * which meant L6 could not produce a finding under any input — and `validate.ts`
+ * hardcoded `profile: 'pull-request'` anyway, so the nightly branch was unreachable from
+ * every caller except its own unit test. A rule that cannot fire is worse than an absent
+ * rule, because the summary prints it in the list of nine and a maintainer counts it.
+ *
+ * It still performs no retrieval: this module is READ-ONLY and offline by construction,
+ * and a rule reporting on retrieval it did not observe is precisely the vacuous gate the
+ * skip was hiding. Instead it consumes the evidence `verify:sources --report` wrote, and
+ * turns it into findings in the one summary a maintainer reads at 9am:
+ *
+ *   - UNMET       (error)   the run promised a body for that strategy and none arrived.
+ *   - UNREACHABLE (warning) no retrieval layer exists for that strategy at all. Visible,
+ *                           because 86 sources reported as `queued (not exercised)` and
+ *                           never reaching an annotation is how "PASSED" came to be
+ *                           printed over 11% coverage.
+ *   - no evidence (skip)    the nightly profile was selected but nothing was supplied.
+ *                           Still a skip, never a pass — L6 will not report a green it
+ *                           did not earn.
  */
 export function L6_linkLiveness(
   files: readonly LintFile[],
@@ -690,21 +736,62 @@ export function L6_linkLiveness(
     return skipped(
       'L6',
       'link liveness',
-      'link liveness runs on the nightly profile only — a contributor\'s pull request must never be red because a third party had an outage. The retrieval itself is verify:sources.',
+      'link liveness runs on the nightly profile only \u2014 a contributor\'s pull request must never be red because a third party had an outage. The retrieval itself is verify:sources.',
     );
   }
 
-  // On the nightly profile this rule enumerates what must be retrieved; the retrieval is
-  // verify-sources' job, so the rule reports the workload rather than performing it.
-  let count = 0;
-  for (const file of files) {
-    for (const { fact } of factsOf(file.record)) count += fact.sources.length;
+  const evidence = options.exercised;
+  if (evidence === undefined) {
+    // Deliberately not an error: the nightly may legitimately run during an outage, when
+    // the probe step is skipped and no evidence exists. Deliberately not a pass either.
+    let queued = 0;
+    for (const file of files) {
+      for (const { fact } of factsOf(file.record)) queued += fact.sources.length;
+    }
+    return skipped(
+      'L6',
+      'link liveness',
+      `the nightly profile was selected but no verify:sources evidence was supplied \u2014 pass --exercised <report.json>, written by \`verify:sources --report\`. ${queued} record sources went unexamined. This rule retrieves nothing itself, and will not report a pass it did not earn.`,
+    );
   }
-  return skipped(
-    'L6',
-    'link liveness',
-    `${count} sources are queued for live re-verification by verify:sources on this nightly run`,
-  );
+
+  const findings: LintFinding[] = [];
+  for (const where of evidence.unmet) {
+    findings.push(
+      finding(
+        'L6',
+        'error',
+        where,
+        `${where} was NOT exercised, although this run named [${evidence.covers.join(', ')}] as strategies it would supply a body for. Either the retrieval step did not run, or it wrote the body under a name suppliedBody does not look for \u2014 do not resolve this by narrowing --require-exercised`,
+      ),
+    );
+  }
+  for (const where of evidence.unreachable) {
+    findings.push(
+      finding(
+        'L6',
+        'warning',
+        where,
+        `${where} was not exercised: no retrieval layer supplies a body for its strategy on this profile. Reported as NOT EXERCISED, never as a pass`,
+      ),
+    );
+  }
+
+  const total =
+    evidence.exercised.length +
+    evidence.attested.length +
+    evidence.unmet.length +
+    evidence.unreachable.length +
+    evidence.awaiting_promotion.length;
+
+  return {
+    ...report('L6', 'link liveness \u2014 nightly, from verify:sources evidence', findings),
+    checked: {
+      examined: evidence.exercised.length + evidence.attested.length,
+      ofTotal: total,
+      unit: 'sources',
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------

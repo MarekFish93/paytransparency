@@ -3,12 +3,21 @@
  * declared strategy, and report the disposition.
  *
  * THIS SCRIPT NEVER OPENS A CONNECTION. That is deliberate and load-bearing, not an
- * oversight. Retrieval lives in the nightly workflow, which probes Cellar in a step of
- * its own and hands the body here via `--bodies <dir>`; on the pull-request profile the
- * responses come from the committed fixtures. Keeping the retrieval verb outside this
- * file means the pull-request profile cannot accidentally acquire network access by
- * somebody adding a flag, and it means a contributor's pull request can never be red
- * because a third party had an outage.
+ * oversight. Retrieval lives in the nightly workflow (`nightly.yml`, step "Hand the
+ * fetched bodies to the verifier"), which probes Cellar in a step of its own and hands
+ * the bodies here via `--bodies <dir>`; on the pull-request profile the responses come
+ * from the committed fixtures. Keeping the retrieval verb outside this file means the
+ * pull-request profile cannot accidentally acquire network access by somebody adding a
+ * flag, and it means a contributor's pull request can never be red because a third
+ * party had an outage.
+ *
+ * THAT WIRING IS LOAD-BEARING AND WAS ONCE ABSENT. For one revision this header
+ * described a `--bodies` hand-off that appeared in no workflow: `suppliedBody` was dead
+ * code, the only caller was the offline pull-request profile, and the script reported
+ * `PASSED — 0 data defect` having exercised 12 of 106 sources. `queued` was silently a
+ * pass. If you are about to remove the nightly step, delete `--bodies` with it and say
+ * plainly in the docs that live verification is not implemented — do not leave a hand-off
+ * described here that nothing performs.
  *
  * Three outcomes per source, and the third is the point:
  *
@@ -28,7 +37,7 @@
  * Runs under Node's native type stripping — `node packages/country-data/scripts/verify-sources.ts` —
  * so only erasable syntax is used.
  */
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -258,28 +267,66 @@ function fixtureFor(candidate: Candidate): VerifierResponse | null {
   return null;
 }
 
-/** A body the nightly job already retrieved, named after the source's scope + language. */
+/**
+ * A body the nightly job already retrieved, named after the source's scope + language.
+ *
+ * The per-language names come first and `fresh.xhtml` last, because the nightly probe now
+ * fetches one expression PER LANGUAGE (`fresh-<lang3>.xhtml`). Falling back to a single
+ * `fresh.xhtml` for a Polish source would check the Polish citation against whichever
+ * expression happened to be fetched — the same class of error as comparing the live
+ * English ETag against a stored Czech one.
+ *
+ * An EMPTY file is treated as no body at all rather than as a body of length zero. A
+ * verifier that passes on an empty 200 is worse than no verifier; here the equivalent is
+ * a verifier that reports `queued` — honestly not exercised — rather than dispatching a
+ * zero-byte body that the byte floor would then blame on the publisher.
+ */
 function suppliedBody(candidate: Candidate, bodiesDir: string): VerifierResponse | null {
   const { source } = candidate;
   const scope = source.scope === null ? 'body' : source.scope.id;
+  const lang = source.language.toLowerCase();
   for (const name of [
-    `${scope}-${source.language.toLowerCase()}.xhtml`,
-    `${scope}-${source.language.toLowerCase()}.html`,
+    `${scope}-${lang}.xhtml`,
+    `${scope}-${lang}.html`,
+    `fresh-${lang}.xhtml`,
+    `fresh-${ISO639_1_TO_3[lang] ?? lang}.xhtml`,
     'fresh.xhtml',
   ]) {
     const path = resolve(bodiesDir, name);
-    if (existsSync(path)) {
-      return {
-        status: 200,
-        body: readFileSync(path, 'utf8'),
-        headers: {},
-        etag: source.etag ?? null,
-        lastModified: source.last_modified ?? null,
-      };
-    }
+    if (!existsSync(path)) continue;
+    const body = readFileSync(path, 'utf8');
+    if (body.length === 0) continue;
+    return {
+      status: 200,
+      body,
+      headers: {},
+      etag: source.etag ?? null,
+      lastModified: source.last_modified ?? null,
+    };
   }
   return null;
 }
+
+/**
+ * `Source.language` is BCP-47 (`en`, `pl`) because that is what a browser speaks; the
+ * Cellar API and the nightly probe speak ISO-639-3 (`eng`, `pol`). Only the languages the
+ * committed corpus actually holds are mapped — an unmapped code falls through to the
+ * BCP-47 name and then to `queued`, which is the honest outcome for a language nothing
+ * retrieved.
+ */
+const ISO639_1_TO_3: Record<string, string> = {
+  en: 'eng',
+  pl: 'pol',
+  sk: 'slk',
+  it: 'ita',
+  lt: 'lit',
+  mt: 'mlt',
+  de: 'deu',
+  nl: 'nld',
+  cs: 'ces',
+  sv: 'swe',
+  da: 'dan',
+};
 
 // ---------------------------------------------------------------------------
 // Dispatch
@@ -347,6 +394,58 @@ export function dispatch(candidate: Candidate, bodiesDir: string | null): Outcom
   };
 }
 
+/**
+ * The strategies a caller claims its retrieval layer can supply bodies for.
+ *
+ * `--require-exercised cellar` says: this run fetched Cellar expressions, so a *cellar*
+ * source that still ends up `queued` is a FAILURE, not a shrug. It deliberately does NOT
+ * say that about `metadata-only` — those 38 sources cite the Publications Office SPARQL
+ * endpoint, which returned zero triples for the CELEX URI and timed out at 60 s, so no
+ * retrieval layer exists for them and a gate demanding one would be red forever and
+ * disabled within a month.
+ *
+ * Everything outside the named set is still REPORTED, as a warning naming each source.
+ * The failure this replaces was not "the gate was too lenient"; it was that 94 unexercised
+ * sources reached neither an exit code nor a CI annotation, and the word PASSED was
+ * printed underneath them.
+ */
+function parseCovers(args: string[]): string[] {
+  const at = args.indexOf('--require-exercised');
+  if (at === -1) return [];
+  const raw = args[at + 1];
+  if (raw === undefined || raw.startsWith('--')) return ['cellar'];
+  return raw
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
+}
+
+/**
+ * The evidence file `--report` writes and `L6_linkLiveness` reads. It is the ONLY channel
+ * between them: the lint is read-only and offline by construction, so it cannot retrieve
+ * anything itself, and a rule that reports on retrieval it did not observe is exactly the
+ * vacuous gate this file exists to stop.
+ *
+ * The split between `unmet` and `unreachable` is made HERE, not in the lint, so the policy
+ * lives in one place — the `--require-exercised` flag — rather than being re-derived by a
+ * second implementation that drifts.
+ */
+export type ExercisedReport = {
+  generated_at: string;
+  /** The strategies this run's retrieval layer claimed to supply. */
+  covers: string[];
+  /** `where` keys that a real response was checked against. */
+  exercised: string[];
+  /** `where` keys resolved offline by a dated human attestation. */
+  attested: string[];
+  /** Queued although this run PROMISED a body for that strategy. An error. */
+  unmet: string[];
+  /** Queued because no retrieval layer exists for that strategy. A warning. */
+  unreachable: string[];
+  /** Queued by design — a proposal cannot be verified where it sits (D-11). */
+  awaiting_promotion: string[];
+};
+
 function main(): number {
   const args = process.argv.slice(2);
   const bodiesAt = args.indexOf('--bodies');
@@ -355,12 +454,19 @@ function main(): number {
     process.stderr.write(`--bodies requires an existing directory (got ${String(bodiesDir)})\n`);
     return 1;
   }
+  const covers = parseCovers(args);
+  const reportAt = args.indexOf('--report');
+  const reportPath = reportAt === -1 ? null : (args[reportAt + 1] ?? null);
+  if (reportAt !== -1 && (reportPath === null || reportPath.startsWith('--'))) {
+    process.stderr.write('--report requires a file path\n');
+    return 1;
+  }
 
   const candidates = [...collectDir(DATA_DIR), ...collectDir(PROPOSED_DIR), ...collectCorpus()];
   process.stdout.write(
     `verify:sources — ${candidates.length} committed sources, ${
       bodiesDir === null ? 'committed fixtures only' : `bodies from ${bodiesDir}`
-    }\n\n`,
+    }${covers.length === 0 ? '' : `, requiring [${covers.join(', ')}] to be exercised`}\n\n`,
   );
 
   const outcomes = candidates.map((c) => dispatch(c, bodiesDir));
@@ -375,6 +481,30 @@ function main(): number {
     process.stdout.write(`  ${String(count).padStart(4)}  ${key}\n`);
   }
 
+  // A proposal is queued BY DESIGN (D-11: only promotion into data/ can verify it), so it
+  // is never counted against coverage. Everything else that is queued was simply not read.
+  const queued = outcomes.filter((o) => o.mode === 'queued' && !o.candidate.awaitingPromotion);
+  const unmet = queued.filter((o) => covers.includes(o.candidate.source.verification));
+  const unreachable = queued.filter((o) => !covers.includes(o.candidate.source.verification));
+
+  if (unreachable.length > 0) {
+    process.stdout.write(
+      `\n::warning title=${unreachable.length} source(s) were NOT exercised::No response stood in for these sources on this profile. They are reported as not exercised, never as passes.\n`,
+    );
+    for (const o of unreachable) {
+      process.stdout.write(`  ? ${o.candidate.where}  [${o.candidate.source.verification}]\n`);
+    }
+  }
+
+  if (unmet.length > 0) {
+    process.stdout.write(
+      `\n::error title=${unmet.length} source(s) this run promised to exercise were not::--require-exercised named [${covers.join(', ')}], so a body was expected for each of these and none arrived. Either the retrieval step did not run, or it wrote under a name suppliedBody does not look for.\n`,
+    );
+    for (const o of unmet) {
+      process.stdout.write(`  x ${o.candidate.where}  [${o.candidate.source.verification}]\n`);
+    }
+  }
+
   if (defects.length > 0) {
     process.stdout.write('\nData defects:\n');
     for (const defect of defects) {
@@ -386,10 +516,29 @@ function main(): number {
     }
   }
 
+  if (reportPath !== null) {
+    const report: ExercisedReport = {
+      generated_at: new Date().toISOString(),
+      covers,
+      exercised: outcomes.filter((o) => o.mode === 'dispatched').map((o) => o.candidate.where),
+      attested: outcomes.filter((o) => o.mode === 'attested').map((o) => o.candidate.where),
+      unmet: unmet.map((o) => o.candidate.where),
+      unreachable: unreachable.map((o) => o.candidate.where),
+      awaiting_promotion: outcomes
+        .filter((o) => o.mode === 'queued' && o.candidate.awaitingPromotion)
+        .map((o) => o.candidate.where),
+    };
+    writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+    process.stdout.write(`\nEvidence written to ${reportPath} — L6 reads this, and only this.\n`);
+  }
+
+  const failures = defects.length + unmet.length;
   process.stdout.write(
-    `\n${defects.length === 0 ? 'PASSED' : 'FAILED'} — ${defects.length} data defect\n`,
+    `\n${failures === 0 ? 'PASSED' : 'FAILED'} — ${defects.length} data defect, ${
+      unmet.length
+    } promised-but-unexercised, ${unreachable.length} not exercised (no retrieval layer)\n`,
   );
-  return defects.length === 0 ? 0 : 1;
+  return failures === 0 ? 0 : 1;
 }
 
 const invokedPath = process.argv[1];

@@ -20,7 +20,7 @@
  * so only erasable syntax is used.
  */
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -29,6 +29,7 @@ import {
   lintAll,
   RULE_IDS,
   type LintFile,
+  type ExercisedEvidence,
   type LintReport,
   type RuleReport,
 } from '../src/lint.ts';
@@ -253,7 +254,13 @@ function renderRule(rule: RuleReport): string {
   const warnings = rule.findings.filter((f) => f.severity === 'warning').length;
   const verdict = errors > 0 ? 'FAIL' : warnings > 0 ? 'WARN' : 'ok';
   const counts = errors > 0 || warnings > 0 ? ` (${errors} error, ${warnings} warning)` : '';
-  return `  ${rule.rule.padEnd(4)} ${verdict.padEnd(6)} ${rule.title}${counts}`;
+  // `L6 ok` and `L6 ok (0 of 106 sources checked)` are very different claims. A rule that
+  // reports a green while examining nothing is the failure this suffix exists to expose.
+  const checked =
+    rule.checked === undefined
+      ? ''
+      : ` (${rule.checked.examined} of ${rule.checked.ofTotal} ${rule.checked.unit} checked)`;
+  return `  ${rule.rule.padEnd(4)} ${verdict.padEnd(6)} ${rule.title}${counts}${checked}`;
 }
 
 function render(report: LintReport): string {
@@ -269,13 +276,46 @@ function render(report: LintReport): string {
   return `${lines.join('\n')}\n`;
 }
 
+/** `--flag <value>`, or null when the flag is absent or has no value after it. */
+function flagValue(args: readonly string[], flag: string): string | null {
+  const at = args.indexOf(flag);
+  if (at === -1) return null;
+  const value = args[at + 1];
+  return value === undefined || value.startsWith('--') ? null : value;
+}
+
 function main(): number {
   // `--base <ref>` arms the unchanged-bump rule. CI passes the pull request's base branch;
   // a local run without it reports BUMP as a skip, which is the honest state when there is
   // no change to judge.
   const args = process.argv.slice(2);
-  const baseAt = args.indexOf('--base');
-  const baseRef = baseAt === -1 ? null : (args[baseAt + 1] ?? null);
+  const baseRef = flagValue(args, '--base');
+
+  // `--profile <pull-request|nightly>` SELECTS the profile instead of hardcoding it.
+  // It was hardcoded to `pull-request`, which made L6's nightly branch unreachable from
+  // every caller except its own unit test — a rule that cannot fire, printed in a list of
+  // nine as though it could. The default stays `pull-request`, so nothing a contributor
+  // runs locally or in the PR workflow changes.
+  const requestedProfile = flagValue(args, '--profile') ?? 'pull-request';
+  if (requestedProfile !== 'pull-request' && requestedProfile !== 'nightly') {
+    process.stderr.write(
+      `--profile must be "pull-request" or "nightly" (got "${requestedProfile}")\n`,
+    );
+    return 1;
+  }
+  const profile: 'pull-request' | 'nightly' = requestedProfile;
+
+  // `--exercised <report.json>` is L6's evidence, written by `verify:sources --report`.
+  // Absent, L6 records a skip naming the missing evidence rather than a pass.
+  const exercisedPath = flagValue(args, '--exercised');
+  let exercised: ExercisedEvidence | undefined;
+  if (exercisedPath !== null) {
+    if (!existsSync(exercisedPath)) {
+      process.stderr.write(`--exercised names a file that does not exist: ${exercisedPath}\n`);
+      return 1;
+    }
+    exercised = JSON.parse(readFileSync(exercisedPath, 'utf8')) as ExercisedEvidence;
+  }
 
   const data = loadRecords(DATA_DIR);
   const proposed = loadRecords(PROPOSED_DIR);
@@ -310,9 +350,10 @@ function main(): number {
   const report = lintAll(
     { data, proposed },
     {
-      profile: 'pull-request',
+      profile,
       lettersDir: resolve(pkgRoot, '..', 'letters'),
       ...(previous === undefined ? {} : { previous }),
+      ...(exercised === undefined ? {} : { exercised }),
     },
   );
   process.stdout.write(render(report));
