@@ -19,6 +19,7 @@
  * Runs under Node's native type stripping — `node packages/country-data/scripts/validate.ts` —
  * so only erasable syntax is used.
  */
+import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,7 +54,36 @@ export function loadRecords(dir: string): LintFile[] {
     .map((name) => ({
       path: `${label}/${name}`,
       record: JSON.parse(readFileSync(resolve(dir, name), 'utf8')) as unknown,
+      repoPath: `packages/country-data/${label}/${name}`,
     }));
+}
+
+/**
+ * The same records as they stand on `baseRef`, keyed by the label the lint uses.
+ *
+ * This is what arms the unchanged-bump rule. Without it `lintAll` has nothing to compare
+ * against and reports BUMP as a skip — which is honest, but means the rule cannot catch
+ * anything on a pull request. `git show` is read-only and touches no working-tree file.
+ *
+ * A file that does not exist on the base (a newly added country) is simply absent from the
+ * result: there is no previous date for it to have advanced from.
+ */
+export function loadBaseRecords(baseRef: string, files: readonly LintFile[]): Record<string, unknown> {
+  const previous: Record<string, unknown> = {};
+  for (const file of files) {
+    if (file.repoPath === undefined) continue;
+    try {
+      const raw = execFileSync('git', ['show', `${baseRef}:${file.repoPath}`], {
+        encoding: 'utf8',
+        maxBuffer: 64 * 1024 * 1024,
+      });
+      previous[file.path] = JSON.parse(raw) as unknown;
+    } catch {
+      // Absent on the base, or the ref is unreachable. Either way there is nothing to
+      // compare, and a missing comparison must not be reported as a violation.
+    }
+  }
+  return previous;
 }
 
 const isRecordLike = (v: unknown): v is Record<string, unknown> =>
@@ -240,6 +270,13 @@ function render(report: LintReport): string {
 }
 
 function main(): number {
+  // `--base <ref>` arms the unchanged-bump rule. CI passes the pull request's base branch;
+  // a local run without it reports BUMP as a skip, which is the honest state when there is
+  // no change to judge.
+  const args = process.argv.slice(2);
+  const baseAt = args.indexOf('--base');
+  const baseRef = baseAt === -1 ? null : (args[baseAt + 1] ?? null);
+
   const data = loadRecords(DATA_DIR);
   const proposed = loadRecords(PROPOSED_DIR);
   const corpus = JSON.parse(readFileSync(resolve(DATA_DIR, '_directive.json'), 'utf8')) as Record<
@@ -260,9 +297,23 @@ function main(): number {
     process.stdout.write('\nSchema parse: ok\n');
   }
 
+  const previous =
+    baseRef === null ? undefined : loadBaseRecords(baseRef, [...data, ...proposed]);
+  if (baseRef !== null) {
+    process.stdout.write(
+      `Base for the unchanged-bump rule: ${baseRef} (${
+        Object.keys(previous ?? {}).length
+      } files retrieved)\n`,
+    );
+  }
+
   const report = lintAll(
     { data, proposed },
-    { profile: 'pull-request', lettersDir: resolve(pkgRoot, '..', 'letters') },
+    {
+      profile: 'pull-request',
+      lettersDir: resolve(pkgRoot, '..', 'letters'),
+      ...(previous === undefined ? {} : { previous }),
+    },
   );
   process.stdout.write(render(report));
 

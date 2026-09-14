@@ -229,6 +229,32 @@ function fixtureFor(candidate: Candidate): VerifierResponse | null {
     return loadEnvelope(resolve(FIXTURES, 'legislation-mt-jsonld.html'));
   }
 
+  // The hosts whose RECORDED behaviour is itself the finding. Registering their captures
+  // by host is what makes citing them a deterministic offline FAILURE rather than a
+  // "queued, not exercised" that quietly passes.
+  //
+  // `eur-lex.europa.eu` answers a non-browser request with an accepted status and a
+  // ZERO-BYTE body. It is deliberately absent from the allowlist for exactly that reason —
+  // but the allowlist is a file a contributor can edit. Someone who hits the allowlist gate
+  // and "fixes" it by widening the allowlist would otherwise get a green, because no
+  // committed fixture stood in for the host and the source would report as not exercised.
+  // With the capture registered, the verifier disposes `data_defect` on the empty body and
+  // says why, whether or not the allowlist was widened. Belt and braces, deliberately.
+  //
+  // Using the CAPTURE rather than a live request also means the case does not depend on a
+  // third party continuing to misbehave.
+  if (host === 'eur-lex.europa.eu' || host.endsWith('.eur-lex.europa.eu')) {
+    return loadEnvelope(resolve(FIXTURES, 'eurlex-frontend-202-empty.txt'));
+  }
+
+  if (host === 'e-tar.lt' || host.endsWith('.e-tar.lt')) {
+    return loadEnvelope(resolve(FIXTURES, 'e-tar-lt-403-interstitial.html'));
+  }
+
+  if (host === 'slov-lex.sk' || host.endsWith('.slov-lex.sk')) {
+    return loadEnvelope(resolve(FIXTURES, 'slov-lex-spa-shell.html'));
+  }
+
   return null;
 }
 

@@ -55,7 +55,14 @@ jobs:
     name: schema-and-lint
     runs-on: ubuntu-latest
     steps:
+      # `fetch-depth: 0` is required by the unchanged-bump rule, not by the checkout: the
+      # rule compares each record against the SAME record on the pull request's base, and
+      # a shallow clone has no base commit to compare against. With a shallow clone the
+      # rule degrades to a skip and reports so — honest, but toothless, which is exactly
+      # the "gate that silently stopped running" failure this repository is built against.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
@@ -79,8 +86,19 @@ jobs:
       # nightly full-set run and this run execute at the same time against the same files
       # without racing each other — so two contributor pull requests touching the same
       # proposed file pass independently and merge order stays a maintainer's decision.
+      # On a pull request, `--base` arms the unchanged-bump rule by giving it the same
+      # records as they stand on the base branch. On a push there is no base, the rule
+      # reports a skip, and that skip is visible in the summary rather than silent.
       - name: Schema parse, policy lint L1-L9, referential pass
-        run: pnpm validate:country-data
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BASE_REF:-}" ]; then
+            pnpm validate:country-data --base "${BASE_REF}"
+          else
+            pnpm validate:country-data
+          fi
 
       # Dispatches every committed source through its own declared strategy against the
       # committed fixtures. Sources with no committed fixture are reported as QUEUED —

@@ -64,7 +64,19 @@ export type RuleReport = {
   skipReason: string | null;
 };
 
-export type LintFile = { path: string; record: unknown };
+export type LintFile = {
+  /** Short label used in messages, e.g. `data/PL.json`. */
+  path: string;
+  record: unknown;
+  /**
+   * Repository-relative path, e.g. `packages/country-data/data/PL.json`.
+   *
+   * Only the caller that read the file from disk knows this, and only the unchanged-bump
+   * rule needs it — it is what lets CI retrieve the same file as it stands on the pull
+   * request's base branch.
+   */
+  repoPath?: string;
+};
 
 export type LintOptions = {
   /** `YYYY-MM-DD`. Injected so a freshness boundary is not a function of the day. */
