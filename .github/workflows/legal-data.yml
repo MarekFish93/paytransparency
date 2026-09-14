@@ -135,6 +135,26 @@ jobs:
       - name: Offline legal-data suite
         run: pnpm vitest run --dir packages/country-data
 
+      # D-13's second human-scale derivation, as a gate rather than as stdout.
+      #
+      # This script ran in no workflow at all. It reported `10 of 10 vectors agree; 45
+      # recorded ambiguities surfaced.` and returned 0, so the count reached nobody. One of
+      # the 45 is substantive: whether the Art. 10(1) five-percent trigger tests the signed
+      # gap or its magnitude decides whether an employer owes a joint pay assessment, and
+      # v08-negative-gap is the only vector where the two readings give different OUTCOMES
+      # rather than different numbers. Burying an ambiguity behind a green verdict is the
+      # script's own recorded threat T-1-22.
+      #
+      # It now fails when the ambiguity count rises above the recorded baseline, when a
+      # citation key is malformed, and when a citation names a paragraph the Directive
+      # corpus does not hold — the resolution `corpusKeyFor`'s docblock described and the
+      # script did not perform.
+      #
+      # Offline: it opens the two authored answer files per vector and the committed
+      # corpus, and nothing else.
+      - name: Golden-vector re-derivation and the ambiguity ratchet
+        run: pnpm rederive:vectors
+
   # ---------------------------------------------------------------------------
   # D-10's hard half, as its own visibly-named job.
   # ---------------------------------------------------------------------------

@@ -20,7 +20,7 @@
  *
  * The whole suite is offline and reads only files in this repository.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
@@ -294,5 +294,61 @@ describe('every definitionCite resolves against the stored Directive corpus', ()
     expect(resolves(altered.cite)).toBe(false);
     expect(altered.source).toContain('rederived.json');
     expect(corpusKeyFor(altered.cite)).toBe('32023L0970#003@eng');
+  });
+});
+
+describe('WR-13 — the ambiguity count is a ratchet, and CI runs the script', () => {
+  /**
+   * `report()` surfaced 45 ambiguities in stdout and returned 0, and the script ran in no
+   * workflow at all. Surfacing is better than nothing, but nothing gated on the count —
+   * and one of the 45 is substantive rather than presentational: whether the Art. 10(1)
+   * five-percent trigger tests the signed gap or its magnitude decides whether an employer
+   * owes a joint pay assessment. Burying an ambiguity behind a green verdict is this
+   * script's own recorded threat, T-1-22.
+   */
+  const BASELINE = JSON.parse(
+    readFileSync(fileURLToPath(new URL('../AMBIGUITY-BASELINE.json', import.meta.url)), 'utf8'),
+  ) as { count?: unknown; accepted?: unknown };
+
+  it('records a baseline, with a note saying what was accepted', () => {
+    expect(typeof BASELINE.count).toBe('number');
+    expect(typeof BASELINE.accepted).toBe('string');
+    expect(String(BASELINE.accepted).length).toBeGreaterThan(40);
+  });
+
+  it('the baseline equals the count the vectors actually carry today', () => {
+    // A baseline that drifted above the real count is a ratchet with slack in it.
+    let ambiguities = 0;
+    for (const vector of listVectors()) {
+      const { expected, rederived } = readAnswers(vector);
+      ambiguities += compareVectors(vector, expected, rederived).ambiguities.length;
+    }
+    expect(ambiguities).toBe(BASELINE.count);
+  });
+
+  it('lives in the package root, because vectors/ must hold no loose file', () => {
+    // `vectors-wellformed.test.ts` asserts vectors/ holds nothing but vector directories,
+    // so no shared default conventions block can be introduced and inherited.
+    expect(existsSync(fileURLToPath(new URL('../AMBIGUITY-BASELINE.json', import.meta.url)))).toBe(true);
+    expect(existsSync(fileURLToPath(new URL('../vectors/AMBIGUITY-BASELINE.json', import.meta.url)))).toBe(false);
+  });
+
+  it('the script resolves citations against the corpus, as corpusKeyFor claims it does', () => {
+    // The resolution existed only in this test file: `pnpm rederive:vectors` reported a
+    // clean run over citations it had never resolved.
+    const source = readFileSync(
+      fileURLToPath(new URL('../scripts/rederive.ts', import.meta.url)),
+      'utf8',
+    );
+    expect(source).toContain('function resolvesInCorpus');
+    expect(source).toContain('corpusKeyFor(cite)');
+  });
+
+  it('is wired into a workflow, so the gate is a gate', () => {
+    const workflow = readFileSync(
+      fileURLToPath(new URL('../../../.github/workflows/legal-data.yml', import.meta.url)),
+      'utf8',
+    );
+    expect(workflow).toContain('pnpm rederive:vectors');
   });
 });

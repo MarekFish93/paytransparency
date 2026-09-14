@@ -29,6 +29,36 @@ import { CITATION_KEY_PATTERN, METRIC_DEFINITIONS, METRIC_KEYS } from '../src/ty
 const VECTORS_DIR = fileURLToPath(new URL('../vectors', import.meta.url));
 
 /**
+ * The recorded ambiguity count, as a RATCHET.
+ *
+ * `report()` surfaced 45 ambiguities in stdout and returned 0. Surfacing is better than
+ * nothing, but nothing gated on the count \u2014 and one of the 45 is substantive rather than
+ * presentational: whether the Art. 10(1) five-percent trigger tests the signed gap or its
+ * magnitude decides whether an employer owes a joint pay assessment, and it is the one
+ * vector in the set where the two readings give different OUTCOMES rather than different
+ * numbers. Burying an ambiguity behind a green verdict is this script's own recorded threat
+ * T-1-22.
+ *
+ * The baseline is a file rather than a constant so that accepting a new ambiguity is a
+ * reviewed diff carrying a note, not an edit to a number inside a tool.
+ *
+ * It lives in the PACKAGE ROOT, not in `vectors/`. `vectors-wellformed.test.ts` asserts
+ * that `vectors/` holds no loose file, so that no shared default conventions block can be
+ * introduced and inherited — and this file is a package-level ratchet, not a vector.
+ */
+const BASELINE_FILE = 'packages/directive-engine/AMBIGUITY-BASELINE.json';
+
+function readAmbiguityBaseline(): number | null {
+  try {
+    const path = fileURLToPath(new URL('../AMBIGUITY-BASELINE.json', import.meta.url));
+    const parsed = JSON.parse(readFileSync(path, 'utf8')) as { count?: unknown };
+    return typeof parsed.count === 'number' ? parsed.count : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * The two AUTHORED answer files, and the only per-vector files this tool opens.
  *
  * The worker-rows file is deliberately absent from this list. A test asserts this
@@ -233,6 +263,45 @@ export function corpusKeyFor(cite: string): string {
   return `${celex}#${article}@${CITATION_LANGUAGE}`;
 }
 
+/**
+ * `packages/country-data/data/_directive.json`, or `null` when it is not on disk.
+ *
+ * READ-ONLY, and only for the citation resolution below. `corpusKeyFor`'s docblock
+ * described a resolution this script did not perform — the check existed only in
+ * `test/rederivation.test.ts`, so `pnpm rederive:vectors` reported a clean run over
+ * citations it had never resolved. Either the script does the resolution or the docblock
+ * stops claiming it; this does the resolution.
+ *
+ * The corpus is a sibling PACKAGE's data file, not an import: `directive-engine` ships with
+ * zero runtime dependencies and nothing under `src/` may reach for one. This is a script.
+ */
+function loadCorpus(): Record<string, unknown> | null {
+  const path = fileURLToPath(
+    new URL('../../country-data/data/_directive.json', import.meta.url),
+  );
+  try {
+    return JSON.parse(readFileSync(path, 'utf8')) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Does the corpus hold the ARTICLE this citation names AND the PARAGRAPH inside it?
+ *
+ * Resolving only as far as the article would let `32023L0970#003.999` pass, which is
+ * exactly the silent drift the check exists to stop — the same rule
+ * `test/rederivation.test.ts` applies, restated here because this script is the gate CI
+ * runs and the test is the gate the suite runs.
+ */
+function resolvesInCorpus(cite: string, corpus: Record<string, unknown>): boolean {
+  const paragraphId = cite.slice(cite.indexOf('#') + 1);
+  const entry = corpus[corpusKeyFor(cite)] as
+    | { value?: { paragraphs?: Record<string, unknown> } }
+    | undefined;
+  return entry?.value?.paragraphs?.[paragraphId] !== undefined;
+}
+
 /** Every citation key in the report type and in both answer files of every vector. */
 export function collectCitations(): CollectedCitation[] {
   const out: CollectedCitation[] = [];
@@ -297,20 +366,71 @@ function report(): number {
     }
   }
 
-  const unresolved = collectCitations().filter(({ cite }) => !CITATION_KEY_PATTERN.test(cite));
+  const citations = collectCitations();
+
+  // Malformed SHAPE. Note that `collectCitations`'s own walk only pushes strings that
+  // already matched `CITATION_KEY_PATTERN`, so this can only ever catch a `definitionCite`
+  // in `types.ts` — which is a real case, and the only one it claims to cover.
+  const malformed = citations.filter(({ cite }) => !CITATION_KEY_PATTERN.test(cite));
+
+  // Malformed REFERENCE: a well-shaped key naming a paragraph the corpus does not hold.
+  // This is the check `corpusKeyFor`'s docblock described and this script did not perform.
+  const corpus = loadCorpus();
+  const unresolved =
+    corpus === null
+      ? []
+      : citations.filter(({ cite }) => CITATION_KEY_PATTERN.test(cite) && !resolvesInCorpus(cite, corpus));
+
   const disagreeing = verdicts.filter((v) => !v.agrees);
 
   let ambiguities = 0;
   for (const verdict of verdicts) ambiguities += verdict.ambiguities.length;
 
+  const baseline = readAmbiguityBaseline();
+
   process.stdout.write(
     `\n${verdicts.length - disagreeing.length} of ${verdicts.length} vectors agree; ` +
-      `${ambiguities} recorded ambiguit${ambiguities === 1 ? 'y' : 'ies'} surfaced.\n`,
+      `${ambiguities} recorded ambiguit${ambiguities === 1 ? 'y' : 'ies'} surfaced ` +
+      `(baseline ${baseline === null ? 'not recorded' : baseline}).\n`,
   );
 
-  if (unresolved.length) {
+  if (corpus === null) {
+    process.stdout.write(
+      `\nThe Directive corpus was not found beside this package, so citation keys were checked for SHAPE only and NOT resolved to a paragraph. Reported, not assumed.\n`,
+    );
+  } else {
+    process.stdout.write(
+      `  ${citations.length} citation key(s) resolved against ${Object.keys(corpus).length} corpus entries.\n`,
+    );
+  }
+
+  if (malformed.length) {
     process.stdout.write(`\nMalformed citation keys:\n`);
+    for (const { cite, source } of malformed) process.stdout.write(`  ${cite}  <- ${source}\n`);
+  }
+
+  if (unresolved.length) {
+    process.stdout.write(
+      `\nCitation keys the corpus does not hold \u2014 a citation that renders blank in a letter:\n`,
+    );
     for (const { cite, source } of unresolved) process.stdout.write(`  ${cite}  <- ${source}\n`);
+  }
+
+  const ambiguitiesRose = baseline !== null && ambiguities > baseline;
+  if (ambiguitiesRose) {
+    process.stdout.write(
+      `\nRECORDED AMBIGUITIES ROSE from ${baseline} to ${ambiguities}.\n` +
+        `An ambiguity is a convention that admits two readings. One of them \u2014 whether the\n` +
+        `Art. 10(1) five-percent trigger tests the signed gap or its magnitude \u2014 decides\n` +
+        `whether an employer owes a joint pay assessment, so this count is not decoration.\n` +
+        `Settle the new one in docs/CONVENTIONS.md, or record a new baseline in\n` +
+        `${BASELINE_FILE} with a note saying who accepted it and why.\n`,
+    );
+  } else if (baseline !== null && ambiguities < baseline) {
+    process.stdout.write(
+      `\nRecorded ambiguities FELL from ${baseline} to ${ambiguities}. Lower the baseline in\n` +
+        `${BASELINE_FILE} in the same commit, so the ratchet cannot slip back up unnoticed.\n`,
+    );
   }
 
   if (disagreeing.length) {
@@ -321,7 +441,7 @@ function report(): number {
     );
   }
 
-  return disagreeing.length || unresolved.length ? 1 : 0;
+  return disagreeing.length || malformed.length || unresolved.length || ambiguitiesRose ? 1 : 0;
 }
 
 // Run the report only when invoked as a script. `pathToFileURL` rather than string

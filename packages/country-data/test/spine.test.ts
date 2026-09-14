@@ -447,6 +447,10 @@ describe('the PR-profile workflow stays offline', () => {
       'pnpm validate:country-data',
       'pnpm verify:sources',
       'pnpm vitest run --dir packages/country-data',
+      // Offline: it opens the two authored answer files per vector and the committed
+      // Directive corpus, and nothing else. `rederivation.test.ts` asserts it never opens
+      // the worker-rows file.
+      'pnpm rederive:vectors',
       // The freshness gate and the base-ref branch run node/sh inline; both are asserted
       // by the verb check above and neither may introduce a new external command.
       'set -euo pipefail',

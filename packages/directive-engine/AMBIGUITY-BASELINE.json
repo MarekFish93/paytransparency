@@ -1,0 +1,24 @@
+{
+  "$comment": [
+    "The recorded ambiguity count across the golden vectors, as a RATCHET.",
+    "",
+    "An ambiguity is a convention in docs/CONVENTIONS.md that admits two readings. The",
+    "two independently authored passes still AGREE on every vector; what this counts is",
+    "the number of places where they agreed without the convention having compelled them",
+    "to. `rederive:vectors` fails when the count RISES above this number.",
+    "",
+    "One of the recorded ambiguities is substantive rather than presentational:",
+    "",
+    "  [denominator] Whether the Art. 10(1) five-percent trigger tests the signed gap or",
+    "  its magnitude. v08-negative-gap is the only vector in the set where the two",
+    "  readings give different OUTCOMES rather than different numbers.",
+    "",
+    "That decides whether an employer owes a joint pay assessment, so this file is not",
+    "bookkeeping. Raising `count` is accepting a new ambiguity: say who accepted it and",
+    "why in `accepted`, in the same diff. Settling one LOWERS the count, and the script",
+    "asks for the baseline to be lowered in the same commit so the ratchet cannot slip."
+  ],
+  "count": 45,
+  "recorded_at": "2026-09-14",
+  "accepted": "Baseline recorded while fixing WR-13. These 45 are the ambiguities the phase-01 vectors surfaced; none is newly introduced here. The [denominator] Art. 10(1) signed-gap-versus-magnitude reading is the one that changes an outcome and is carried forward as an open convention question, not as an accepted state."
+}
