@@ -1,0 +1,15 @@
+# Blank issues stay enabled: a reporter who does not fit a template should not be turned
+# away, and a legal error described badly is still a legal error.
+blank_issues_enabled: true
+contact_links:
+  - name: Report a legal error privately
+    url: https://github.com/MarekFish93/paytransparency/security/advisories/new
+    about: >-
+      Use this if you would rather your report not be public while it is assessed. It is the
+      same channel as a security report and reaches the same maintainers.
+  - name: Report a security vulnerability
+    url: https://github.com/MarekFish93/paytransparency/security/advisories/new
+    about: A vulnerability in the code or the site — not a wrong legal fact. See SECURITY.md.
+  - name: How corrections are handled
+    url: https://github.com/MarekFish93/paytransparency/blob/master/CHANGELOG-legal.md
+    about: Every correction to a legal fact is logged publicly with a date and who reported it.

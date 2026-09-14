@@ -403,9 +403,83 @@ describe('the PR-profile workflow stays offline', () => {
     'utf8',
   );
 
+  /**
+   * The retrieval verbs, checked where retrieval can actually happen.
+   *
+   * `curl`, `wget` and `Invoke-WebRequest` are forbidden ANYWHERE in the file — there is no
+   * legitimate use of any of them here.
+   *
+   * `fetch` carries one documented exception: `fetch-depth:`, which is `actions/checkout`'s
+   * CLONE DEPTH option and retrieves no legal source. It is required by the unchanged-bump
+   * rule, which compares each record against the same record on the pull request's base
+   * commit — a shallow clone has no base commit to compare against, so without it that rule
+   * silently degrades to a skip. The header of `legal-data.yml` already states that access
+   * to GitHub's own runner infrastructure is permitted; a clone depth is exactly that.
+   *
+   * Narrowing the exception to that one token, rather than dropping `fetch` from the list,
+   * is deliberate: a bare `fetch(` or a `pnpm fetch` would still fail this.
+   */
   it('performs no network retrieval of any legal source', () => {
-    for (const verb of ['curl', 'wget', 'fetch', 'Invoke-WebRequest']) {
-      expect(WORKFLOW).not.toContain(verb);
+    for (const verb of ['curl', 'wget', 'Invoke-WebRequest']) {
+      expect(WORKFLOW, `"${verb}" must not appear in the PR profile`).not.toContain(verb);
+    }
+    const fetchOccurrences = [...WORKFLOW.matchAll(/fetch/g)].map((m) =>
+      WORKFLOW.slice(m.index, m.index + 'fetch-depth'.length),
+    );
+    for (const occurrence of fetchOccurrences) {
+      expect(occurrence, 'the only permitted "fetch" is the fetch-depth clone option').toBe(
+        'fetch-depth',
+      );
+    }
+  });
+
+  /**
+   * Stronger than the verb check above, and the one that would actually catch a retrieval
+   * smuggled in under a name the verb list does not know: every `run:` command in this
+   * workflow must be one of a small, enumerated set. A step that retrieved a legal source
+   * would have to appear here first.
+   */
+  it('runs only enumerated commands — nothing that could retrieve a legal source', () => {
+    const PERMITTED = [
+      'corepack enable',
+      'pnpm install --frozen-lockfile',
+      'pnpm typecheck',
+      'pnpm validate:country-data',
+      'pnpm verify:sources',
+      'pnpm vitest run --dir packages/country-data',
+      // The freshness gate and the base-ref branch run node/sh inline; both are asserted
+      // by the verb check above and neither may introduce a new external command.
+      'set -euo pipefail',
+      'node --input-type=module -e',
+      'if [ -n "${BASE_REF:-}" ]; then',
+      'else',
+      'fi',
+    ];
+    const commandLines = WORKFLOW.split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith('run: ') || line.startsWith('pnpm ') || line.startsWith('corepack '))
+      .map((line) => line.replace(/^run: \|?/, '').trim())
+      .filter((line) => line.length > 0);
+
+    for (const line of commandLines) {
+      expect(
+        PERMITTED.some((allowed) => line.startsWith(allowed)),
+        `unenumerated command in legal-data.yml: "${line}"`,
+      ).toBe(true);
+    }
+  });
+
+  /**
+   * Only first-party GitHub actions. A third-party action is arbitrary code with the
+   * runner's token, and this workflow gates what a worker cites to their employer.
+   */
+  it('uses only first-party actions', () => {
+    const uses = [...WORKFLOW.matchAll(/^\s*-?\s*uses:\s*(\S+)/gm)].map((m) => m[1]);
+    expect(uses.length).toBeGreaterThan(0);
+    for (const action of uses) {
+      expect(action, `third-party action in the PR profile: ${action}`).toMatch(
+        /^actions\/(checkout|setup-node)@v\d+$/,
+      );
     }
   });
 

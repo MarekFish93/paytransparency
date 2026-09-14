@@ -1,5 +1,5 @@
 /**
- * `@jafn/country-data` — the legal-data spine.
+ * `@paytransparency/country-data` — the legal-data spine.
  *
  * Every legal fact in this package is a `Fact<T>` envelope: a value cannot exist here
  * without the source and date that justify it. Unknown is `value: null` with
@@ -56,7 +56,7 @@ export type { ScopeRule, StrategyAssertion, StrategyEntry } from './source-strat
 /**
  * The pre-fetch allowlist guard. Build-time only — it reads `data/_allowlist.json` with
  * `node:fs`, which is why this barrel is not browser-bundler-safe. The first client
- * bundle that needs `@jafn/country-data` should get a data-only subpath export rather
+ * bundle that needs `@paytransparency/country-data` should get a data-only subpath export rather
  * than a weaker guard.
  */
 export { isAllowlisted, assertFetchable, assertRedirectChain, AllowlistViolation } from './allowlist.ts';

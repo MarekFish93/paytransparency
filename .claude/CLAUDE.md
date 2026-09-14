@@ -2,7 +2,7 @@
 
 ## Project
 
-**JAFN — "Ask about your pay" (working codename)**
+**paytransparency — "Ask about your pay"**
 
 A free, no-signup, privacy-first web toolkit that lets any employee in the EU actually use
 their new rights under the Pay Transparency Directive (EU) 2023/970: generate a

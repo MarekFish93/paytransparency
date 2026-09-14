@@ -1,6 +1,6 @@
 # The PR profile for the legal-data spine.
 #
-# This job is OFFLINE BY DESIGN, and that is a correctness property rather than an
+# This workflow is OFFLINE BY DESIGN, and that is a correctness property rather than an
 # optimisation. Its only network access is to GitHub's own runner infrastructure and to
 # the package registry for a lockfile-pinned install. It retrieves no legal source.
 #
@@ -11,19 +11,33 @@
 # suites are named `*.live.test.ts` and are excluded from this profile by
 # `vitest.config.ts`.
 #
-# What this job DOES prove, entirely from committed fixtures: that a correct,
+# What this workflow DOES prove, entirely from committed fixtures: that a correct,
 # allowlisted, live, above-floor source cited for the WRONG PROVISION is rejected. If
 # somebody weakens the byte floor, broadens an anchor, or drops the subtree scope in
-# order to turn a red gate green, `cellar-art7-recital-decoy.xhtml` turns this job red.
+# order to turn a red gate green, `cellar-art7-recital-decoy.xhtml` turns this red.
 #
 # The "stays offline" property is itself asserted in `spine.test.ts`, which reads this
 # file and fails if a network-retrieval verb appears in it. That assertion deliberately
 # lives in the suite rather than in a step here, so this file stays clean of the very
 # verbs it forbids.
 #
-# Jobs `schema-and-lint` and `freshness-gate` are added by plans 01-02 and 01-05. They
-# are not stubbed here: an always-green placeholder job reads as coverage that does not
-# exist.
+# ---------------------------------------------------------------------------
+# THE PROPOSED DIRECTORY IS NOT A WEAKER PROFILE — plan 01-05, D-11
+# ---------------------------------------------------------------------------
+#
+# Note the DELIBERATE ABSENCE of any `paths:` filter below. That absence is the job-level
+# condition: a pull request touching only `packages/country-data/proposed/**` runs exactly
+# the same three jobs as one touching the live dataset. `validate:country-data` parses and
+# lints BOTH directories in one pass.
+#
+# A proposed contribution is therefore held to the same schema, the same allowlist and the
+# same anchor assertion as a live one. What it cannot do is carry a `verified` status —
+# rule L9 fails any proposed file that tries. A contributor gets a merged pull request,
+# and merging alone cannot make the site more confident; only a maintainer's promotion
+# into `data/`, which records `verified_by`, can.
+#
+# Adding a `paths:` filter here would be a silent downgrade: a required check that never
+# runs reports as passed on GitHub, so a filtered job is indistinguishable from a green one.
 name: legal-data
 
 on:
@@ -34,11 +48,21 @@ permissions:
   contents: read
 
 jobs:
-  offline-suite:
-    name: offline-suite
+  # ---------------------------------------------------------------------------
+  # Layer 1 + 2: is every record well formed, and is it acceptable?
+  # ---------------------------------------------------------------------------
+  schema-and-lint:
+    name: schema-and-lint
     runs-on: ubuntu-latest
     steps:
+      # `fetch-depth: 0` is required by the unchanged-bump rule, not by the checkout: the
+      # rule compares each record against the SAME record on the pull request's base, and
+      # a shallow clone has no base commit to compare against. With a shallow clone the
+      # rule degrades to a skip and reports so — honest, but toothless, which is exactly
+      # the "gate that silently stopped running" failure this repository is built against.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
@@ -48,7 +72,54 @@ jobs:
           # one — leaving the step to fail with "Unable to locate executable file: pnpm".
           package-manager-cache: false
 
-      # Resolves the pnpm version pinned in package.json's `packageManager` field.
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Schema parse over data/ and proposed/, then the nine policy rules and the
+      # unchanged-bump rule, then the cross-artefact referential pass that resolves every
+      # Directive fallback citation key against the stored corpus.
+      #
+      # READ-ONLY. This step never writes to the data directory, which is what lets a
+      # nightly full-set run and this run execute at the same time against the same files
+      # without racing each other — so two contributor pull requests touching the same
+      # proposed file pass independently and merge order stays a maintainer's decision.
+      # On a pull request, `--base` arms the unchanged-bump rule by giving it the same
+      # records as they stand on the base branch. On a push there is no base, the rule
+      # reports a skip, and that skip is visible in the summary rather than silent.
+      - name: Schema parse, policy lint L1-L9, referential pass
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BASE_REF:-}" ]; then
+            pnpm validate:country-data --base "${BASE_REF}"
+          else
+            pnpm validate:country-data
+          fi
+
+      # Dispatches every committed source through its own declared strategy against the
+      # committed fixtures. Sources with no committed fixture are reported as QUEUED —
+      # not exercised — rather than as passes; the network dispositions belong to nightly.
+      - name: Dispatch every committed source through the verifier, offline
+        run: pnpm verify:sources
+
+  # ---------------------------------------------------------------------------
+  # The full fixture-driven suite, including the proof-of-teeth decoy.
+  # ---------------------------------------------------------------------------
+  offline-suite:
+    name: offline-suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
       - name: Enable corepack
         run: corepack enable
 
@@ -63,3 +134,56 @@ jobs:
       # The spine plus the proof-of-teeth. Committed fixtures only.
       - name: Offline legal-data suite
         run: pnpm vitest run --dir packages/country-data
+
+  # ---------------------------------------------------------------------------
+  # D-10's hard half, as its own visibly-named job.
+  # ---------------------------------------------------------------------------
+  #
+  # This is a separate job rather than one assertion inside the suite for a reason a
+  # maintainer feels at 9am: when a launch country's legally-operative fact goes stale,
+  # the pull request shows a red check called `freshness-gate`, not a red check called
+  # `offline-suite` with the reason twenty lines into a log. The gate that can stop a
+  # release should say its own name.
+  #
+  # It delegates to `freshnessGate`, which is the ONE implementation of the rule. The
+  # soft half — everything that is stale outside the launch five's operative fields —
+  # warns inside the lint and does not appear here, because an unrelated typo fix on a
+  # Tuesday must not be undeployable because a non-launch country's verification lapsed
+  # on Monday.
+  freshness-gate:
+    name: freshness-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Launch-country legally-operative freshness hard gate
+        run: |
+          set -euo pipefail
+          node --input-type=module -e "
+            import { readFileSync, readdirSync } from 'node:fs';
+            import { freshnessGate } from './packages/country-data/src/freshness.ts';
+            const dir = 'packages/country-data/data';
+            const records = readdirSync(dir)
+              .filter((n) => n.endsWith('.json') && !n.startsWith('_'))
+              .map((n) => JSON.parse(readFileSync(dir + '/' + n, 'utf8')));
+            const today = new Date().toISOString().slice(0, 10);
+            const failures = freshnessGate(records, today);
+            if (failures.length === 0) {
+              process.stdout.write('freshness-gate: ok — ' + records.length + ' records, no launch-country legally-operative fact is past its window\n');
+            } else {
+              for (const f of failures) process.stderr.write('  x ' + f.message + '\n');
+              process.stderr.write('\nfreshness-gate: FAILED — ' + failures.length + ' stale launch-country legally-operative fact(s). Re-verify the source and record who read it in verified_by; do NOT extend the TTL to turn this green.\n');
+              process.exitCode = 1;
+            }
+          "

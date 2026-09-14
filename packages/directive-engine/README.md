@@ -1,4 +1,4 @@
-# `@jafn/directive-engine`
+# `@paytransparency/directive-engine`
 
 The Article 9 report contract for **Directive (EU) 2023/970** — the EU Pay Transparency
 Directive — as data.

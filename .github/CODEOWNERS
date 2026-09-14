@@ -1,0 +1,43 @@
+# Code owners for the legal dataset and the letters a worker actually sends.
+#
+# This file exists because of one failure mode: a well-meaning contributor updates a
+# country's transposition status from a social-media post, a maintainer merges it on a
+# Friday, and a worker sends a letter to their employer citing a law that was never
+# enacted. The letter has already been sent. There is no reputational recovery path as
+# cheap as prevention.
+#
+# Pair this file with branch protection on the default branch requiring ALL THREE named
+# checks from `.github/workflows/legal-data.yml`:
+#
+#   - schema-and-lint
+#   - offline-suite
+#   - freshness-gate
+#
+# and with AUTO-MERGE DISABLED. No path below may be merged by automation alone, and
+# there is no trusted-contributor carve-out on the two-person rule for a status or a
+# deadline change. A pull request touching `country-data` with a green CI and one
+# approving review from a bot is the exact shape this file exists to stop.
+
+# Everything, as the backstop.
+*                                   @MarekFish93
+
+# The legal dataset. A change here decides what a worker cites to their employer.
+/packages/country-data/             @MarekFish93
+/packages/country-data/data/        @MarekFish93
+/packages/country-data/proposed/    @MarekFish93
+
+# The letter templates. Authored in Phase 5; the ownership is declared NOW so the phase
+# inherits it rather than adding it late, when "we'll add CODEOWNERS after launch" has
+# already become "we launched without CODEOWNERS".
+/packages/letters/                  @MarekFish93
+
+# The gates themselves. A pull request that weakens a byte floor, broadens an anchor,
+# relaxes a lint rule or removes a required check must be reviewed as carefully as a
+# change to the data it protects — more carefully, because it is invisible in the data.
+/.github/workflows/                 @MarekFish93
+/.github/CODEOWNERS                 @MarekFish93
+/packages/country-data/src/lint.ts          @MarekFish93
+/packages/country-data/src/allowlist.ts     @MarekFish93
+/packages/country-data/src/freshness.ts     @MarekFish93
+/packages/country-data/src/source-strategy.ts @MarekFish93
+/packages/country-data/src/verifier.ts      @MarekFish93
