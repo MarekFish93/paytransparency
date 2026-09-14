@@ -146,7 +146,7 @@ Plans:
 ### Phase 5: Article 7 Letter Generator
 
 **Goal**: A worker in any member state gets a correctly cited, legally-grounded letter they can send — and is walked through what sending it means before it is handed over
-**Depends on**: Phase 3 (shell, country data rendering), Phase 1 (verified Art. 6, 7 and 12(3) data for the launch countries), Phase 2 (the multi-step flow sketch)
+**Depends on**: Phase 3 (shell, country data rendering), Phase 1 (the country schema, the verification gates and the Directive fallback), Phase 2 (the multi-step flow sketch). **Maintainer prerequisite, not a phase deliverable:** Art. 6, 7 and 12(3) facts for the launch countries (PL, SK, IT, LT, MT) must be promoted from `pending_verification` before letters ship. D-06 reserves that promotion to a human who has read the primary source, so no phase can discharge it — Phase 1 delivered the machine and the fallback, and until promotion a letter correctly cites the Directive article itself rather than a national one. Recorded 2026-09-14 at phase-01 UAT.
 **Requirements**: LTR-01, LTR-02, LTR-03, LTR-04, LTR-05, LTR-06, LTR-07, LTR-08, LTR-09, LTR-10, LTR-11, LTR-12, LTR-13, LTR-14, LTR-15, LTR-16, LTR-17, I18N-04
 **Success Criteria** (what must be TRUE):
 

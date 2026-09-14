@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 11
+open_count: 12
 waived_count: 0
 fixed_count: 1
-total_count: 12
-last_updated: 2026-09-14T08:40:17.118Z
+total_count: 13
+last_updated: 2026-09-14T10:44:30.777Z
 ---
 
 # Broken Windows Ledger
@@ -27,6 +27,7 @@ last_updated: 2026-09-14T08:40:17.118Z
 | 10 | 01 | deviation | docs/BAD-PR-DRILL.md |  | A git history rewrite is NOT sufficient to remove content once a pull request has existed against the contaminated commit. GitHub retains refs/pull/N/head independently of the branch; those refs survive branch deletion AND history rewriting, are fetchable by anyone on a public repo, and a closed PR cannot be deleted via the API. Verified empirically: after a clean rewrite, origin/ci branch returned 0 hits while all five refs/pull/N/head still resolved to the contaminated commit. Caught ONLY because the sweep was re-run against the corrected artefact rather than trusting the corrected intention. Resolution was a fresh repository; the original is kept private as the drill archive. | open |  | 2026-09-14T08:40:04.375Z |  |
 | 11 | 01 | unrun-verify | docs/BAD-PR-DRILL.md |  | The public repository's drill evidence is NOT independently verifiable: the five pull requests and their CI runs live in the private archive MarekFish93/paytransparency-archive. A reader takes the transcribed failure output on trust. Stated plainly in the document itself rather than glossed, with the four commands a reader CAN run locally to exercise every rule the transcription is about. Closing this needs either a public re-run of the drill on the new repository or published run artefacts. | open |  | 2026-09-14T08:40:10.863Z |  |
 | 12 | 01 | deviation | .github/CODEOWNERS |  | Branch protection on master has enforce_admins=false. With a single maintainer, an admin who cannot bypass cannot merge at all (no self-approval), and an unmergeable repository gets its protection switched off within a month. The three required checks, code-owner review, no force-push and no deletions ARE enforced; the documented two-person rule in CONTRIBUTING.md is therefore a policy commitment above a weaker mechanical floor. Flip enforce_admins to true as soon as a second maintainer exists. | open |  | 2026-09-14T08:40:17.118Z |  |
+| 13 | 01 | unmet-truth | packages/country-data/data/ |  | Launch-country Art. 6, 7 and 12(3) facts (PL, SK, IT, LT, MT) remain pending_verification. D-06 reserves promotion to a human who has read the primary source; letters fall back to the Directive article until then. Owed before Phase 5 ships letters. Accepted at phase-01 UAT 2026-09-14 as maintainer work, not a phase gap. | open |  | 2026-09-14T10:44:30.777Z |  |
 
 ````json
 [
@@ -177,6 +178,19 @@ last_updated: 2026-09-14T08:40:17.118Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-09-14T08:40:17.118Z",
+    "resolved_at": null,
+    "milestone": null
+  },
+  {
+    "id": 13,
+    "kind": "unmet-truth",
+    "phase": "01",
+    "file": "packages/country-data/data/",
+    "line": null,
+    "description": "Launch-country Art. 6, 7 and 12(3) facts (PL, SK, IT, LT, MT) remain pending_verification. D-06 reserves promotion to a human who has read the primary source; letters fall back to the Directive article until then. Owed before Phase 5 ships letters. Accepted at phase-01 UAT 2026-09-14 as maintainer work, not a phase gap.",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-09-14T10:44:30.777Z",
     "resolved_at": null,
     "milestone": null
   }

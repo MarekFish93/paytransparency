@@ -20,5 +20,5 @@
   ],
   "count": 45,
   "recorded_at": "2026-09-14",
-  "accepted": "Baseline recorded while fixing WR-13. These 45 are the ambiguities the phase-01 vectors surfaced; none is newly introduced here. The [denominator] Art. 10(1) signed-gap-versus-magnitude reading is the one that changes an outcome and is carried forward as an open convention question, not as an accepted state."
+  "accepted": "Baseline recorded while fixing WR-13. These 45 are the ambiguities the phase-01 vectors surfaced; none is newly introduced here. The [denominator] Art. 10(1) signed-gap-versus-magnitude reading is the one that changes an outcome. It is now DECIDED, not carried forward: the MAGNITUDE reading governs, as recorded in docs/CONVENTIONS.md (denominator). Art. 10(1) is engaged by a difference in average pay level of at least 5 % whichever sex it favours, and Art10Flag.gapPct carries the SIGNED value so the direction is never lost. Accepted by the maintainer (marek.rybka1) on 2026-09-14 during phase-01 UAT, on the ground that the signed reading would silently exempt every category in which men are the underpaid group. The remaining 44 ambiguities change numbers, not outcomes."
 }
