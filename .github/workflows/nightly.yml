@@ -37,6 +37,11 @@ permissions:
 env:
   CELLAR_CACHE_DIR: .cache/cellar
   CELEX_URI: http://publications.europa.eu/resource/celex/32023L0970
+  # Outside the checkout on purpose: this is a derived index of the committed corpus,
+  # not a repository artefact, and nothing in this workflow may write into the working
+  # tree. Outside CELLAR_CACHE_DIR too, because that directory is restored from and
+  # saved to a cache keyed on the very ETags this file records.
+  STORED_ETAGS: ${{ runner.temp }}/stored-etags.json
 
 jobs:
   live-sources:
@@ -62,26 +67,55 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # The cache key carries the STORED ETag, so "the cached body" and "the body the
-      # committed citations were verified against" are the same thing by construction.
-      - name: Read the stored ETag and citation keys
+      # The cache key carries EVERY stored ETag, so "the cached bodies" and "the bodies
+      # the committed citations were verified against" are the same thing by construction.
+      #
+      # Keyed BY LANGUAGE, and that is the whole of CR-04. This step used to collapse every
+      # ETag in the corpus into a Set and take `[...etags][0]`. The committed corpus holds
+      # four distinct ETags across eleven languages, and `[0]` resolved to the English one
+      # ONLY because `fetch-directive.ts` happens to emit the file language-outer with `eng`
+      # first. Any re-sort of `_directive.json` — an obvious tidy-up; alphabetically
+      # `#003@ces` sorts first — would have made the job compare the live ENGLISH ETag
+      # against the stored CZECH one and report "Directive expression drifted" every single
+      # night. A gate that is red for a reason nobody can act on gets disabled.
+      #
+      # The "one ETag per language" invariant is ASSERTED here rather than assumed: a
+      # language holding two distinct ETags throws, because silently picking one is the bug
+      # this step is being fixed for.
+      - name: Read the stored ETags and citation keys, per language
         id: stored
         run: |
           set -euo pipefail
+          mkdir -p "${CELLAR_CACHE_DIR}"
           node --input-type=module -e "
-            import { readFileSync } from 'node:fs';
+            import { readFileSync, writeFileSync } from 'node:fs';
+            import { createHash } from 'node:crypto';
             const file = JSON.parse(readFileSync('packages/country-data/data/_directive.json', 'utf8'));
-            const keys = Object.keys(file);
-            const etags = new Set();
-            for (const key of keys) for (const s of file[key].sources) if (s.etag) etags.add(s.etag);
-            const etag = [...etags][0] ?? '(none)';
-            const slug = etag.replace(/[^A-Za-z0-9]/g, '');
-            process.stdout.write('etag=' + etag + '\n');
-            process.stdout.write('citation_keys=' + keys.join(',') + '\n');
-            process.stdout.write('cache_key=cellar-body-' + slug + '\n');
+            const byLang = new Map();
+            for (const key of Object.keys(file)) {
+              const match = /@([a-z]{3})\$/.exec(key);
+              if (match === null) throw new Error('citation key carries no language suffix: ' + key);
+              const lang = match[1];
+              const entry = byLang.get(lang) ?? { etags: new Set(), keys: [] };
+              entry.keys.push(key);
+              for (const s of file[key].sources) if (s.etag) entry.etags.add(s.etag);
+              byLang.set(lang, entry);
+            }
+            const languages = [...byLang.keys()].sort().map((lang) => {
+              const entry = byLang.get(lang);
+              if (entry.etags.size > 1) {
+                throw new Error(lang + ' holds ' + entry.etags.size + ' distinct ETags (' + [...entry.etags].join(', ') + '). Picking one by key order is exactly the defect this step was rewritten to remove.');
+              }
+              return { lang, etag: [...entry.etags][0] ?? '(none)', keys: entry.keys };
+            });
+            writeFileSync(process.env.STORED_ETAGS, JSON.stringify(languages, null, 2) + '\n');
+            const slug = createHash('sha256').update(languages.map((l) => l.lang + '=' + l.etag).join('|')).digest('hex').slice(0, 32);
+            process.stdout.write('languages=' + languages.map((l) => l.lang).join(',') + '\n');
+            process.stdout.write('cache_key=cellar-bodies-' + slug + '\n');
           " >> "$GITHUB_OUTPUT"
+          cat "${STORED_ETAGS}"
 
-      - name: Restore the last successful Cellar body
+      - name: Restore the last successful Cellar bodies
         id: restore
         uses: actions/cache/restore@v4
         with:
@@ -91,56 +125,140 @@ jobs:
       # The classifier. Every branch below is a disposition the verifier already models:
       # transport failure is an outage, a changed ETag is drift, an unchanged ETag is a
       # revalidation. Nothing here decides what a legal fact says.
-      - name: Probe Cellar, classify the outcome
+      #
+      # ONE PROBE PER LANGUAGE. The previous version sent `Accept-Language: eng` and nothing
+      # else, so the Polish, Slovak, Italian, Lithuanian and Maltese expressions — the
+      # authentic texts a launch country's letter quotes — were never compared against the
+      # live source, while the annotation printed all 66 citation keys as "affected" and
+      # overstated coverage by an order of magnitude.
+      #
+      # `set -e` is now ON (WR-09). Without it a `grep` that matched no ETag left LIVE_ETAG
+      # empty, the script carried on, and the next comparison reported
+      # `Directive expression drifted ... from "Con-…" to .` — a maintainer told the Official
+      # Journal text had changed when in fact the job could not read a response header. Every
+      # command whose failure is EXPECTED now says so explicitly with `|| true`, and an empty
+      # ETag is classified as an outage, which is what it is.
+      - name: Probe Cellar per language, classify the outcome
         id: probe
         env:
-          STORED_ETAG: ${{ steps.stored.outputs.etag }}
-          CITATION_KEYS: ${{ steps.stored.outputs.citation_keys }}
+          LANGUAGES: ${{ steps.stored.outputs.languages }}
           CACHE_HIT: ${{ steps.restore.outputs.cache-hit }}
         run: |
-          set -uo pipefail
+          set -euo pipefail
           mkdir -p "${CELLAR_CACHE_DIR}"
 
-          HTTP_CODE=$(curl -sS -L --max-time 90 \
-            -H 'Accept: application/xhtml+xml' \
-            -H 'Accept-Language: eng' \
-            -D "${CELLAR_CACHE_DIR}/headers.txt" \
-            -o "${CELLAR_CACHE_DIR}/fresh.xhtml" \
-            -w '%{http_code}' \
-            "${CELEX_URI}") || HTTP_CODE=000
+          stored_field() {
+            node -e "
+              const rows = JSON.parse(require('fs').readFileSync(process.env.STORED_ETAGS, 'utf8'));
+              const row = rows.find((r) => r.lang === process.argv[1]);
+              if (row === undefined) throw new Error('no stored row for ' + process.argv[1]);
+              process.stdout.write(process.argv[2] === 'keys' ? row.keys.join(', ') : row.etag);
+            " "$1" "$2"
+          }
 
-          # --- OUTAGE: transport failure or a server-side error -------------------
-          if [ "${HTTP_CODE}" = "000" ] || [ "${HTTP_CODE}" -ge 500 ]; then
-            if [ "${CACHE_HIT}" = "true" ] && [ -s "${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml" ]; then
-              echo "::warning title=Cellar unreachable, served from cache::HTTP ${HTTP_CODE} from the Publications Office. Restored the last successful body from the cache keyed on ETag ${STORED_ETAG}. This is an outage, not a data defect — the build is NOT failed."
-            else
-              echo "::warning title=Cellar unreachable, no cached body::HTTP ${HTTP_CODE} from the Publications Office and no cached body under ETag ${STORED_ETAG}. Live verification did not run tonight. This is an outage, not a data defect — the build is NOT failed."
+          DRIFTED=0
+          UNREADABLE=0
+
+          for LANG in ${LANGUAGES//,/ }; do
+            STORED_ETAG="$(stored_field "${LANG}" etag)"
+            CITATION_KEYS="$(stored_field "${LANG}" keys)"
+
+            HTTP_CODE=$(curl -sS -L --max-time 90 \
+              -H 'Accept: application/xhtml+xml' \
+              -H "Accept-Language: ${LANG}" \
+              -D "${CELLAR_CACHE_DIR}/headers-${LANG}.txt" \
+              -o "${CELLAR_CACHE_DIR}/cellar-${LANG}.xhtml" \
+              -w '%{http_code}' \
+              "${CELEX_URI}") || HTTP_CODE=000
+
+            # --- OUTAGE: transport failure or a server-side error -------------------
+            if [ "${HTTP_CODE}" = "000" ] || [ "${HTTP_CODE}" -ge 500 ]; then
+              echo "::warning title=Cellar unreachable for ${LANG}::HTTP ${HTTP_CODE} from the Publications Office for the ${LANG} expression. This is an outage, not a data defect — the build is NOT failed."
+              UNREADABLE=$((UNREADABLE + 1))
+              continue
             fi
-            echo "outcome=cached" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
 
-          # --- DEFECT: anything that is not exactly 200 --------------------------
-          if [ "${HTTP_CODE}" != "200" ]; then
-            echo "::error title=Cellar answered ${HTTP_CODE}::Expected exactly 200 for ${CELEX_URI}. Note that res.ok is true for 202, which the EUR-Lex web front end serves with a zero-length body — this is a data defect, not an outage."
-            echo "outcome=defect" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
+            # --- DEFECT: anything that is not exactly 200 --------------------------
+            if [ "${HTTP_CODE}" != "200" ]; then
+              echo "::error title=Cellar answered ${HTTP_CODE} for ${LANG}::Expected exactly 200 for ${CELEX_URI} in ${LANG}. Note that res.ok is true for 202, which the EUR-Lex web front end serves with a zero-length body — this is a data defect, not an outage."
+              echo "outcome=defect" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
 
-          LIVE_ETAG=$(grep -i '^etag:' "${CELLAR_CACHE_DIR}/headers.txt" | tail -1 | sed 's/^[^:]*:[[:space:]]*//' | tr -d '\r')
-          echo "live ETag:   ${LIVE_ETAG}"
-          echo "stored ETag: ${STORED_ETAG}"
+            # A zero-byte 200 is the documented EUR-Lex anti-automation posture. Treating it
+            # as a readable body is exactly the "verifier that passes on an empty 200" this
+            # project forbids.
+            if [ ! -s "${CELLAR_CACHE_DIR}/cellar-${LANG}.xhtml" ]; then
+              echo "::error title=Empty 200 for ${LANG}::${CELEX_URI} answered 200 with a zero-byte body for ${LANG}. A verifier that passes on an empty 200 is worse than no verifier."
+              echo "outcome=defect" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
 
-          # --- DRIFT: a changed ETag opens a review task, never an auto-update ----
-          if [ "${LIVE_ETAG}" != "${STORED_ETAG}" ]; then
-            echo "::error title=Directive expression drifted — review required::The Cellar ETag changed from ${STORED_ETAG} to ${LIVE_ETAG}. Affected citation keys: ${CITATION_KEYS}. A human must read the diff and author the update; nothing is changed automatically, because a legal quotation updated from a diff nobody read is exactly the failure this rule prevents."
+            LIVE_ETAG=$(grep -i '^etag:' "${CELLAR_CACHE_DIR}/headers-${LANG}.txt" | tail -1 | sed 's/^[^:]*:[[:space:]]*//' | tr -d '\r') || LIVE_ETAG=""
+            echo "${LANG}: live ${LIVE_ETAG:-<none>} | stored ${STORED_ETAG}"
+
+            # An unreadable header is an OUTAGE, not drift (WR-09). Reporting "the Official
+            # Journal text changed" because a proxy stripped a header is worse than silence.
+            if [ -z "${LIVE_ETAG}" ]; then
+              echo "::warning title=No ETag in the ${LANG} response::Cannot compare against the stored ETag for ${LANG}; treating as an outage, not as drift."
+              UNREADABLE=$((UNREADABLE + 1))
+              continue
+            fi
+
+            # --- DRIFT: a changed ETag opens a review task, never an auto-update ----
+            # The annotation names ONLY this language's citation keys. The previous version
+            # printed all 66 regardless of which expression it had actually read.
+            if [ "${LIVE_ETAG}" != "${STORED_ETAG}" ]; then
+              echo "::error title=Directive ${LANG} expression drifted — review required::The Cellar ETag for the ${LANG} expression changed from ${STORED_ETAG} to ${LIVE_ETAG}. Affected citation keys: ${CITATION_KEYS}. A human must read the diff and author the update; nothing is changed automatically, because a legal quotation updated from a diff nobody read is exactly the failure this rule prevents."
+              DRIFTED=$((DRIFTED + 1))
+            fi
+          done
+
+          if [ "${DRIFTED}" -gt 0 ]; then
             echo "outcome=drift" >> "$GITHUB_OUTPUT"
             exit 1
           fi
 
-          cp "${CELLAR_CACHE_DIR}/fresh.xhtml" "${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml"
-          printf '%s' "${LIVE_ETAG}" > "${CELLAR_CACHE_DIR}/etag.txt"
+          if [ "${UNREADABLE}" -gt 0 ]; then
+            echo "::warning title=${UNREADABLE} expression(s) unreadable::Live verification did not cover every language tonight. This is an outage, not a data defect — the build is NOT failed."
+            echo "outcome=cached" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A failing cp or printf must fail the step. Reporting outcome=fresh for bodies it
+          # did not cache is how the next run's "restored from cache" becomes a lie (WR-09).
+          cp "${CELLAR_CACHE_DIR}/cellar-eng.xhtml" "${CELLAR_CACHE_DIR}/cellar-art7-en.xhtml"
+          cp "${STORED_ETAGS}" "${CELLAR_CACHE_DIR}/stored-etags.json"
           echo "outcome=fresh" >> "$GITHUB_OUTPUT"
+
+      # CR-03: the `--bodies` hand-off `verify-sources.ts` documents, actually performed.
+      # For one revision this step did not exist: `--bodies` appeared in no workflow,
+      # `suppliedBody` was dead code, and `pnpm verify:sources` reported PASSED having
+      # exercised 12 of 106 sources.
+      #
+      # `--require-exercised cellar` is what gives it teeth: all 66 corpus sources were just
+      # fetched, one body per language, so a cellar source that still reports "queued" means
+      # the retrieval did not reach it and the run fails. It deliberately does NOT require
+      # the 38 metadata-only sources — those cite the Publications Office SPARQL endpoint,
+      # which returned zero triples for the CELEX URI and timed out at 60s, so no retrieval
+      # layer exists for them. They are reported as warnings, per source, rather than hidden
+      # inside a count under the word PASSED.
+      - name: Hand the fetched bodies to the verifier
+        if: steps.probe.outputs.outcome == 'fresh'
+        run: |
+          set -euo pipefail
+          pnpm verify:sources \
+            --bodies "${CELLAR_CACHE_DIR}" \
+            --require-exercised cellar \
+            --report "${CELLAR_CACHE_DIR}/exercised.json"
+
+      # The nightly lint profile, with the liveness evidence the step above wrote. This is
+      # the only caller that reaches L6's nightly branch; `validate.ts` used to hardcode
+      # `profile: 'pull-request'`, so that branch was unreachable from every caller except
+      # its own unit test.
+      - name: Policy lint on the nightly profile, with the liveness evidence
+        if: steps.probe.outputs.outcome == 'fresh'
+        run: pnpm validate:country-data --profile nightly --exercised "${CELLAR_CACHE_DIR}/exercised.json"
 
       # Skipped during an outage: re-running an assertion against a source that is down
       # would turn somebody else's downtime into our red build.
@@ -180,7 +298,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Restore the body live-sources fetched
+      - name: Restore the bodies live-sources fetched
         id: restore
         uses: actions/cache/restore@v4
         with:

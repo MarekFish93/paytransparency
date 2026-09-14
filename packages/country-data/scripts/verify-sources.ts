@@ -56,7 +56,7 @@ const isRecordLike = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** One source, with everything the verifier needs that the source itself cannot carry. */
-type Candidate = {
+export type Candidate = {
   /** `data/PL.json#article_7.legal_basis.sources[0]` — what a maintainer opens. */
   where: string;
   /** The country whose allowlist governs this URL. */
@@ -76,7 +76,7 @@ type Candidate = {
   awaitingPromotion: boolean;
 };
 
-type Outcome = {
+export type Outcome = {
   candidate: Candidate;
   mode: 'dispatched' | 'attested' | 'queued';
   result: VerifyResult | null;
@@ -268,46 +268,6 @@ function fixtureFor(candidate: Candidate): VerifierResponse | null {
 }
 
 /**
- * A body the nightly job already retrieved, named after the source's scope + language.
- *
- * The per-language names come first and `fresh.xhtml` last, because the nightly probe now
- * fetches one expression PER LANGUAGE (`fresh-<lang3>.xhtml`). Falling back to a single
- * `fresh.xhtml` for a Polish source would check the Polish citation against whichever
- * expression happened to be fetched — the same class of error as comparing the live
- * English ETag against a stored Czech one.
- *
- * An EMPTY file is treated as no body at all rather than as a body of length zero. A
- * verifier that passes on an empty 200 is worse than no verifier; here the equivalent is
- * a verifier that reports `queued` — honestly not exercised — rather than dispatching a
- * zero-byte body that the byte floor would then blame on the publisher.
- */
-function suppliedBody(candidate: Candidate, bodiesDir: string): VerifierResponse | null {
-  const { source } = candidate;
-  const scope = source.scope === null ? 'body' : source.scope.id;
-  const lang = source.language.toLowerCase();
-  for (const name of [
-    `${scope}-${lang}.xhtml`,
-    `${scope}-${lang}.html`,
-    `fresh-${lang}.xhtml`,
-    `fresh-${ISO639_1_TO_3[lang] ?? lang}.xhtml`,
-    'fresh.xhtml',
-  ]) {
-    const path = resolve(bodiesDir, name);
-    if (!existsSync(path)) continue;
-    const body = readFileSync(path, 'utf8');
-    if (body.length === 0) continue;
-    return {
-      status: 200,
-      body,
-      headers: {},
-      etag: source.etag ?? null,
-      lastModified: source.last_modified ?? null,
-    };
-  }
-  return null;
-}
-
-/**
  * `Source.language` is BCP-47 (`en`, `pl`) because that is what a browser speaks; the
  * Cellar API and the nightly probe speak ISO-639-3 (`eng`, `pol`). Only the languages the
  * committed corpus actually holds are mapped — an unmapped code falls through to the
@@ -327,6 +287,63 @@ const ISO639_1_TO_3: Record<string, string> = {
   sv: 'swe',
   da: 'dan',
 };
+
+/**
+ * A body the nightly job already retrieved, matched to the source it was fetched FOR.
+ *
+ * THE MATCH IS BY STRATEGY AND BY HOST, NOT BY LANGUAGE ALONE, and that is the whole of
+ * this function's correctness. An earlier shape fell back to a bare `fresh.xhtml` /
+ * `fresh-<lang>.xhtml` for any source, which handed the Cellar ENGLISH EXPRESSION to the
+ * 38 `metadata-only` sources that cite the Publications Office SPARQL endpoint. Each then
+ * reported `anchor_absent` against a document it had never cited — 32 fabricated data
+ * defects, and a maintainer sent to look for a missing anchor in the wrong document. A
+ * body fetched from one host is not evidence about another.
+ *
+ * An EMPTY file is treated as no body at all rather than as a body of length zero. A
+ * verifier that passes on an empty 200 is worse than no verifier; here the equivalent is
+ * reporting `queued` — honestly not exercised — rather than dispatching a zero-byte body
+ * whose failure the byte floor would then blame on the publisher.
+ */
+export function suppliedBody(candidate: Candidate, bodiesDir: string): VerifierResponse | null {
+  const { source } = candidate;
+  const lang = source.language.toLowerCase();
+  const lang3 = ISO639_1_TO_3[lang] ?? lang;
+
+  const names: string[] = [];
+  if (source.verification === 'cellar') {
+    // The nightly probe writes ONE whole expression per language, named `cellar-<iso3>`.
+    names.push(`cellar-${lang3}.xhtml`, `cellar-${lang}.xhtml`);
+    if (source.scope !== null) {
+      names.push(`${source.scope.id}-${lang}.xhtml`, `${source.scope.id}-${lang}.html`);
+    }
+  } else {
+    // Named after the HOST. Nothing retrieves these today; the naming is declared so that
+    // a future retrieval step has one obvious place to write, and so that a body for one
+    // host can never be served to a source citing another.
+    let host: string;
+    try {
+      host = new URL(source.url).hostname.toLowerCase();
+    } catch {
+      return null;
+    }
+    names.push(`${host}-${lang}.html`, `${host}-${lang}.xhtml`, `${host}-${lang}.txt`);
+  }
+
+  for (const name of names) {
+    const path = resolve(bodiesDir, name);
+    if (!existsSync(path)) continue;
+    const body = readFileSync(path, 'utf8');
+    if (body.length === 0) continue;
+    return {
+      status: 200,
+      body,
+      headers: {},
+      etag: source.etag ?? null,
+      lastModified: source.last_modified ?? null,
+    };
+  }
+  return null;
+}
 
 // ---------------------------------------------------------------------------
 // Dispatch
