@@ -80,12 +80,11 @@ that does not say what let the error through is a correction that will be repeat
   rejecter differed from the expected one and the two rules the drill did **not** prove.
 - **Reported by:** internal — planned as a deliverable, on the principle that until each
   gate has been shown to reject, "the gates work" is an assertion.
-- **Fixed in:** pull requests
-  [#1](https://github.com/MarekFish93/paytransparency/pull/1),
-  [#2](https://github.com/MarekFish93/paytransparency/pull/2),
-  [#3](https://github.com/MarekFish93/paytransparency/pull/3),
-  [#4](https://github.com/MarekFish93/paytransparency/pull/4) and
-  [#5](https://github.com/MarekFish93/paytransparency/pull/5), all closed, none merged.
+- **Fixed in:** five pull requests, all closed, none merged. They live in the project's
+  **private** archive repository rather than here, and are therefore **not publicly
+  verifiable** — see the "Read this before you read the evidence" section of
+  [`docs/BAD-PR-DRILL.md`](docs/BAD-PR-DRILL.md) for why, and for what you *can* check
+  yourself in this repository.
 - **How it got through:** it did not, which is the result the exercise was run to establish.
   The drill covered a fabricated statute number, a source on a non-allowlisted domain, a
   source URL returning an accepted-but-empty response, a silent date change disguised as a

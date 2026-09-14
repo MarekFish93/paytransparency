@@ -7,32 +7,55 @@ This document is the evidence. Until a gate has been *seen* to reject, "the gate
 an assertion, and an assertion is not what this project can offer a worker who is about to
 send a letter to their employer citing a law.
 
-The drill was run on **2026-09-14**, against `ci/01-05-governance-gates` at `8abccad`,
-while the repository was still private.
+The drill was run on **2026-09-14**, while the repository was still private. Each pull
+request carried exactly one defect so the rejection would be attributable to a single rule.
+Each was closed without merging, with no bypass, no admin override and no auto-merge.
 
-> **The SHAs below were rewritten after the drill ran. The outcomes were not.**
-> A pre-publication sweep of the full history found that an earlier commit on this branch
-> published a personal email address as a contact route. Because publishing cannot be
-> undone and the branch had not yet merged to `master`, the affected commits were rewritten
-> to remove it before the repository was opened. Every commit SHA on this branch therefore
-> moved: the drill base `8abccad` is now `cab176f`, and the commits the five pull requests
-> were opened against no longer exist under their original identifiers.
->
-> **What did not move:** the pull requests themselves, their CI runs, the jobs that failed,
-> and the messages quoted below. Those are recorded against the pull requests and their
-> workflow runs, which are unaffected by a branch rewrite. If you follow a link and GitHub
-> reports the head commit as unreachable, that is this rewrite and nothing else — the run
-> logs remain the evidence. Each pull request carried exactly one defect so the
-rejection would be attributable to a single rule. Each was closed without merging, with no
-bypass, no admin override and no auto-merge.
+## Read this before you read the evidence
 
-| # | Defect | Expected rejecter | Actual rejecter | Pull request |
-|---|---|---|---|---|
-| 1 | A fabricated statute number in an unsourced fact | L4 anti-hallucination | **L4** — as expected (2 findings) | [#1](https://github.com/MarekFish93/paytransparency/pull/1) |
-| 2 | A source on a non-allowlisted domain | L5 url hygiene | **L5** — as expected | [#2](https://github.com/MarekFish93/paytransparency/pull/2) |
-| 3 | A source URL returning an accepted-but-empty response | verifier data defect | **verifier** — `anti_automation_gate` | [#3](https://github.com/MarekFish93/paytransparency/pull/3) |
-| 4 | A silent date change disguised as a typo fix | freshness-gate + unchanged-bump | **unchanged-bump only** — see the finding | [#4](https://github.com/MarekFish93/paytransparency/pull/4) |
-| 5 | A correct, allowlisted, live source cited for the wrong provision | subtree-scoped anchor assertion | **subtree-scoped anchor assertion** — `anchor_absent` | [#5](https://github.com/MarekFish93/paytransparency/pull/5) |
+**The five pull requests and their CI runs are not in this repository, and you cannot
+verify them yourself.** That is a real limitation, and it would be dishonest for a document
+about gate integrity to gloss it.
+
+Here is what happened. The drill ran in the repository that became this one's private
+archive. Before publication, a sweep of the full history found that an earlier commit
+published a personal email address as a contact route. The branch was rewritten to remove
+it — but a rewrite is not sufficient once a pull request has existed against the
+contaminated commit: GitHub retains `refs/pull/N/head` independently of the branch, those
+refs survive both branch deletion and history rewriting, and on a public repository anyone
+can fetch them. Deleting the branches would not have helped, and a closed pull request
+cannot be deleted through the API.
+
+So the clean history was pushed to a **new** repository — this one — and the original was
+kept **private** as the archive. The five pull requests, their workflow runs and their logs
+live there. They are intact; they are not public.
+
+**What this means for you as a reader:** the quoted failure output below is transcribed
+from those runs, and you are taking our word for the transcription. What you *can* verify
+independently, right now, in this repository, is everything the transcription is about:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm vitest run packages/country-data/test/lint.test.ts   # 37 cases: L1-L9, BUMP, determinism
+pnpm validate:country-data                                 # every rule identifier, on the real tree
+pnpm verify:sources                                        # every committed source, offline
+```
+
+Every rule quoted below is exercised by that suite against committed fixtures — including
+the recital decoy that case 5 turned red. If you want to re-run the drill itself, the
+defects are described precisely enough to reconstruct all five in a fork, and doing so is a
+better check on us than trusting this page.
+
+We would rather publish an evidence document with a stated hole in it than one that implies
+a verifiability it does not have.
+
+| # | Defect | Expected rejecter | Actual rejecter |
+|---|---|---|---|
+| 1 | A fabricated statute number in an unsourced fact | L4 anti-hallucination | **L4** — as expected (2 findings) |
+| 2 | A source on a non-allowlisted domain | L5 url hygiene | **L5** — as expected |
+| 3 | A source URL returning an accepted-but-empty response | verifier data defect | **verifier** — `anti_automation_gate` |
+| 4 | A silent date change disguised as a typo fix | freshness-gate + unchanged-bump | **unchanged-bump only** — see the finding |
+| 5 | A correct, allowlisted, live source cited for the wrong provision | subtree-scoped anchor assertion | **subtree-scoped anchor assertion** — `anchor_absent` |
 
 ---
 
