@@ -42,24 +42,29 @@ jobs:
   live-sources:
     name: live-sources
     runs-on: ubuntu-latest
-    # Outside the checkout on purpose: this is a derived index of the committed corpus,
-    # not a repository artefact, and nothing in this workflow may write into the working
-    # tree. Outside CELLAR_CACHE_DIR too, because that directory is restored from and
-    # saved to a cache keyed on the very ETags this file records.
-    #
-    # Declared at JOB level, not workflow level. `runner.*` does not exist in the
-    # workflow-level `env:` context, and GitHub rejects the ENTIRE FILE for an invalid
-    # context reference there - a startup_failure with zero jobs, which reads as "the
-    # nightly is broken" rather than "this line is wrong". Found on the first push
-    # after CR-04; a local rehearsal cannot catch it, because the error is in GitHub's
-    # workflow validation, not in anything the script does.
-    env:
-      STORED_ETAGS: ${{ runner.temp }}/stored-etags.json
     outputs:
       cache-key: ${{ steps.stored.outputs.cache_key }}
       outcome: ${{ steps.probe.outputs.outcome }}
     steps:
       - uses: actions/checkout@v5
+
+      # STORED_ETAGS is a derived index of the committed corpus, not a repository
+      # artefact: it lives outside the checkout because nothing in this workflow may
+      # write into the working tree, and outside CELLAR_CACHE_DIR because that directory
+      # is restored from and saved to a cache keyed on the very ETags this file records.
+      #
+      # It is resolved HERE, at run time, from the RUNNER_TEMP environment variable —
+      # NOT from `${{ runner.temp }}` in any `env:` block. The `runner` context does not
+      # exist in a workflow-level OR a job-level `env:`; GitHub rejects the whole file
+      # for the invalid reference and the run becomes a startup_failure with zero jobs,
+      # named by path instead of by the workflow's own name. That reads as "the nightly
+      # is broken" rather than "this one line is wrong", which is how it was first
+      # misread. RUNNER_TEMP is a default environment variable and is always present.
+      #
+      # No local rehearsal catches this class: the error is in GitHub's workflow
+      # validation, not in anything the scripts do. `gh workflow run` is what proves it.
+      - name: Resolve the stored-ETag index path
+        run: echo "STORED_ETAGS=${RUNNER_TEMP}/stored-etags.json" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v5
         with:
