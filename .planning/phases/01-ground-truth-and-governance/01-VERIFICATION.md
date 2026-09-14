@@ -1,7 +1,8 @@
 ---
 phase: 01-ground-truth-and-governance
 verified: 2026-09-14T10:30:43Z
-status: human_needed
+uat_resolved: 2026-09-14T10:50:00Z
+status: passed
 score: 5/5 must-haves verified
 covered_files:
   - ".github/CODEOWNERS"
@@ -340,3 +341,28 @@ the source.
 
 _Verified: 2026-09-14T10:30:43Z_
 _Verifier: Claude (gsd-verifier)_
+
+---
+
+## UAT resolution — 2026-09-14
+
+All seven `human_verification` items were put to the maintainer and answered. Status moved
+`human_needed` → `passed` on that basis. Recorded in `01-UAT.md` (status: complete, 7/7).
+
+| # | Item | Outcome |
+|---|------|---------|
+| 1 | Art. 10(1) signed vs magnitude | **MAGNITUDE governs.** Accepted on the ground already recorded in `CONVENTIONS.md`: the signed reading would silently exempt every category in which men are the underpaid group. `Art10Flag.gapPct` keeps the SIGNED value so direction is never lost. `AMBIGUITY-BASELINE.json` corrected to say DECIDED; `CONVENTIONS.md` and both `v08` vectors unchanged — they already implemented it. `pnpm rederive:vectors` re-run after the edit: 10/10 agree, baseline 45 held. |
+| 2 | Drill evidence provenance | Accepted as disclosed. The mechanism was independently reconstructed offline for cases 1, 2, 3 and 5; only "five real PRs went through CI" rests on the private archive, and `docs/BAD-PR-DRILL.md` says so. WINDOWS entry stays OPEN. |
+| 3 | Phase 5 dependency | **Phase 1 owed the machine, not the facts.** Its own SC2 permits "or rendering as pending verification", and D-06 reserves promotion to a human who has read the primary source — so no phase can discharge it. ROADMAP Phase 5's dependency line reworded to name the promotion as a maintainer prerequisite rather than a Phase 1 deliverable. Logged as an open WINDOWS entry. Until promotion, `resolve()` falls back to the Directive article, so a letter cites Art. 7(1) and the two-month deadline correctly, just not country-specifically. |
+| 4 | Freshness gate unexercisable | Accepted. Proved by construction (synthesised stale PL fact → 1 failure, then 0 after moving `verified_at`); cannot fire on real data until a D-06 promotion happens. WINDOWS entry stays OPEN. |
+| 5 | SC4 wording vs D-10 | Accepted. D-10 deliberately narrows "any fact" to a hard-fail on launch-country legally-operative facts; everything else degrades rather than darkens. |
+| 6 | REQUIREMENTS.md traceability | Updated. Six IDs moved to Complete — each carries an explicit "or pending" / fallback clause its own wording satisfies. **LEGAL-02, LEGAL-05, LEGAL-06 and LEGAL-08 recorded as PARTIAL, not Complete**, with per-ID reasons: the machinery is proved, but 540 of 567 country facts remain `pending_verification` by design. Evidence read from the records, not the summaries: `transposition.status` is `unknown` ×15 / `no_measure_notified` ×12, and 0 of 27 states name an equality body. |
+| 7 | `enforce_admins=false` | Accepted with a trigger: flip it the day a second maintainer exists. WINDOWS entry stays OPEN as the reminder. |
+
+**Post-UAT re-verification** (source unchanged by any of the above; only planning artefacts and
+one JSON description field moved): `pnpm test` 411 passed, `pnpm rederive:vectors` 10/10 agree
+with baseline 45 held, `pnpm typecheck` clean.
+
+**Five items above remain OPEN in the ledger on purpose.** They are honest limitations, not
+defects to tidy away, and `/gsd-ship` will keep blocking while they stand.
+
